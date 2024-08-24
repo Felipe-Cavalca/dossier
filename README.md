@@ -1,49 +1,30 @@
 # base-repo
 
-[![link-repo-base](https://img.shields.io/badge/Repo-Base-blue)](./)
-
-[![GIT](https://img.shields.io/badge/GIT-orange)](./)
-[![MD](https://img.shields.io/badge/MD-darkblue)](./)
-[![YML](https://img.shields.io/badge/YML-darkblue)](./)
+[![link-repo-base](https://img.shields.io/badge/Repo-Dossier-blue)](./)
 
 [![link-readme-inglês](https://img.shields.io/badge/README-English/Inglês-red)](./README.md#english)
 [![link-readme-Portugês](https://img.shields.io/badge/README-Portuguese/Portugês-green)](./README.md#português)
 
 ## English
 
-Bifrost is a PHP framework with a basis for web development
-
-## Description
-
-This repository contains a `tasks.json` file inside the `.vscode` folder, which defines tasks to pull repositories with `API`, `APP`, `Banco` scripts and others.
+Dossier, a home for your files.
 
 ## Requirements
 
 * Git
-*Docker
+* Docker
 * Docker Compose
-* Visual Studio Code (VS Code)
 
 ## Installation
 
 1. Clone the repository:
 
     ```sh
-    git clone https://github.com/Felipe-Cavalca/BifrostPHP.git
-    cd BifrostPHP
+    git clone https://github.com/Felipe-Cavalca/dossier.git
+    cd dossier
     ```
 
-2. Open the project in Visual Studio Code:
-
-    ```sh
-    code .
-    ```
-
-3. In VS Code, open the built-in terminal and run the tasks defined in `tasks.json` to pull the scripts from the required repositories:
-    * In the menu, go to **Terminal > Run Task...**
-    * Select the desired task to perform.
-
-4. Build and start Docker containers:
+1. Build and start Docker containers:
 
     ```sh
     docker-compose up --build -d
@@ -76,39 +57,24 @@ Contributions are welcome! Please follow the steps below to contribute:
 
 ## português
 
-Bifrost é um framework em PHP com uma base para o desenvolvimento web
-
-## Descrição
-
-Este repositório contém um arquivo `tasks.json` dentro da pasta `.vscode`, que define tarefas para puxar os repositórios com os scripts de `API`, `APP`, `Banco` entre outros.
+Dossier, um lar para seus arquivos
 
 ## Requisitos
 
 * Git
 * Docker
 * Docker Compose
-* Visual Studio Code (VS Code)
 
 ## Instalação
 
 1. Clone o repositório:
 
     ```sh
-    git clone https://github.com/Felipe-Cavalca/BifrostPHP.git
-    cd BifrostPHP
+    git clone https://github.com/Felipe-Cavalca/dossier.git
+    cd dossier
     ```
 
-2. Abra o projeto no Visual Studio Code:
-
-    ```sh
-    code .
-    ```
-
-3. No VS Code, abra o terminal integrado e execute as tarefas definidas no `tasks.json` para puxar os scripts dos repositórios necessários:
-    * No menu, vá para **Terminal > Run Task...**
-    * Selecione a tarefa desejada para executar.
-
-4. Construa e inicie os containers Docker:
+1. Construa e inicie os containers Docker:
 
     ```sh
     docker-compose up --build -d
