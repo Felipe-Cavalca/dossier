@@ -1,0 +1,38 @@
+{
+    "cssFiles": [
+        "/config/variaveis.css",
+        "/css/index.css",
+        "/libs/bootstrap-5.3.2-dist/css/bootstrap.css"
+    ],
+    "jsFiles": [
+        "/libs/customComponents-1.2.0-9.min.js",
+        "/libs/jquery-3.6.0.js",
+        "/libs/bootstrap-5.3.2-dist/js/bootstrap.js"
+    ],
+    "metaData": {
+        "meta": [
+            {
+                "name": "viewport",
+                "content": "width=device-width, initial-scale=1"
+            },
+            {
+                "httpEquiv": "X-UA-Compatible",
+                "content": "IE=edge"
+            },
+            {
+                "charset": "UTF-8"
+            },
+            {
+                "name": "theme-color",
+                "content": "#000000"
+            }
+        ],
+        "link": [
+            {
+                "rel": "shortcut icon",
+                "href": "/assets/global/favicon.ico",
+                "type": "image/x-icon"
+            }
+        ]
+    }
+}

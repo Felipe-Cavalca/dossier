@@ -48,6 +48,14 @@
             "linux": {
                 "command": "git remote | grep banco && git remote set-url banco https://github.com/Felipe-Cavalca/BifrostPHP-Databanco.git || git remote add banco https://github.com/Felipe-Cavalca/BifrostPHP-Databanco.git; git fetch banco && git merge banco/latest-release --allow-unrelated-histories"
             }
+        },
+
+        // Scripts do front
+        {
+            "label": "front docker-compose up",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": ["-f", "app/docker-compose.yml", "up", "--build", "-d"]
         }
     ]
 }
