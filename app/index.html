@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <title>Redirecionamento</title>
+    <script>
+        window.onload = function () {
+            // Verifica se o JavaScript está habilitado
+            if (typeof window.location.replace === 'function') {
+                window.location.replace('./pages/');
+            }
+        };
+    </script>
+</head>
+
+<body>
+    <h1>Erro: O JavaScript está desabilitado.</h1>
+</body>
+
+</html>
