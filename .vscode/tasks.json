@@ -59,10 +59,10 @@
             "type": "shell",
             "problemMatcher": [],
             "windows": {
-                "command": "if (git remote | findstr 'banco') { git remote set-url banco https://github.com/Felipe-Cavalca/BifrostPHP-Databanco.git } else { git remote add banco https://github.com/Felipe-Cavalca/BifrostPHP-Databanco.git }; git fetch banco; git merge banco/latest-release --allow-unrelated-histories"
+                "command": "if (git remote | findstr 'banco') { git remote set-url banco https://github.com/Felipe-Cavalca/BifrostPHP-Database.git } else { git remote add banco https://github.com/Felipe-Cavalca/BifrostPHP-Database.git }; git fetch banco; git merge banco/latest-release --allow-unrelated-histories"
             },
             "linux": {
-                "command": "git remote | grep banco && git remote set-url banco https://github.com/Felipe-Cavalca/BifrostPHP-Databanco.git || git remote add banco https://github.com/Felipe-Cavalca/BifrostPHP-Databanco.git; git fetch banco && git merge banco/latest-release --allow-unrelated-histories"
+                "command": "git remote | grep banco && git remote set-url banco https://github.com/Felipe-Cavalca/BifrostPHP-Database.git || git remote add banco https://github.com/Felipe-Cavalca/BifrostPHP-Database.git; git fetch banco && git merge banco/latest-release --allow-unrelated-histories"
             }
         },
 
