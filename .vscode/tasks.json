@@ -56,6 +56,20 @@
             "type": "shell",
             "command": "docker-compose",
             "args": ["-f", "app/docker-compose.yml", "up", "--build", "-d"]
+        },
+
+        // Scripts do back
+        {
+            "label": "back docker-compose up",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": [
+                "-f",
+                "api/docker-compose.yml",
+                "up",
+                "--build",
+                "-d"
+            ]
         }
     ]
 }
