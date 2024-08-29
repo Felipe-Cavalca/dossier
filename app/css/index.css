@@ -1,5 +1,8 @@
 body {
-    background-color: var(--cor-fundo);
+    background-image: var(--cor-fundo);
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100vh;
     color: var(--cor-texto);
 }
 
