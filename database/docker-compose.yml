@@ -1,0 +1,25 @@
+services:
+
+  database1:
+    image: mysql
+    container_name: database1
+    env_file:
+      - .env
+    ports:
+      - "23306:3306"
+    volumes:
+      - database1-data:/var/lib/mysql # Adicionando volume para persistência dos dados
+      - ./src:/scripts/src # Adicionando pasta de scripts para gerenciamento do banco
+      - ./install.sh:/scripts/install.sh # Adicionando script de instalação
+      - ./install:/scripts/install # Adicionando pasta de scripts de instalação
+      - ./update.sh:/scripts/update.sh # Adicionando script de atualização
+      - ./update:/scripts/update # Adicionando pasta de scripts de atualização
+    networks:
+      - mysql
+
+volumes:
+  database1-data:
+
+networks:
+  mysql:
+    driver: bridge
