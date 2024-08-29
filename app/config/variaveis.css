@@ -1,6 +1,8 @@
 /* variaveis css */
 :root {
     /* variveis gerais */
-    --cor-fundo: #1A233A;
-    --cor-texto: #8DC7F8;
+    --cor-fundo: linear-gradient(10deg, #7117ea, #ea6060);
+    --cor-texto: #1d2730;
+    --cor-primary: #ea6060;
+    --cor-secondary: #a164f1;
 }

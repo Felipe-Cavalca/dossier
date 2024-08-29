@@ -2,28 +2,46 @@
 <html>
 
 <head>
-    <title>Página Inicial</title>
+    <title>Dossier</title>
+    <link rel="stylesheet" href="../css/pages/index.css">
 </head>
 
 <body>
-    <c-navbar>Inicial</c-navbar>
-
-    <div class="container mt-5">
+    <div class="container d-flex justify-content-center align-items-center full-screen">
         <div class="row">
-            <div class="col-md-10 offset-md-1" id="content">
-                <p>Olá, seja bem-vindo ao BifrostPHP</p>
-                <p>Um framework para desenvolvimento web</p>
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="font-monospace flex-column">
+                    <h1>{{nome}}</h1>
+                    <h2 class="mt-3">{{slogan}}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>&#8595;</span>
+        </div>
+    </div>
+
+    <div class="container d-flex justify-content-center align-items-center full-screen">
+        <div class="card">
+            <div class="card-header d-flex justify-content-center pt-3">
+                <h3>Login</h3>
+            </div>
+            <div class="card-body mt-2">
+                <form action="/usuario/login" method="POST">
+                    <div class="mb-3">
+                        <input type="email" name="email" class="form-control" placeholder="meu@email.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" name="senha" class="form-control" placeholder="Senha" required>
+                    </div>
+                    <button type="submit"><b>Entrar</b></button>
+                </form>
             </div>
         </div>
     </div>
 
     <script src="../core/core.js"></script>
-    <script type="text/javascript">
-        const before = (bifrost) => { };
-        const after = (bifrost) => { };
-
-        let bifrost = new Bifrost(before, after);
-    </script>
+    <script src="../js/pages/index.js"></script>
 </body>
 
 </html>
