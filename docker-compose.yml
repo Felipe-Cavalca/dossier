@@ -1,0 +1,46 @@
+volumes:
+  dossier-storage:
+    name: dossier-storage
+    labels:
+      com.description: "This volume is used for data storage"
+  dossier-redis_data:
+    name: dossier-redis_data
+    labels:
+      com.description: "This volume is used for Redis"
+
+networks:
+  dossier-network:
+    name: dossier-network
+
+services:
+  app:
+    build:
+      context: ./app
+      dockerfile: ./Dockerfile
+    ports:
+      - "20080:80"
+    volumes:
+      - ./app/:/usr/local/apache2/htdocs/
+    networks:
+      - dossier-network
+  api:
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile
+    ports:
+      - "28080:80"
+    env_file:
+      - ./api/.env
+    volumes:
+      - ./api/:/var/www/html
+      - dossier-storage:/storage
+    networks:
+      - dossier-network
+    depends_on:
+      - redis
+  redis:
+    image: redis:latest
+    volumes:
+      - dossier-redis_data:/data
+    networks:
+      - dossier-network

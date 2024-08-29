@@ -1,0 +1,37 @@
+volumes:
+  bifrost-storage:
+    name: bifrost-storage
+    labels:
+      com.description: "This volume is used for data storage"
+  bifrost-redis_data:
+    name: bifrost-redis_data
+    labels:
+      com.description: "This volume is used for Redis"
+
+networks:
+  bifrost-network:
+    name: bifrost-network
+
+services:
+  api:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+      - "28080:80"
+    env_file:
+      - .env
+    volumes:
+      - ./:/var/www/html
+      - bifrost-storage:/storage
+    networks:
+      - bifrost-network
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    volumes:
+      - bifrost-redis_data:/data
+    networks:
+      - bifrost-network

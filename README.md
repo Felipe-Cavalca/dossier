@@ -1,11 +1,11 @@
-# base-repo
+# BifrostPHP - Back-end Module
 
 [![link-repo-base](https://img.shields.io/badge/Repo-Dossier-blue)](./)
 
-[![link-readme-inglês](https://img.shields.io/badge/README-English/Inglês-red)](./README.md#english)
-[![link-readme-Portugês](https://img.shields.io/badge/README-Portuguese/Portugês-green)](./README.md#português)
+[![link-readme-inglês](https://img.shields.io/badge/README-English/Inglês-red)](./README.md)
+[![link-readme-Portugês](https://img.shields.io/badge/README-Portuguese/Portugês-green)](./README-PT.md)
 
-## English
+This repository contains the BifrostPHP back-end source code base.
 
 Dossier, a home for your files.
 
