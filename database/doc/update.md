@@ -7,7 +7,7 @@
     Com o ambiente rodando, você pode usar o comando abaixo para executar o script [`update.sh`](../update.sh):
 
     ```bash
-    docker exec database1 /bin/bash /scripts/update.sh
+    docker exec database /bin/bash /scripts/update.sh
     ```
 
     Esse script irá listar todos os arquivos `.sql` dentro da pasta [`/update`](../update/) e executá-los no banco de dados.
@@ -45,5 +45,5 @@ Você pode criar scripts `SQL` personalizados para configurar o banco de dados d
     O script [`update.sh`](../update.sh) automaticamente detectará e executará todos os arquivos `.sql` na pasta [`/update`](../update/) na próxima vez que você executar o comando:
 
     ```bash
-    docker exec database1 /bin/bash /scripts/update.sh
+    docker exec database /bin/bash /scripts/update.sh
     ```
