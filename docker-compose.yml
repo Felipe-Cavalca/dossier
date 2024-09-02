@@ -52,12 +52,12 @@ services:
     networks:
       - dossier-network
   database:
-    image: mysql
+    image: postgres
     container_name: database
     env_file:
-      - .env
+      - ./database/.env
     ports:
-      - "23306:3306"
+      - "25432:5432"
     volumes:
       - dossier-database-data:/var/lib/mysql # Adicionando volume para persistência dos dados
       - ./database/src:/scripts/src # Adicionando pasta de scripts para gerenciamento do banco
