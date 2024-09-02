@@ -9,3 +9,5 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Exemplo para criar um trigger para a tabela 'users'
 SELECT create_log_trigger('users');
+
+INSERT INTO users (name, email, password) VALUES ('admin', 'admin@dossier.com', '123456');
