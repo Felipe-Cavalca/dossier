@@ -37,9 +37,9 @@ Você pode criar scripts `SQL` personalizados para configurar o banco de dados d
     Aqui está um exemplo de um script que cria uma tabela simples:
 
     ```sql
-    CREATE TABLE exemplo (
-        id INT PRIMARY KEY,
-        nome VARCHAR(100)
+    CREATE TABLE `exemplo` (
+        `id` SERIAL PRIMARY KEY,
+        `nome` VARCHAR(100)
     );
     ```
 
