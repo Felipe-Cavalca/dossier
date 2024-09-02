@@ -33,7 +33,7 @@ Você pode criar scripts `SQL` personalizados para configurar o banco de dados d
     Aqui está um exemplo de um script
 
     ```sql
-    ALTER TABLE users ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER updated_ad;
+    ALTER TABLE `users` ADD COLUMN `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
     ```
 
 3. Adicionar o Script:
