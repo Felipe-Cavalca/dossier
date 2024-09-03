@@ -31,7 +31,12 @@ function beforeForm() {
 }
 
 function afterForm(data) {
-    console.log(data);
+    data = JSON.parse(data);
+    if (data.status) {
+        window.location.href = "home.html";
+    } else {
+        $("c-alert").show();
+    }
 }
 
 let bifrost = new Bifrost(beforeLoad, afterLoad);
