@@ -44,7 +44,8 @@
     border-radius: 50px 50px 0 0 !important;
 }
 
-form button{
+form button,
+c-alert button {
     width: 100%;
     background-color: var(--cor-secondary);
     color: var(--cor-texto);

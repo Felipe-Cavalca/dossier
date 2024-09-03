@@ -1,0 +1,64 @@
+<style>
+    :host {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.8);
+        opacity: 0; /* Inicialmente invisível */
+        animation: fadeIn 1s forwards; /* Animação de fade-in */
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .content {
+        position: relative;
+        background-color: #ffffff;
+        margin: 10% auto;
+        /* padding: 20px; */
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 90%;
+        border-radius: 5px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.9);
+        text-align: center;
+        border-radius: 15px;
+    }
+
+    .header {
+        background-color: #333;
+        color: white;
+        padding: 10px;
+        border-radius: 15px 15px 0 0;
+    }
+
+    .body {
+        margin: 10px;
+    }
+</style>
+<div class="content">
+    <div class="header">
+        <slot name="header"></slot>
+    </div>
+    <div class="body">
+        <slot name="body">
+            <h4>
+                Desculpe, Houve um erro no sistema.
+            </h4>
+        </slot>
+    </div>
+    <div class="footer">
+        <slot name="footer"></slot>
+    </div>
+</div>

@@ -6,7 +6,35 @@
     <link rel="stylesheet" href="../css/pages/index.css">
 </head>
 
+<style>
+    .bg-red {
+        background-color: red;
+        color: white;
+        padding: 10px;
+        border-radius: 15px 15px 0 0;
+    }
+</style>
+
 <body>
+
+    <c-alert>
+        <div slot="header">
+            <h2>Dados de login incorretos</h2>
+        </div>
+        <div slot="body">
+            <div>
+                <p>
+                    Verifique se o e-mail e a senha estão corretos e tente novamente.
+                </p>
+            </div>
+            <div>
+                <button onclick="this.parentElement.parentElement.parentElement.style.display = 'none'">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </c-alert>
+
     <div class="container d-flex justify-content-center align-items-center full-screen">
         <div class="row">
             <div class="d-flex justify-content-center align-items-center">
@@ -32,7 +60,7 @@
                         <input type="email" name="email" class="form-control" placeholder="meu@email.com" required>
                     </div>
                     <div class="mb-3">
-                        <input type="password" name="senha" class="form-control" placeholder="Senha" required>
+                        <input type="password" name="password" class="form-control" placeholder="Senha" required>
                     </div>
                     <button type="submit"><b>Entrar</b></button>
                 </form>
