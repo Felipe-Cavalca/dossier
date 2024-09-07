@@ -26,9 +26,11 @@ class Usuario implements ControllerInterface
         $email = $_POST["email"];
         $password = $_POST["password"];
 
-        $user = $database->list(
-            "SELECT * FROM users WHERE email = :email AND password = :password",
-            [":email" => $email, ":password" => $password]
+        $user = $database->query(
+            select: "u.id, u.name, u.email",
+            from: "users u",
+            where: "u.email = :email AND u.password = :password",
+            params: [":email" => $email, ":password" => $password]
         );
 
         if (count($user) == 1) {
