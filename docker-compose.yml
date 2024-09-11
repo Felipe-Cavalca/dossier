@@ -67,3 +67,17 @@ services:
       - ./database/update:/scripts/update # Adicionando pasta de scripts de atualização
     networks:
       - dossier-network
+  webdav:
+    image: bytemark/webdav
+    container_name: webdav
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - AUTH_TYPE=Basic
+      - USERNAME=admin
+      - PASSWORD=admin
+    volumes:
+      - ./webdav/data:/var/lib/dav/data
+    networks:
+      - dossier-network
