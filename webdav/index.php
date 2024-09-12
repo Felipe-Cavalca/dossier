@@ -21,7 +21,7 @@ function authenticate()
     list($username, $password) = explode(':', base64_decode(substr($headers['Authorization'], 6)));
 
     // Chama a API de autenticação
-    $apiUrl = "https://suaapi.com/authenticate";
+    $apiUrl = "http://api/webdav/auth";
     $data = http_build_query([
         'username' => $username,
         'password' => $password
@@ -38,7 +38,7 @@ function authenticate()
     $context  = stream_context_create($options);
     $result = file_get_contents($apiUrl, false, $context);
 
-    if ($result === FALSE || json_decode($result)->success !== true) {
+    if ($result === FALSE || json_decode($result)->status !== true) {
         header('HTTP/1.1 403 Forbidden');
         exit;
     }
@@ -97,7 +97,11 @@ function handleWebDAVRequest($method, $uri)
 
         case 'DELETE':
             if (file_exists($filePath)) {
-                unlink($filePath);
+                if (is_dir($filePath)) {
+                    deleteDirectory($filePath);
+                } else {
+                    unlink($filePath);
+                }
                 header("HTTP/1.1 204 No Content");
             } else {
                 header("HTTP/1.1 404 Not Found");
@@ -113,11 +117,11 @@ function handleWebDAVRequest($method, $uri)
             break;
 
         case 'LOCK':
-            handleLock($filePath);
+            // handleLock($filePath);
             break;
 
         case 'UNLOCK':
-            handleUnlock($filePath);
+            // handleUnlock($filePath);
             break;
 
         case 'MKCOL':
@@ -317,8 +321,25 @@ function handleMove($filePath)
     }
 }
 
+// Função para apagar diretórios recursivamente
+function deleteDirectory($dir) {
+    if (!is_dir($dir)) {
+        return;
+    }
+    $items = array_diff(scandir($dir), ['.', '..']);
+    foreach ($items as $item) {
+        $path = $dir . DIRECTORY_SEPARATOR . $item;
+        if (is_dir($path)) {
+            deleteDirectory($path);
+        } else {
+            unlink($path);
+        }
+    }
+    rmdir($dir);
+}
+
 // Autenticação via API
-// authenticate();
+authenticate();
 
 // Processa a requisição WebDAV
 handleWebDAVRequest($requestMethod, $requestUri);
