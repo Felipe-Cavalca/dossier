@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS user (
     password TEXT NOT NULL
 );
 
+CREATE INDEX idx_user_email ON user(email);
+
 SELECT create_log_trigger('user');
 
 -- senha padrão: 123456
