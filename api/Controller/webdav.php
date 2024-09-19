@@ -99,7 +99,13 @@ class Webdav implements ControllerInterface
 
     public function POST()
     {
-        $file = new File($_POST["path"]);
+        $file = new File($_POST["path"] ?? "/");
+
+        $_POST["content"] = base64_decode($_POST["content"] ?? "");
+
+        if (empty($_POST["content"])) {
+            $_POST["content"] = "";
+        }
 
         if (!$file->isFile && !$file->isDir) {
             $file->createFile($_POST["content"]);
@@ -309,17 +315,6 @@ class Webdav implements ControllerInterface
         return $this->response->buildResponseWebDav(
             headers: [
                 "HTTP/1.1 204 No Content",
-            ]
-        );
-    }
-
-    public function PROPPATCH()
-    {
-        // Retorna a resposta XML
-        return $this->response->buildResponseWebDav(
-            headers: [
-                "HTTP/1.1 207 Multi-Status",
-                "Content-Type: application/xml; charset=\"utf-8\""
             ]
         );
     }

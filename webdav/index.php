@@ -24,7 +24,6 @@ class WebDAV
                 header('DAV: 1,2');
                 header('Allow: OPTIONS, GET, HEAD, POST, DELETE, PROPFIND, PUT, LOCK, UNLOCK, MKCOL, MOVE, PROPPATCH');
                 break;
-
             case "GET":
                 return $this->getReturnApi("/get", ["path" => $path]);
             case "HEAD":
@@ -42,32 +41,25 @@ class WebDAV
             case "POST":
                 return $this->getReturnApi("/post", [
                     "path" => $path,
-                    "content" => file_get_contents("php://input") ?? ""
+                    "content" => base64_encode(file_get_contents("php://input") ?? "a")
                 ]);
             case "PROPFIND":
+            case "PROPPATCH":
                 return $this->getReturnApi("/propfind", [
                     "path" => $path,
                     "depth" => isset($_SERVER['HTTP_DEPTH']) ? $_SERVER['HTTP_DEPTH'] : 'infinity'
                 ]);
-            case "PROPPATCH":
-                return $this->getReturnApi("/proppatch", [
-                    "path" => $path,
-                    "body" => file_get_contents("php://input") ?? ""
-                ]);
-
             case "LOCK":
                 return $this->getReturnApi("/lock", [
                     "path" => $path,
                     "headers" => $this->headers,
                     "body" => file_get_contents("php://input") ?? ""
                 ]);
-
             case "UNLOCK":
                 return $this->getReturnApi("/unlock", [
                     "path" => $path,
                     "lock_token" => $_SERVER["HTTP_LOCK_TOKEN"] ?? ""
                 ]);
-
             default:
                 $this->setHeader("HTTP/1.1 405 Method Not Allowed");
                 exit;

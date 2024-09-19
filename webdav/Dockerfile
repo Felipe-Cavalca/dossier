@@ -14,6 +14,11 @@ COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 # Tornar o script executável
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+# Configurando o php.ini para aumentar o tamanho máximo de upload e POST
+RUN echo "upload_max_filesize = 1G" >> /usr/local/etc/php/php.ini
+RUN echo "post_max_size = 1G" >> /usr/local/etc/php/php.ini
+RUN echo "memory_limit = 1G" >> /usr/local/etc/php/php.ini
+
 # Definir o script de entrada
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
