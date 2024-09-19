@@ -15,6 +15,11 @@ RUN apt-get update && apt-get install -y libpq-dev \
 # instalando a extensão PHP Redis
 RUN pecl install redis && docker-php-ext-enable redis
 
+# Configurando o php.ini para aumentar o tamanho máximo de upload e POST
+RUN echo "upload_max_filesize = 1G" >> /usr/local/etc/php/php.ini
+RUN echo "post_max_size = 1G" >> /usr/local/etc/php/php.ini
+RUN echo "memory_limit = 1G" >> /usr/local/etc/php/php.ini
+
 RUN service apache2 restart
 
 EXPOSE 80

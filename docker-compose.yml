@@ -40,6 +40,7 @@ services:
     volumes:
       - ./api/:/var/www/html
       - dossier-storage:/storage
+      - ./storage:/storage
     networks:
       - dossier-network
     depends_on:
@@ -65,5 +66,17 @@ services:
       - ./database/install:/scripts/install # Adicionando pasta de scripts de instalação
       - ./database/update.sh:/scripts/update.sh # Adicionando script de atualização
       - ./database/update:/scripts/update # Adicionando pasta de scripts de atualização
+    networks:
+      - dossier-network
+  webdav:
+    build:
+      context: ./webdav
+      dockerfile: ./Dockerfile
+    container_name: webdav
+    ports:
+      - "8080:80"
+    volumes:
+      - ./webdav:/var/www/html
+      - dossier-storage:/storage
     networks:
       - dossier-network
