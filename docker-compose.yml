@@ -77,6 +77,5 @@ services:
       - "8080:80"
     volumes:
       - ./webdav:/var/www/html
-      - dossier-storage:/storage
     networks:
       - dossier-network
