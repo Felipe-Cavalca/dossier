@@ -2,25 +2,21 @@
 
 namespace Bifrost\Class;
 
-/**
- * Classe responsável por gerenciar as response
- *
- * @package Bifrost\Class
- * @author Felipe dos S. Cavalca
- */
 class HttpResponse
 {
-    public function buildResponse(
+    public static function buildResponse(
         string $message,
         bool $status = true,
         int $statusCode = 200,
-        array $data = [],
+        array|string $data = [],
     ): array {
+        $dateTime = new \DateTime();
         return [
             "status" => $status,
             "statusCode" => $statusCode,
             "message" => $message,
-            "data" => $data
+            "data" => is_string($data) ? json_decode($data) : $data,
+            "date" => $dateTime->format('Y-m-d H:i:s.uP')
         ];
     }
 
