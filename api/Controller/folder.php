@@ -18,7 +18,7 @@ class Folder implements ControllerInterface
     #[Method('GET')]
     #[RequiredParams(['user_id'])]
     #[Cache('folder-list', 5)]
-    public function index(): array
+    public function details(): array
     {
         $path = $_GET['path'] ?? null;
 
@@ -27,10 +27,10 @@ class Folder implements ControllerInterface
         }
 
         if (!isset($folder->id)) {
-            throw new HttpError("e404", ["path" => "A pasta não existe"]);
+            throw HttpError::notFound("A pasta $path não existe");
         }
 
-        return HttpResponse::buildResponse(
+        return HttpResponse::success(
             message: "Listagem de pastas",
             data: $folder
         );
