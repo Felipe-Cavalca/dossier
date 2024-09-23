@@ -2,39 +2,68 @@
 
 namespace Bifrost\Class;
 
+use Bifrost\Enum\HttpStatusCode;
+
 class HttpResponse
 {
-    public static function buildResponse(
-        string $message,
-        bool $status = true,
-        int $statusCode = 200,
+    private HttpStatusCode $statusCode;
+    private string $message;
+    private array|string $data;
+    private array $additionalInfo;
+
+    public function __construct(
+        HttpStatusCode $statusCode = HttpStatusCode::INTERNAL_SERVER_ERROR,
+        string $message = "",
         array|string $data = [],
-    ): array {
-        $dateTime = new \DateTime();
-        return [
-            "status" => $status,
-            "statusCode" => $statusCode,
-            "message" => $message,
-            "data" => is_string($data) ? json_decode($data) : $data,
-            "date" => $dateTime->format('Y-m-d H:i:s.uP')
-        ];
+        array $additionalInfo = []
+    ) {
+        $this->statusCode = $statusCode;
+        $this->message = $message;
+        $this->data = $data;
+        $this->additionalInfo = $additionalInfo;
     }
 
-    public function buildResponseWebDav(
-        bool $status = true,
-        int $statusCode = 200,
-        string $message = null,
-        array $headers = [],
-        array $data = [],
-        string $return = "",
-    ): array {
-        return [
-            "status" => $status,
-            "statusCode" => $statusCode,
-            "message" => $message,
-            "headers" => $headers,
-            "data" => $data,
-            "return" => $return
-        ];
+    public function __toString(): string
+    {
+        return json_encode(self::buildResponse(
+            $this->statusCode,
+            $this->message,
+            $this->data,
+            $this->additionalInfo
+        ));
     }
+
+    public static function buildResponse(
+        HttpStatusCode $statusCode,
+        string $message,
+        array|string $data = [],
+        array $additionalInfo = []
+    ): array {
+        $dateTime = new \DateTime();
+        $response = [
+            "statusCode" => $statusCode->value,
+            "isSuccess" => $statusCode->isSuccess(),
+            "message" => $message,
+            "timestamp" => $dateTime->format('Y-m-d H:i:s.uP'),
+        ];
+
+        if (!empty($data)) {
+            $response["data"] = is_string($data) ? json_decode($data, true) : $data;
+        }
+
+        http_response_code($statusCode->value);
+        return array_merge($response, $additionalInfo);
+    }
+
+    public static function success(string $message, array|string $data = []): array
+    {
+        return self::buildResponse(HttpStatusCode::OK, $message, $data);
+    }
+
+    public static function notFound(string $message, array|string $data = []): array
+    {
+        return self::buildResponse(HttpStatusCode::NOT_FOUND, $message, $data);
+    }
+
+    // Adicione outros métodos conforme necessário
 }
