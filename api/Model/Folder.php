@@ -13,13 +13,6 @@ class Folder
         $this->database = new Database();
     }
 
-    /**
-     * Retorna o ID de uma pasta a partir de seu caminho
-     *
-     * @param string|array $path Caminho da pasta
-     * @param int $user_id ID do usuário
-     * @return int|null ID da pasta
-     */
     public function getIdByPath(string|array $path, int $userId): ?int
     {
         $pathString = is_array($path) ? implode('/', $path) : $path;
@@ -52,12 +45,6 @@ class Folder
         return $folder[0]['id'] ?? null;
     }
 
-    /**
-     * Retorna as informações de uma pasta a partir de seu ID
-     *
-     * @param int $folderId ID da pasta
-     * @return array|null Informações da pasta
-     */
     public function getById(int $folderId): ?array
     {
         $folder = $this->database->query(
