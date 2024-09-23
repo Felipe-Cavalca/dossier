@@ -48,9 +48,14 @@ class Folder
     public function getById(int $folderId): ?array
     {
         $folder = $this->database->query(
-            select: "*",
-            from: "folder",
-            where: "id = :id",
+            select: ["f.*", "fl.changed"],
+            from: "folder f",
+            join: [
+                "JOIN folder_log fl ON fl.original_id = f.id"
+            ],
+            where: "f.id = :id",
+            order: "fl.changed DESC",
+            limit: 1,
             params: [':id' => $folderId]
         );
 
