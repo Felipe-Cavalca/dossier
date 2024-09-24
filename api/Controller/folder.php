@@ -24,14 +24,18 @@ class Folder implements ControllerInterface
     #[Cache("folder-list", 5)]
     public function details(): array
     {
-        $path = (int) $_GET["id"] ?? (string) $_GET["path"] ?? null;
-
-        if ($path) {
-            $folder = new FolderClass($path, $_GET["user_id"]);
+        if (!empty($_GET["id"])) {
+            $folder = new FolderClass((int) $_GET["id"], $_GET["user_id"]);
+        } elseif (!empty($_GET["path"])) {
+            $folder = new FolderClass((string) $_GET["path"], $_GET["user_id"]);
+        } else {
+            throw HttpError::badRequest("Nenhum dos campos encontrados", [
+                "fieldName" => ["id", "path"],
+            ]);
         }
 
         if (!isset($folder->id)) {
-            throw HttpError::notFound("A pasta $path não existe");
+            throw HttpError::notFound("A pasta não existe");
         }
 
         return HttpResponse::success(
