@@ -9,4 +9,9 @@ CREATE TABLE IF NOT EXISTS folder (
     UNIQUE (user_id, parent_id, name)
 );
 
+-- Para casos onde o parent_id é null
+CREATE UNIQUE INDEX unique_folder_with_null_parent
+ON folder (user_id, name)
+WHERE parent_id IS NULL;
+
 SELECT create_log_trigger ('folder');
