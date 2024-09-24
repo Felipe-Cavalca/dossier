@@ -61,4 +61,32 @@ class Folder
 
         return $folder[0] ?? null;
     }
+
+    public function getContent(int|null $folderId, int $userId): array
+    {
+        $folders = $this->database->query(
+            select: ["f.*", "fl.changed"],
+            from: "folder f",
+            join: [
+                "JOIN folder_log fl ON fl.original_id = f.id"
+            ],
+            where: [
+                "f.parent_id" => $folderId,
+                "f.user_id" => $userId
+            ],
+            // order: "fl.changed DESC"
+        );
+
+        /*
+        $files = $this->database->list(
+            "SELECT * FROM file WHERE folder_id = :id",
+            [':id' => $folderId]
+        );
+        */
+
+        return [
+            'folders' => $folders,
+            // 'files' => $files
+        ];
+    }
 }
