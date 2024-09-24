@@ -15,15 +15,17 @@ class Folder implements ControllerInterface
 
     public function __construct() {}
 
-    #[Method('GET')]
-    #[RequiredParams(['user_id'])]
-    #[Cache('folder-list', 5)]
+    #[Method("GET")]
+    #[RequiredParams([
+        "user_id" => FILTER_VALIDATE_INT
+    ])]
+    #[Cache("folder-list", 5)]
     public function details(): array
     {
-        $path = $_GET['path'] ?? null;
+        $path = (int) $_GET["id"] ?? (string) $_GET["path"] ?? null;
 
         if ($path) {
-            $folder = new FolderClass($path, $_GET['user_id']);
+            $folder = new FolderClass($path, $_GET["user_id"]);
         }
 
         if (!isset($folder->id)) {
