@@ -1,0 +1,19 @@
+a {
+    text-decoration: none;
+    color: var(--cor-texto);
+    -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input,
+span {
+    margin-top: 20px;
+}
+
+button.danger::before {
+    content: "\2B06  ";
+}
+
+button.danger:after {
+    content: " \2B06";
+}

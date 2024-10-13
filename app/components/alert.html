@@ -9,14 +9,36 @@
         height: 100%;
         overflow: auto;
         background-color: rgba(0, 0, 0, 0.8);
-        opacity: 0; /* Inicialmente invisível */
-        animation: fadeIn 1s forwards; /* Animação de fade-in */
+        opacity: 0;
+        animation: fadeIn 1s forwards;
+    }
+
+    button {
+        background-color: #ff5c5c;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #ff1c1c;
+        /* Cor mais escura ao passar o mouse */
+    }
+
+    button:active {
+        background-color: #d11c1c;
+        /* Cor mais escura ao clicar */
     }
 
     @keyframes fadeIn {
         from {
             opacity: 0;
         }
+
         to {
             opacity: 1;
         }
@@ -26,7 +48,6 @@
         position: relative;
         background-color: #ffffff;
         margin: 10% auto;
-        /* padding: 20px; */
         border: 1px solid #888;
         width: 80%;
         max-width: 90%;
@@ -34,6 +55,7 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.9);
         text-align: center;
         border-radius: 15px;
+        padding-bottom: 20px;
     }
 
     .header {
@@ -59,6 +81,18 @@
         </slot>
     </div>
     <div class="footer">
-        <slot name="footer"></slot>
+        <slot name="footer">
+            <button id="closeButton">
+                Fechar
+            </button>
+        </slot>
     </div>
 </div>
+
+<script>
+    function initializeComponentScript(self) {
+        self.shadowRoot.getElementById('closeButton').addEventListener('click', () => {
+            self.style.display = 'none';
+        });
+    }
+</script>

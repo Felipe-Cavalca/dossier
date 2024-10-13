@@ -1,9 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+html {
+    scroll-behavior: smooth;
+}
+
 body {
-    background-image: var(--cor-fundo);
-    background-repeat: no-repeat;
-    background-size: cover;
-    min-height: 100vh;
-    color: var(--cor-texto);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
 }
 
 pre {
