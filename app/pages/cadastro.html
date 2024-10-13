@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dossier</title>
+    <link rel="stylesheet" href="../css/pages/cadastro.css">
+    <script src="../core/core.js" defer></script>
+    <script src="../js/pages/cadastro.js" defer></script>
+</head>
+
+<body>
+
+    <c-alert></c-alert>
+
+    <main>
+        <header>
+            <c-maximized id="slogan">
+                <h1>{{name}}</h1>
+                <h2>{{slogan}}</h2>
+                <a href="#explanation">
+                    <button type="button" aria-label="Quero fazer parte!">
+                        Quero fazer parte!
+                    </button>
+                </a>
+            </c-maximized>
+        </header>
+
+        <c-maximized id="explanation">
+            <header>
+                <h3>Vamos iniciar a jornada para armazenar os seus arquivos!</h3>
+                <p>Nessa etapa vamos pedir alguns dados, como você gostaria de ser chamado, seu nome, etc</p>
+            </header>
+            <div>
+                <a href="#slogan">
+                    <button type="button" class="danger">Voltar</button>
+                </a>
+                <a href="#section-name">
+                    <button type="button">Vamos lá</button>
+                </a>
+            </div>
+        </c-maximized>
+
+        <form action="">
+
+            <c-maximized id="section-name">
+                <label for="filed-name">Qual o seu nome verdadeiro?</label>
+                <input type="text" name="name" id="filed-name" placeholder="Fulano da silva" required minlength="4"
+                    autocomplete="on" pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ]+(\s+[a-zA-ZÀ-ÖØ-öø-ÿ]+)+$"
+                    tabindex="0" inputmode="latin-name" autocapitalize="words" spellcheck="true">
+                <div>
+                    <a href="#explanation">
+                        <button type="button" class="danger">Voltar</button>
+                    </a>
+                    <a href="#section-userName">
+                        <button type="button">Esse é meu nome !</button>
+                    </a>
+                </div>
+                <span class="danger">Esse deve ser seu nome real!</span>
+            </c-maximized>
+
+            <c-maximized id="section-userName">
+                <label for="userName">Como eu devo te chamar ?</label>
+                <input type="text" name="userName" id="userName" placeholder="Fulaninho gamer" required minlength="3"
+                    maxlength="20" autocomplete="off" tabindex="1" inputmode="verbatim" autocapitalize="words"
+                    spellcheck="false">
+                <div>
+                    <a href="#section-name">
+                        <button type="button" class="danger">Voltar</button>
+                    </a>
+                    <a href="#section-email">
+                        <button type="button">Me chame por esse nome</button>
+                    </a>
+                </div>
+                <span>Esse deve ser o apelido que as pessoas verão.</span>
+            </c-maximized>
+
+            <c-maximized id="section-email">
+                <label for="email">Me diga, qual o seu melhor email ?</label>
+                <input type="email" name="email" id="email" placeholder="fulano@email.com" required autocomplete="on"
+                    tabindex="2" inputmode="email" autocapitalize="none">
+                <div>
+                    <a href="#section-userName">
+                        <button type="button" class="danger">Voltar</button>
+                    </a>
+                    <a href="#section-tel">
+                        <button type="button">Esse é meu email</button>
+                    </a>
+                </div>
+                <span>Vamos nos comunicar com você por aqui.</span>
+            </c-maximized>
+
+            <c-maximized id="section-tel">
+                <label for="tel">Podemos saber seu celular ?</label>
+                <input type="tel" name="tel" id="tel" placeholder="(12) 98888-7777" autocomplete="on" tabindex="3">
+                <div>
+                    <a href="#section-email">
+                        <button type="button" class="danger">Voltar</button>
+                    </a>
+                    <a href="#section-password">
+                        <button type="button">Esse é meu celular</button>
+                        <button type="button" class="secondary">Prefiro não informar</button>
+                    </a>
+
+                </div>
+                <span>Podemos nos comunicar com você por aqui.</span>
+            </c-maximized>
+
+            <c-maximized id="section-password">
+                <label for="password">Agora, preciso de uma senha.</label>
+                <input type="password" name="password" id="password" required minlength="4" autocomplete="off"
+                    tabindex="4">
+                <div>
+                    <a href="#section-tel">
+                        <button type="button" class="danger">Voltar</button>
+                    </a>
+                    <a href="#section-confirmPasswork">
+                        <button type="button">Essa vai ser minha senha</button>
+                    </a>
+                </div>
+                <span>Essa senha deve ter no mínimo 4 caracteres.</span>
+            </c-maximized>
+
+            <c-maximized id="section-confirmPasswork">
+                <label for="confirmPassword">Confirme sua senha agora</label>
+                <input type="password" name="confirmPassword" id="confirmPassword" required minlength="4"
+                    autocomplete="off" tabindex="5">
+                <div>
+                    <a href="#section-password">
+                        <button type="button" class="danger">Voltar</button>
+                    </a>
+                    <a href="#tmp">
+                        <button type="button">Senha Confirmada!</button>
+                    </a>
+                </div>
+                <span>Essa senha deve ser igual a anterior.</span>
+            </c-maximized>
+
+            <c-maximized id="tmp">
+                <h1>Em construção</h1>
+                <a href="#slogan">
+                    <button type="button" class="danger">Voltar</button>
+                </a>
+            </c-maximized>
+        </form>
+    </main>
+</body>
+
+</html>
