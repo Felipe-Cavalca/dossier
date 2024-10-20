@@ -2,74 +2,69 @@
 <html>
 
 <head>
-    <title>Dossier</title>
+    <title>Página Inicial</title>
     <link rel="stylesheet" href="../css/pages/index.css">
+    <script src="../core/core.js" defer></script>
+    <script src="../js/pages/index.js" defer></script>
 </head>
 
-<style>
-    .bg-red {
-        background-color: red;
-        color: white;
-        padding: 10px;
-        border-radius: 15px 15px 0 0;
-    }
-</style>
-
 <body>
-
     <c-alert>
-        <div slot="header">
-            <h2>Dados de login incorretos</h2>
-        </div>
-        <div slot="body">
-            <div>
-                <p>
-                    Verifique se o e-mail e a senha estão corretos e tente novamente.
-                </p>
-            </div>
-            <div>
-                <button onclick="this.parentElement.parentElement.parentElement.style.display = 'none'">
-                    Fechar
-                </button>
-            </div>
-        </div>
+        <section slot="header">
+            {{name}} diz:
+        </section>
+        <section slot="body">
+            <h1>Mensagem customizada</h1>
+            <pre id="response-form"></pre>
+        </section>
     </c-alert>
 
-    <div class="container d-flex justify-content-center align-items-center full-screen">
-        <div class="row">
-            <div class="d-flex justify-content-center align-items-center">
-                <div class="font-monospace flex-column">
-                    <h1>{{nome}}</h1>
-                    <h2 class="mt-3">{{slogan}}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="scroll-indicator">
-            <span>&#8595;</span>
-        </div>
-    </div>
+    <c-maximized>
+        <h1>Olá, seja bem-vindo ao {{name}}</h1>
+        <h2>{{slogan}}</h2>
+    </c-maximized>
 
-    <div class="container d-flex justify-content-center align-items-center full-screen">
-        <div class="card">
-            <div class="card-header d-flex justify-content-center pt-3">
-                <h3>Login</h3>
-            </div>
-            <div class="card-body mt-2">
-                <form action="/usuario/login" method="POST">
-                    <div class="mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="meu@email.com" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="password" name="password" class="form-control" placeholder="Senha" required>
-                    </div>
-                    <button type="submit"><b>Entrar</b></button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script src="../core/core.js"></script>
-    <script src="../js/pages/index.js"></script>
+    <c-maximized id="test">
+        <c-card>
+            <section id="text-form">
+                <h3>Exemplo de form</h3>
+                <small>Apenas um exemplo de designe de formulário.</small>
+            </section>
+            <form action="exampleResponse.json" method="POST" data-noApi="true">
+                <section>
+                    <label for="filed-name">Qual o seu nome verdadeiro?</label>
+                    <input type="text" name="name" id="filed-name" placeholder="Fulano da silva" required minlength="4"
+                        autocomplete="on" pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ]+(\s+[a-zA-ZÀ-ÖØ-öø-ÿ]+)+$" inputmode="latin-name"
+                        autocapitalize="words" spellcheck="true">
+                    <span class="danger">
+                        <b>Esse deve ser seu nome real!</b>
+                    </span>
+                </section>
+                <section>
+                    <label for="email">Me diga, qual o seu melhor email ?</label>
+                    <input type="email" name="email" id="email" placeholder="fulano@email.com" autocomplete="on"
+                        inputmode="email" autocapitalize="none">
+                    <span class="danger">
+                        <b>O email deve estar correto!</b>
+                    </span>
+                </section>
+                <section>
+                    <label for="confirmPassword">Confirme sua senha agora</label>
+                    <input type="password" name="confirmPassword" id="confirmPassword" placeholder="***" required
+                        minlength="4" autocomplete="off">
+                    <span class="danger">
+                        <b>Essa senha deve ter no mínimo 4 caracteres.</b>
+                    </span>
+                </section>
+                <section>
+                    <button type="submit">Testar</button>
+                </section>
+                <section>
+                    <progress value="32" max="100"> 32% </progress>
+                </section>
+            </form>
+        </c-card>
+    </c-maximized>
 </body>
 
 </html>
