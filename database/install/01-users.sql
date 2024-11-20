@@ -1,5 +1,7 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE IF NOT EXISTS "user" (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(50) NOT NULL CHECK (name ~ '^[A-Za-z ]+$'),
     username VARCHAR(50) UNIQUE NOT NULL CHECK (LENGTH(username) >= 3 AND LENGTH(username) <= 50),
     email VARCHAR(100) UNIQUE NOT NULL CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
@@ -7,6 +9,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 );
 
 CREATE INDEX idx_user_email ON "user" (email);
+CREATE INDEX idx_user_username ON "user" (username);
 
 SELECT create_log_trigger ('user');
 

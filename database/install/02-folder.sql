@@ -1,8 +1,10 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE IF NOT EXISTS folder (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES "user" (id) ON DELETE CASCADE,
-    parent_id INTEGER DEFAULT NULL REFERENCES folder (id) ON DELETE CASCADE,
-    original_folder_id INTEGER DEFAULT NULL REFERENCES folder (id) ON DELETE CASCADE,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES "user" (id) ON DELETE CASCADE,
+    parent_id UUID DEFAULT NULL REFERENCES folder (id) ON DELETE CASCADE,
+    original_folder_id UUID DEFAULT NULL REFERENCES folder (id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL CHECK (
         name ~ '^[^\\/:*?"<>|]{1,255}$'
     ),
