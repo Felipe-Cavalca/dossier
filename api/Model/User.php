@@ -1,21 +1,12 @@
 <?php
 
-//! MODELO DE EXEMPLO
-
 namespace Bifrost\Model;
 
 use Bifrost\Core\Database;
 
-/**
- * Classe de representação do usuário
- *
- * Classe responsável por realizar a comunicação com o banco de dados
- *
- * @package Bifrost\Model
- */
 class User
 {
-    private string $table = "user";
+    private string $table = "users";
     private Database $database;
 
     public function __construct()
@@ -23,29 +14,37 @@ class User
         $this->database = new Database();
     }
 
-    public function getById(int $id)
+    public function getById(string $id): array
     {
-        return $this->serach(["id" => $id])[0] ?? [];
+        return $this->serach(["u.id" => $id])[0] ?? [];
     }
 
-    public function getByEmail(string $email)
+    public function getByEmail(string $email): array
     {
-        return $this->serach(["email" => $email])[0] ?? [];
+        return $this->serach(["u.email" => $email])[0] ?? [];
     }
 
-    public function getAll()
+    public function getAll(): array
     {
-        return $this->database->list("SELECT * FROM $this->table");
+        return $this->database->select(
+            table: $this->table
+        );
     }
 
     public function serach(array $conditions)
     {
-        $sql = "SELECT * FROM $this->table WHERE " . $this->database->where($conditions);
-        return $this->database->list($sql, $conditions);
-    }
-
-    public function insert(array $data)
-    {
-        return $this->database->insert($this->table, $data);
+        return $this->database->select(
+            table: $this->table . " u",
+            fields: [
+                "u.*",
+                "ulc.changed AS created",
+                "COALESCE(ulu.changed, ulc.changed) AS updated",
+            ],
+            join: [
+                "JOIN users_log ulc ON ulc.original_id = u.id AND ulc.action = 'INSERT'",
+                "LEFT JOIN users_log ulu ON ulu.original_id = u.id AND ulu.action = 'UPDATE'",
+            ],
+            where: $conditions
+        );
     }
 }
