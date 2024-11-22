@@ -41,6 +41,7 @@ services:
       - ./api/:/var/www/html
       - dossier-storage:/storage
       - ./storage:/storage
+      - ./tmp:/var/log/xdebug
     networks:
       - dossier-network
     depends_on:
