@@ -33,7 +33,7 @@ class Auth implements AttributesInterface
         }
 
         $database = new Database();
-        $database->setSystemIdentifier(["user_id" => $this->session->id]);
+        $database->setSystemIdentifier(["user_id" => $this->session->userId]);
 
         return null;
     }

@@ -16,12 +16,12 @@ class User
 
     public function getById(string $id): array
     {
-        return $this->serach(["u.id" => $id])[0] ?? [];
+        return $this->search(["u.id" => $id])[0] ?? [];
     }
 
     public function getByEmail(string $email): array
     {
-        return $this->serach(["u.email" => $email])[0] ?? [];
+        return $this->search(["u.email" => $email])[0] ?? [];
     }
 
     public function getAll(): array
@@ -29,6 +29,7 @@ class User
         return $this->database->select(
             table: $this->table . " u",
             fields: [
+                "u.id",
                 "r.name AS role",
                 "u.name",
                 "u.username",
@@ -44,7 +45,7 @@ class User
         );
     }
 
-    public function serach(array $conditions)
+    public function search(array $conditions)
     {
         return $this->database->select(
             table: $this->table . " u",
@@ -64,6 +65,7 @@ class User
         return $this->database->select(
             table: $this->table . " u",
             fields: [
+                "u.id",
                 "r.name AS role",
                 "u.name",
                 "u.username",
