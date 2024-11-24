@@ -27,7 +27,20 @@ class User
     public function getAll(): array
     {
         return $this->database->select(
-            table: $this->table
+            table: $this->table . " u",
+            fields: [
+                "r.name AS role",
+                "u.name",
+                "u.username",
+                "u.email",
+                "ulc.changed AS created",
+                "COALESCE(ulu.changed, ulc.changed) AS updated",
+            ],
+            join: [
+                "JOIN users_log ulc ON ulc.original_id = u.id AND ulc.action = 'INSERT'",
+                "LEFT JOIN users_log ulu ON ulu.original_id = u.id AND ulu.action = 'UPDATE'",
+                "JOIN roles r ON r.id = u.role_id",
+            ]
         );
     }
 
@@ -37,14 +50,33 @@ class User
             table: $this->table . " u",
             fields: [
                 "u.*",
+                "r.code AS role",
+            ],
+            join: [
+                "JOIN roles r ON r.id = u.role_id",
+            ],
+            where: $conditions
+        );
+    }
+
+    public function print(string $userId)
+    {
+        return $this->database->select(
+            table: $this->table . " u",
+            fields: [
+                "r.name AS role",
+                "u.name",
+                "u.username",
+                "u.email",
                 "ulc.changed AS created",
                 "COALESCE(ulu.changed, ulc.changed) AS updated",
             ],
             join: [
                 "JOIN users_log ulc ON ulc.original_id = u.id AND ulc.action = 'INSERT'",
                 "LEFT JOIN users_log ulu ON ulu.original_id = u.id AND ulu.action = 'UPDATE'",
+                "JOIN roles r ON r.id = u.role_id",
             ],
-            where: $conditions
+            where: ["u.id" => $userId]
         );
     }
 }
