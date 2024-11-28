@@ -1,33 +1,23 @@
 services:
 
   api:
-    # image: scriptplayer/dossier_api
-    build:
-      context: ./api
-      dockerfile: ./Dockerfile.dev
+    image: scriptplayer/dossier_api
     container_name: api
-    ports:
-      - "28080:80"
     volumes:
       - dossier-storage:/storage
     environment:
-      # Configurações do php
-      - PHP_DISPLAY_ERRORS=1
-      - PHP_DISPLAY_STARTUP_ERRORS=1
-
       # Configurações da sessão
       - SESSION_SAVE_HANDLER = redis
       - SESSION_SAVE_PATH = tcp://redis:6379
       - SESSION_GC_MAXLIFETIME = 43200
       - SESSION_COOKIE_LIFETIME = 43200
-
       # Configuração de conexão com o banco
       - SQL_DRIVER=PostgreSQL
       - SQL_HOST=database
       - SQL_PORT=5432
-      - SQL_DATABASE=bifrost
-      - SQL_USER=bifrost
-      - SQL_PASSWORD=passwordBifrost
+      - SQL_DATABASE=dossier
+      - SQL_USER=dossierADM
+      - SQL_PASSWORD=passwordDossierADM
     networks:
       - dossier-network-public
       - dossier-network-back
@@ -38,13 +28,10 @@ services:
     cpus: '0.25'
 
   app:
-    # image: scriptplayer/dossier_app
-    build:
-      context: ./app
-      dockerfile: ./Dockerfile
+    image: scriptplayer/dossier_app
     container_name: app
     ports:
-      - "20080:80"
+      - "80:80"
     networks:
       - dossier-network-public
     depends_on:
@@ -55,8 +42,6 @@ services:
   redis:
     image: redis:alpine3.20
     container_name: redis
-    ports:
-      - "6379:6379"
     volumes:
       - dossier-redis_data:/data
     networks:
@@ -65,19 +50,16 @@ services:
     cpus: '0.25'
 
   database:
-    # image: scriptplayer/dossier_db
-    build:
-      context: ./database
-      dockerfile: ./Dockerfile
+    image: scriptplayer/dossier_db
     container_name: database
     ports:
       - "25432:5432"
     volumes:
       - dossier-database_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=bifrost
-      - POSTGRES_PASSWORD=passwordBifrost
-      - POSTGRES_DB=bifrost
+      - POSTGRES_USER=dossierADM
+      - POSTGRES_PASSWORD=passwordDossierADM
+      - POSTGRES_DB=dossier
       - POSTGRES_HOST=database
     networks:
       - dossier-network-back
@@ -85,10 +67,7 @@ services:
     cpus: '0.25'
 
   webdav:
-    # image: scriptplayer/dossier_webdav
-    build:
-      context: ./webdav
-      dockerfile: ./Dockerfile
+    image: scriptplayer/dossier_webdav
     container_name: webdav
     ports:
       - "8080:80"
