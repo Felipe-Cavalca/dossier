@@ -45,6 +45,9 @@ services:
     container_name: app
     ports:
       - "20080:80"
+    environment:
+      - API_HOST:API
+      - API_PORT:80
     networks:
       - dossier-network-public
     depends_on:
@@ -108,5 +111,6 @@ volumes:
 networks:
   dossier-network-public:
     name: dossier-network-public
+    external: true
   dossier-network-back:
     name: dossier-network-back
