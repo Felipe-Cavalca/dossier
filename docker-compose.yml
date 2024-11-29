@@ -50,8 +50,8 @@ services:
       - dossier-network-public
     depends_on:
       - api
-    mem_limit: 20m
-    cpus: '0.01'
+    mem_limit: 512m
+    cpus: '0.25'
 
   redis:
     image: redis:alpine3.20
