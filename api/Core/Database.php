@@ -3,7 +3,6 @@
 namespace Bifrost\Core;
 
 use PDO;
-use DateTime;
 use PDOException;
 use Bifrost\Core\Functions;
 use Bifrost\Core\Settings;
@@ -203,17 +202,15 @@ class Database
             }
         } catch (PDOException $e) {
             // Lançar um erro de servidor interno com detalhes adicionais
+            $details = explode("\nDETAIL:", $e->errorInfo[2])[0];
             throw HttpError::internalServerError(
-                details: $e->getMessage(),
-                additionalInfo: [
-                    "sql" => $sql,
-                    "params" => $params
-                ]
+                details: $details,
+                additionalInfo: []
             );
         }
     }
 
-    public function insert(string $table, array $data, string $returning = ""): int|false
+    public function insert(string $table, array $data, string $returning = ""): int|false|string
     {
         $returning = $this->hasReturning ? $returning : "";
 

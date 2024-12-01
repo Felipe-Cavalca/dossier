@@ -2,6 +2,9 @@
 
 FROM php:7.4-apache
 
+# Copia os arquivos do servidor web para a imagem
+COPY . /var/www/html
+
 # Habilitar módulos necessários do Apache
 RUN a2enmod rewrite
 

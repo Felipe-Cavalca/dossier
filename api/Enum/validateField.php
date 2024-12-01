@@ -16,6 +16,7 @@ enum ValidateField: string
     case CPF = 'Cpf';
     case CNPJ = 'Cnpj';
     case EMAIL = 'Email';
+    case UUID = 'Uuid';
 
     public function validate($val): bool
     {
@@ -31,6 +32,7 @@ enum ValidateField: string
             self::CPF => self::validateCPF($val),
             self::CNPJ => self::validateCNPJ($val),
             self::EMAIL => self::validateEmail($val),
+            self::UUID => self::validateUUID($val),
             default => false,
         };
     }
@@ -48,5 +50,13 @@ enum ValidateField: string
     private static function validateEmail($val): bool
     {
         return filter_var($val, FILTER_VALIDATE_EMAIL) !== false;
+    }
+
+    private static function validateUUID($val): bool
+    {
+        if(!is_string($val)) {
+            return false;
+        }
+        return preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $val) === 1;
     }
 }

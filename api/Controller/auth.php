@@ -12,6 +12,7 @@ use Bifrost\Enum\ValidateField;
 use Bifrost\Include\Controller;
 use Bifrost\Interface\ControllerInterface;
 use Bifrost\Core\Post;
+use Bifrost\Core\Session;
 
 class Auth implements ControllerInterface
 {
@@ -34,6 +35,9 @@ class Auth implements ControllerInterface
             return HttpError::unauthorized("Usuário ou senha invalidos");
         }
 
+        $session = new Session();
+        $session->logged = true;
+        $session->userId = $user->id;
         return HttpResponse::success("Usuário logado com sucesso", $user);
     }
 }

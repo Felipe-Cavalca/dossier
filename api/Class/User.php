@@ -7,10 +7,8 @@ use Bifrost\Model\User as UserModel;
 
 class User
 {
-    use DatabaseProperties;
-
     protected UserModel $userModel;
-    private string $password;
+    private array $userData = [];
 
     public function __construct(
         string $id = null,
@@ -28,10 +26,27 @@ class User
             return;
         }
 
-        $this->password = $userData["password"];
-        unset($userData["password"]);
+        $this->userData = $userData;
+    }
 
-        $this->setDatabaseProperties($userData);
+    public function __get(string $property): mixed
+    {
+        return $this->userData[$property] ?? null;
+    }
+
+    public function __set(string $property, mixed $value): void
+    {
+        $this->userData[$property] = $value;
+    }
+
+    public function __isset(string $property): bool
+    {
+        return isset($this->userData[$property]);
+    }
+
+    public function __toString(): string
+    {
+        return json_encode($this->userModel->print($this->id));
     }
 
     public function validatePassword(string $password): bool

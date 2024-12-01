@@ -91,8 +91,12 @@ final class Settings
      */
     private static function iniSet(): void
     {
-        ini_set("display_errors", static::getEnv("PHP_DISPLAY_ERRORS"));
-        ini_set("display_startup_errors", static::getEnv("PHP_DISPLAY_STARTUP_ERRORS"));
+        ini_set("display_errors", (bool)static::getEnv("PHP_DISPLAY_ERRORS") ?? false);
+        ini_set("display_startup_errors", (bool)static::getEnv("PHP_DISPLAY_STARTUP_ERRORS") ?? false);
+        ini_set('session.save_handler', static::getEnv("PHP_SESSION_SAVE_HANDLER") ?? "files");
+        ini_set('session.save_path', static::getEnv("PHP_SESSION_SAVE_PATH") ?? "/var/lib/php/sessions");
+        ini_set('session.gc_maxlifetime', static::getEnv("PHP_SESSION_GC_MAXLIFETIME") ?? 1440);
+        ini_set('session.cookie_lifetime', static::getEnv("PHP_SESSION_COOKIE_LIFETIME") ?? 0);
     }
 
     /**
@@ -125,7 +129,7 @@ final class Settings
      */
     public function getSettingsDatabase(string $databaseName = null): array
     {
-        if(!empty($databaseName)){
+        if (!empty($databaseName)) {
             $databaseName = strtoupper($databaseName) . "_";
         }
 

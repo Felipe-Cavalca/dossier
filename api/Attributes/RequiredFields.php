@@ -38,7 +38,7 @@ class RequiredFields implements AttributesInterface
         foreach (self::$fields as $field => $filter) {
             $campos[$field] = $filter->value ?? null;
         }
-        return ["Campos" => $campos];
+        return ["Fields" => $campos];
     }
 
     public function validateRequiredFields(array $fields): bool
