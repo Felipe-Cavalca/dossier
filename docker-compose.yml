@@ -27,6 +27,8 @@ services:
     volumes:
       - dossier-storage:/storage
       - ./api:/var/www/html
+    ports:
+      - "2080:80"
     networks:
       - dossier-network-public
       - dossier-network-back
@@ -46,6 +48,8 @@ services:
       API_HOST: http://api:80
     volumes:
       - ./app:/usr/local/apache2/htdocs
+    ports:
+      - "80:80"
     networks:
       - dossier-network-public
     depends_on:
