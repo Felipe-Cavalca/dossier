@@ -41,7 +41,7 @@ services:
     build:
       context: ./app
       dockerfile: ./Dockerfile
-    container_name: app1
+    container_name: app
     environment:
       API_HOST: http://api:80
     volumes:
