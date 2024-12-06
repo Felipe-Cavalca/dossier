@@ -28,7 +28,7 @@ services:
       - dossier-storage:/storage
       - ./api:/var/www/html
     ports:
-      - "2080:80"
+      - "28080:80"
     networks:
       - dossier-network-public
       - dossier-network-back
