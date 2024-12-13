@@ -1,47 +1,49 @@
+#section-header a.button {
+    margin-top: 20px;
+    display: block;
+}
+
 c-card {
     min-height: 200px;
     max-width: 30rem;
     width: 100%;
 }
 
-c-card section#text-form {
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    margin: 20px 0px 40px 10px;
+#text-form {
+    margin-top: 20px;
+    margin-bottom: 30px;
 }
 
-c-card section#text-form h3 {
-    margin-top: 0px;
-    margin-bottom: 0px;
+#text-form h3 {
+    margin: 0;
     font-size: xx-large;
 }
 
-c-card form section {
+form section {
     justify-content: center;
     align-items: center;
     text-align: center;
     margin-bottom: 20px;
 }
 
-c-card form label {
+form label {
     margin: 10px auto;
     display: block;
     width: 85%;
     text-align: left;
 }
 
-c-card form input {
+form input {
     margin: 10px auto;
     display: block;
     width: 85%;
 }
 
-c-card form section span {
+form section span {
     margin-top: 10px;
     text-decoration: dotted;
 }
 
-c-card form button {
+form button {
     min-width: 30%;
 }

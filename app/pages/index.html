@@ -3,7 +3,7 @@
 
 <head>
     <title>Página Inicial</title>
-    <link rel="stylesheet" href="../css/pages/index.css">
+    <link rel="stylesheet" href="../css/pages/index.css" rel="preload">
     <script src="../core/core.js" defer></script>
     <script src="../js/pages/index.js" defer></script>
 </head>
@@ -19,48 +19,36 @@
         </section>
     </c-alert>
 
-    <c-maximized>
+    <c-maximized id="section-header">
         <h1>Olá, seja bem-vindo ao {{name}}</h1>
         <h2>{{slogan}}</h2>
+        <div>
+            <a href="#login" class="button">Já tenho conta</a>
+            <a href="cadastro.html" class="button secondary">Quero me cadastrar</a>
+        </div>
     </c-maximized>
 
-    <c-maximized id="test">
+    <c-maximized id="login">
         <c-card>
             <section id="text-form">
-                <h3>Exemplo de form</h3>
-                <small>Apenas um exemplo de designe de formulário.</small>
+                <h3>Login</h3>
+                <small>Faça login em sua conta {{name}}</small>
             </section>
-            <form action="exampleResponse.json" method="POST" data-noApi="true">
+            <form action="" method="POST">
                 <section>
-                    <label for="filed-name">Qual o seu nome verdadeiro?</label>
-                    <input type="text" name="name" id="filed-name" placeholder="Fulano da silva" required minlength="4"
-                        autocomplete="on" pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ]+(\s+[a-zA-ZÀ-ÖØ-öø-ÿ]+)+$" inputmode="latin-name"
-                        autocapitalize="words" spellcheck="true">
-                    <span class="danger">
-                        <b>Esse deve ser seu nome real!</b>
-                    </span>
-                </section>
-                <section>
-                    <label for="email">Me diga, qual o seu melhor email ?</label>
-                    <input type="email" name="email" id="email" placeholder="fulano@email.com" autocomplete="on"
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" placeholder="fulano@email.com" required autocomplete="on"
                         inputmode="email" autocapitalize="none">
                     <span class="danger">
-                        <b>O email deve estar correto!</b>
+                        <b>O email deve ser valido</b>
                     </span>
                 </section>
                 <section>
-                    <label for="confirmPassword">Confirme sua senha agora</label>
-                    <input type="password" name="confirmPassword" id="confirmPassword" placeholder="***" required
-                        minlength="4" autocomplete="off">
-                    <span class="danger">
-                        <b>Essa senha deve ter no mínimo 4 caracteres.</b>
-                    </span>
+                    <label for="confirmPassword">Senha</label>
+                    <input type="password" name="password" id="password" placeholder="***" required autocomplete="off">
                 </section>
                 <section>
-                    <button type="submit">Testar</button>
-                </section>
-                <section>
-                    <progress value="32" max="100"> 32% </progress>
+                    <button type="submit">Entrar</button>
                 </section>
             </form>
         </c-card>
