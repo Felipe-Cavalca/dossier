@@ -17,7 +17,7 @@ use Bifrost\Class\User as ClassUser;
 use Bifrost\Core\Database;
 use Bifrost\Core\Post;
 use Bifrost\Enum\HttpStatusCode;
-use Bifrost\Enum\ValidateField;
+use Bifrost\Enum\Field;
 use Bifrost\Model\User as ModelUser;
 use Bifrost\Model\Role as ModelRole;
 
@@ -58,11 +58,11 @@ class User implements ControllerInterface
     #[Method("POST")]
     #[Auth("manager", "admin")]
     #[RequiredFields([
-        "name" => ValidateField::STRING,
-        "userName" => ValidateField::STRING,
-        "email" => ValidateField::EMAIL,
-        "password" => ValidateField::STRING,
-        "role" => ValidateField::STRING
+        "name" => Field::STRING,
+        "userName" => Field::STRING,
+        "email" => Field::EMAIL,
+        "password" => Field::STRING,
+        "role" => Field::STRING
     ])]
     #[Details([
         "description" => "Cria um novo usuário no sistema"

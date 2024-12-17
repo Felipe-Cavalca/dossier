@@ -8,7 +8,7 @@ use Bifrost\Attributes\RequiredFields;
 use Bifrost\Class\HttpError;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Class\User;
-use Bifrost\Enum\ValidateField;
+use Bifrost\Enum\Field;
 use Bifrost\Include\Controller;
 use Bifrost\Interface\ControllerInterface;
 use Bifrost\Core\Post;
@@ -20,8 +20,8 @@ class Auth implements ControllerInterface
 
     #[Method("POST")]
     #[RequiredFields([
-        "email" => ValidateField::EMAIL,
-        "password" => ValidateField::STRING
+        "email" => Field::EMAIL,
+        "password" => Field::STRING
     ])]
     #[Details([
         "description" => "Realiza o login do usuário"
