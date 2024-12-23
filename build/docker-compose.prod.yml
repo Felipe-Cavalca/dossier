@@ -10,6 +10,10 @@ services:
       PHP_SESSION_GC_MAXLIFETIME: 43200
       PHP_SESSION_COOKIE_LIFETIME: 43200
 
+      # Configurações do redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
       # Configuração de conexão com o banco
       SQL_DRIVER: PostgreSQL
       SQL_HOST: database
