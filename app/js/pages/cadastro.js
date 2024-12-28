@@ -9,7 +9,9 @@ const bifrost = new Bifrost(
 
 function toInput(element) {
     window.location.href = element;
-    document.querySelector(`${element} input`).focus();
+    setTimeout(() => {
+        document.querySelector(`${element} input`).focus();
+    }, 500);
 }
 
 function focusOnEnter(event, nextElement) {
