@@ -30,9 +30,12 @@
 
 <body>
 
-    <c-alert></c-alert>
+    <c-alert>
+        <div slot="header">Houve um erro ao cadastrar</div>
+        <pre slot="body">Ocorreu um erro ao tentar cadastrar, por favor, tente novamente.</pre>
+    </c-alert>
 
-    <form action="">
+    <form action="/user" method="POST">
         <c-maximized id="slogan">
             <h1>{{name}}</h1>
             <h2>{{slogan}}</h2>
@@ -123,18 +126,18 @@
             <section id="section-confirmPassword" class="section-input">
                 <label for="confirmPassword">Confirme sua senha agora</label>
                 <input type="password" name="confirmPassword" id="confirmPassword" placeholder="****" required
-                    minlength="4" autocomplete="off" onkeydown="focusOnEnter(event, '#tmp')">
+                    minlength="4" autocomplete="off" onkeydown="focusOnEnter(event, '#cadastrar')">
                 <div>
                     <a href="#section-password" class="button danger">Voltar</a>
-                    <a href="#tmp" class="button">Senha Confirmada!</a>
+                    <a href="#cadastrar" class="button">Senha Confirmada!</a>
                 </div>
                 <span class="danger">Essa senha deve ser igual a anterior.</span>
             </section>
         </c-maximized>
 
-        <c-maximized id="tmp">
-            <h1>Em construção</h1>
-            <a href="#slogan" class="button danger">Voltar</a>
+        <c-maximized id="cadastrar">
+            <h1>Cadastrar</h1>
+            <button type="submit">Cadastrar</button>
         </c-maximized>
     </form>
 </body>
