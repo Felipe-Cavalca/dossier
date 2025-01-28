@@ -17,7 +17,7 @@ use Bifrost\Class\User as ClassUser;
 use Bifrost\Core\Database;
 use Bifrost\Core\Post;
 use Bifrost\Enum\HttpStatusCode;
-use Bifrost\Enum\ValidateField;
+use Bifrost\Enum\Field;
 use Bifrost\Model\User as ModelUser;
 use Bifrost\Model\Role as ModelRole;
 
@@ -56,13 +56,11 @@ class User implements ControllerInterface
     }
 
     #[Method("POST")]
-    #[Auth("manager", "admin")]
     #[RequiredFields([
-        "name" => ValidateField::STRING,
-        "userName" => ValidateField::STRING,
-        "email" => ValidateField::EMAIL,
-        "password" => ValidateField::STRING,
-        "role" => ValidateField::STRING
+        "name" => Field::STRING,
+        "userName" => Field::STRING,
+        "email" => Field::EMAIL,
+        "password" => Field::STRING,
     ])]
     #[Details([
         "description" => "Cria um novo usuário no sistema"
@@ -74,7 +72,8 @@ class User implements ControllerInterface
         $userModel = new ModelUser();
         $database = new Database();
 
-        $role = $roleModel->getByCode($post->role);
+        // Cadastra o usuário com a role de visitor
+        $role = $roleModel->getByCode("visitor");
         if (empty($role)) {
             return HttpError::badRequest("Role inválida", [
                 "role" => "Role inválida"
@@ -90,7 +89,7 @@ class User implements ControllerInterface
         if (!empty($userValidate)) {
             $fieldsToCheck = [
                 "email" => "Já existe um usuário com o email cadastrado",
-                "userName" => "Já existe um usuário com o userName cadastrado"
+                "userName" => "Já existe um usuário com o nome de usuário cadastrado"
             ];
             foreach ($fieldsToCheck as $field => $errorMessage) {
                 $fieldDatabase = strtolower($field);

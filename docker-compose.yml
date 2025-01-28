@@ -11,11 +11,15 @@ services:
       PHP_DISPLAY_ERRORS: 1
       PHP_DISPLAY_STARTUP_ERRORS: 1
 
+      # Configurações do redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
       # Configurações da sessão
-      SESSION_SAVE_HANDLER: redis
-      SESSION_SAVE_PATH: tcp://redis:6379
-      SESSION_GC_MAXLIFETIME: 43200
-      SESSION_COOKIE_LIFETIME: 43200
+      PHP_SESSION_SAVE_HANDLER: redis
+      PHP_SESSION_SAVE_PATH: tcp://redis:6379
+      PHP_SESSION_GC_MAXLIFETIME: 43200
+      PHP_SESSION_COOKIE_LIFETIME: 43200
 
       # Configuração de conexão com o banco
       SQL_DRIVER: PostgreSQL
@@ -27,6 +31,8 @@ services:
     volumes:
       - dossier-storage:/storage
       - ./api:/var/www/html
+    ports:
+      - "28080:80"
     networks:
       - dossier-network-public
       - dossier-network-back
@@ -46,6 +52,8 @@ services:
       API_HOST: http://api:80
     volumes:
       - ./app:/usr/local/apache2/htdocs
+    ports:
+      - "80:80"
     networks:
       - dossier-network-public
     depends_on:

@@ -5,10 +5,14 @@ services:
     container_name: api
     environment:
       # Configurações da sessão
-      SESSION_SAVE_HANDLER: redis
-      SESSION_SAVE_PATH: tcp://redis:6379
-      SESSION_GC_MAXLIFETIME: 43200
-      SESSION_COOKIE_LIFETIME: 43200
+      PHP_SESSION_SAVE_HANDLER: redis
+      PHP_SESSION_SAVE_PATH: tcp://redis:6379
+      PHP_SESSION_GC_MAXLIFETIME: 43200
+      PHP_SESSION_COOKIE_LIFETIME: 43200
+
+      # Configurações do redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
 
       # Configuração de conexão com o banco
       SQL_DRIVER: PostgreSQL
@@ -33,6 +37,8 @@ services:
     container_name: app
     environment:
       API_HOST: http://api:80
+    ports:
+      - "80:80"
     networks:
       - dossier-network-public
     depends_on:

@@ -3,135 +3,141 @@
 
 <head>
     <title>Dossier</title>
-    <link rel="stylesheet" href="../css/pages/cadastro.css">
+    <link rel="stylesheet" href="../css/pages/cadastro.css" media="print" onload="this.media='all'">
     <script src="../core/core.js" defer></script>
     <script src="../js/pages/cadastro.js" defer></script>
 </head>
 
+<style>
+    c-maximized {
+        height: 100vh;
+        width: 100%;
+    }
+
+    form {
+        height: 900vh;
+        width: 100%;
+    }
+
+    a {
+        white-space: nowrap;
+        display: block;
+        /* Adiciona esta linha para garantir que cada link ocupe uma linha inteira */
+        margin-bottom: 10px;
+        /* Adiciona esta linha para espaçamento entre os links */
+    }
+</style>
+
 <body>
 
-    <c-alert></c-alert>
+    <c-alert>
+        <div slot="header">Houve um erro ao cadastrar</div>
+        <pre slot="body">Ocorreu um erro ao tentar cadastrar, por favor, tente novamente.</pre>
+    </c-alert>
 
-    <c-maximized id="slogan">
-        <h1>{{name}}</h1>
-        <h2>{{slogan}}</h2>
-        <a href="#explanation">
-            <button type="button">Quero fazer parte!</button>
-        </a>
-    </c-maximized>
-
-    <c-maximized id="explanation">
-        <header>
-            <h3>Vamos iniciar a jornada para armazenar os seus arquivos!</h3>
-            <p>Nessa etapa vamos pedir alguns dados, como você gostaria de ser chamado, seu nome, etc</p>
-        </header>
-        <div>
-            <a href="#slogan">
-                <button type="button" class="danger">Voltar</button>
-            </a>
-            <a href="#section-name">
-                <button type="button">Vamos lá</button>
-            </a>
-        </div>
-    </c-maximized>
-
-    <form action="">
-
-        <c-maximized id="section-name">
-            <label for="filed-name">Qual o seu nome verdadeiro?</label>
-            <input type="text" name="name" id="filed-name" placeholder="Fulano da silva" required minlength="4"
-                autocomplete="on" pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ]+(\s+[a-zA-ZÀ-ÖØ-öø-ÿ]+)+$" inputmode="latin-name"
-                autocapitalize="words" spellcheck="true">
-            <div>
-                <a href="#explanation">
-                    <button type="button" class="danger">Voltar</button>
-                </a>
-                <a href="#section-userName">
-                    <button type="button">Esse é meu nome !</button>
-                </a>
-            </div>
-            <span class="danger">Esse deve ser seu nome real!</span>
+    <form action="/user" method="POST">
+        <c-maximized id="slogan">
+            <h1>{{name}}</h1>
+            <h2>{{slogan}}</h2>
+            <a href="#explanation" class="button">Quero fazer parte!</a>
         </c-maximized>
 
-        <c-maximized id="section-userName">
-            <label for="userName">Como eu devo te chamar ?</label>
-            <input type="text" name="userName" id="userName" placeholder="Fulaninho gamer" required minlength="3"
-                maxlength="20" autocomplete="off" inputmode="verbatim" autocapitalize="words" spellcheck="false">
+        <c-maximized id="explanation">
+            <header>
+                <h3>Vamos iniciar a jornada para armazenar os seus arquivos!</h3>
+                <p>Nessa etapa vamos pedir alguns dados, como você gostaria de ser chamado, seu nome, etc</p>
+            </header>
             <div>
-                <a href="#section-name">
-                    <button type="button" class="danger">Voltar</button>
-                </a>
-                <a href="#section-email">
-                    <button type="button">Me chame por esse nome</button>
-                </a>
+                <a href="#slogan" class="button danger">Voltar</a>
+                <a href="#section-name" class="button">Vamos lá</a>
             </div>
-            <span class="danger">Esse deve ser o apelido que as pessoas verão.</span>
         </c-maximized>
 
-        <c-maximized id="section-email">
-            <label for="email">Me diga, qual o seu melhor email ?</label>
-            <input type="email" name="email" id="email" placeholder="fulano@email.com" required autocomplete="on"
-                inputmode="email" autocapitalize="none">
-            <div>
-                <a href="#section-userName">
-                    <button type="button" class="danger">Voltar</button>
-                </a>
-                <a href="#section-tel">
-                    <button type="button">Esse é meu email</button>
-                </a>
-            </div>
-            <span class="danger">Vamos nos comunicar com você por aqui.</span>
+
+        <c-maximized>
+            <section id="section-name" class="section-input">
+                <label for="field-name">Qual o seu nome verdadeiro?</label>
+                <input type="text" name="name" id="field-name" placeholder="Fulano da silva" required minlength="4"
+                    autocomplete="on" pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ]+(\s+[a-zA-ZÀ-ÖØ-öø-ÿ]+)+$" inputmode="latin-name"
+                    autocapitalize="words" spellcheck="true" onkeydown="focusOnEnter(event, '#section-userName')">
+                <div>
+                    <a href="#explanation" class="button danger">Voltar</a>
+                    <a href="#section-userName" class="button">Esse é meu nome !</a>
+                </div>
+                <span class="danger">Esse deve ser seu nome real!</span>
+            </section>
         </c-maximized>
 
-        <c-maximized id="section-tel">
-            <label for="tel">Podemos saber seu celular ?</label>
-            <input type="tel" name="tel" id="tel" placeholder="(12) 98888-7777" autocomplete="on" maxlength="11">
-            <div>
-                <a href="#section-email">
-                    <button type="button" class="danger">Voltar</button>
-                </a>
-                <a href="#section-password">
-                    <button type="button">Esse é meu celular</button>
-                    <button type="button" class="secondary">Prefiro não informar</button>
-                </a>
-            </div>
-            <span class="danger">Podemos nos comunicar com você por aqui.</span>
+        <c-maximized>
+            <section id="section-userName" class="section-input">
+                <label for="fields-userName">Como eu devo te chamar ?</label>
+                <input type="text" name="userName" id="fields-userName" placeholder="Fulaninho gamer" required
+                    minlength="3" maxlength="20" autocomplete="off" inputmode="verbatim" autocapitalize="words"
+                    spellcheck="false" onkeydown="focusOnEnter(event, '#section-email')">
+                <div>
+                    <a href="#section-name" class="button danger">Voltar</a>
+                    <a href="#section-email" class="button">Me chame por esse nome</a>
+                </div>
+                <span class="danger">Esse deve ser o apelido que as pessoas verão.</span>
+            </section>
         </c-maximized>
 
-        <c-maximized id="section-password">
-            <label for="password">Agora, preciso de uma senha.</label>
-            <input type="password" name="password" id="password" required minlength="4" autocomplete="off">
-            <div>
-                <a href="#section-tel">
-                    <button type="button" class="danger">Voltar</button>
-                </a>
-                <a href="#section-confirmPasswork">
-                    <button type="button">Essa vai ser minha senha</button>
-                </a>
-            </div>
-            <span class="danger">Essa senha deve ter no mínimo 4 caracteres.</span>
+        <c-maximized>
+            <section id="section-email" class="section-input">
+                <label for="email">Me diga, qual o seu melhor email ?</label>
+                <input type="email" name="email" id="email" placeholder="fulano@email.com" required autocomplete="on"
+                    inputmode="email" autocapitalize="none" onkeydown="focusOnEnter(event, '#section-tel')">
+                <div>
+                    <a href="#section-userName" class="button danger">Voltar</a>
+                    <a href="#section-tel" class="button">Esse é meu email</a>
+                </div>
+                <span class="danger">Vamos nos comunicar com você por aqui.</span>
+            </section>
         </c-maximized>
 
-        <c-maximized id="section-confirmPasswork">
-            <label for="confirmPassword">Confirme sua senha agora</label>
-            <input type="password" name="confirmPassword" id="confirmPassword" required minlength="4"
-                autocomplete="off">
-            <div>
-                <a href="#section-password">
-                    <button type="button" class="danger">Voltar</button>
-                </a>
-                <a href="#tmp">
-                    <button type="button">Senha Confirmada!</button>
-                </a>
-            </div>
-            <span class="danger">Essa senha deve ser igual a anterior.</span>
+        <c-maximized>
+            <section id="section-tel" class="section-input">
+                <label for="tel">Podemos saber seu celular ?</label>
+                <input type="tel" name="tel" id="tel" placeholder="(12) 98888-7777" autocomplete="on" maxlength="11"
+                    onkeydown="focusOnEnter(event, '#section-password')">
+                <div>
+                    <a href="#section-email" class="button danger">Voltar</a>
+                    <a href="#section-password" class="button">Esse é meu celular</a>
+                    <a href="#section-password" class="button secondary">Prefiro não informar</a>
+                </div>
+                <span class="danger">Podemos nos comunicar com você por aqui.</span>
+            </section>
         </c-maximized>
 
-        <c-maximized id="tmp">
-            <h1>Em construção</h1>
-            <a href="#slogan">
-                <button type="button" class="danger">Voltar</button>
-            </a>
+        <c-maximized>
+            <section id="section-password" class="section-input">
+                <label for="password">Agora, preciso de uma senha.</label>
+                <input type="password" name="password" id="password" placeholder="****" required minlength="4"
+                    autocomplete="off" onkeydown="focusOnEnter(event, '#section-confirmPassword')">
+                <div>
+                    <a href="#section-tel" class="button danger">Voltar</a>
+                    <a href="#section-confirmPassword" class="button">Essa vai ser minha senha</a>
+                </div>
+                <span class="danger">Essa senha deve ter no mínimo 4 caracteres.</span>
+            </section>
+        </c-maximized>
+
+        <c-maximized>
+            <section id="section-confirmPassword" class="section-input">
+                <label for="confirmPassword">Confirme sua senha agora</label>
+                <input type="password" name="confirmPassword" id="confirmPassword" placeholder="****" required
+                    minlength="4" autocomplete="off" onkeydown="focusOnEnter(event, '#cadastrar')">
+                <div>
+                    <a href="#section-password" class="button danger">Voltar</a>
+                    <a href="#cadastrar" class="button">Senha Confirmada!</a>
+                </div>
+                <span class="danger">Essa senha deve ser igual a anterior.</span>
+            </section>
+        </c-maximized>
+
+        <c-maximized id="cadastrar">
+            <h1>Cadastrar</h1>
+            <button type="submit">Cadastrar</button>
         </c-maximized>
     </form>
 </body>

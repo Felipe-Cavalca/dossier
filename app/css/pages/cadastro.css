@@ -6,14 +6,27 @@ a {
 
 button,
 input,
-span {
-    margin-top: 20px;
+span,
+div:has(a.button) {
+    margin-top: 25px;
 }
 
-button.danger::before {
+button.danger::before,
+a.button.danger::before {
     content: "\2B06  ";
 }
 
-button.danger:after {
+button.danger:after,
+a.button.danger:after {
     content: " \2B06";
+}
+
+.section-input {
+    display: flex;
+    flex-direction: column;
+    min-width: 80%;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 100px;
 }

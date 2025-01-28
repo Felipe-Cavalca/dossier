@@ -79,6 +79,6 @@ class User
                 "JOIN roles r ON r.id = u.role_id",
             ],
             where: ["u.id" => $userId]
-        );
+        )[0] ?? [];
     }
 }

@@ -19,3 +19,6 @@ ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO roles (code, name, description) VALUES ('user', 'user', 'Usuário')
 ON CONFLICT (code) DO NOTHING;
+
+INSERT INTO roles (code, name, description) VALUES ('visitor', 'visitor', 'Visitante')
+ON CONFLICT (code) DO NOTHING;
