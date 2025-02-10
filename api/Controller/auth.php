@@ -40,4 +40,15 @@ class Auth implements ControllerInterface
         $session->userId = $user->id;
         return HttpResponse::success("Usuário logado com sucesso", $user);
     }
+
+    #[Method("GET")]
+    #[Auth("user", "manager", "admin")]
+    #[Details([
+        "description" => "Valida se o usuário está logado"
+    ])]
+    public function validate()
+    {
+        return HttpResponse::success("Usuário logado com sucesso");
+    }
+
 }
