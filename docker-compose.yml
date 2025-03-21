@@ -43,7 +43,7 @@ services:
     volumes:
       - dossier-database_data:/var/lib/postgresql/data
     ports:
-      - "25432:5432"
+      - "5432:5432"
     networks:
       - dossier-network-back
 
@@ -55,6 +55,16 @@ services:
       - "8080:80"
     networks:
       - dossier-network-public
+
+  tests:
+    image: ghcr.io/felipe-cavalca/bifrostphp-tests:latest
+    volumes:
+      - ./tests/tests
+    ports:
+      - 81:80
+    networks:
+      - dossier-network-public
+      - dossier-network-back
 
 volumes:
   dossier-redis_data:
