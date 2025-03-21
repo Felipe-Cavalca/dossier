@@ -1,56 +1,18 @@
-# BifrostPHP - Back-end Module
+# 📁 Dossier
 
-[![link-repo-base](https://img.shields.io/badge/Repo-Dossier-blue)](./)
+**Dossier** é um gestor de arquivos que pode ser instalado tanto em servidores locais quanto na nuvem.
+A proposta é oferecer uma solução simples, eficiente e autônoma para gerenciamento de arquivos — como se fosse a sua própria nuvem.
 
-[![link-readme-inglês](https://img.shields.io/badge/README-English/Inglês-red)](./README.md)
-[![link-readme-Portugês](https://img.shields.io/badge/README-Portuguese/Portugês-green)](./README-PT.md)
+---
 
-This repository contains the BifrostPHP back-end source code base.
+## 🚀 Começando
 
-Dossier, a home for your files.
+Para subir o ambiente completo, basta ter o Docker instalado e rodar:
 
-## Requirements
+```bash
+docker-compose up -d
+```
 
-* Git
-* Docker
-* Docker Compose
+## 📌 Funcionalidades
 
-## Installation
-
-1. Clone the repository:
-
-    ```sh
-    git clone https://github.com/Felipe-Cavalca/dossier.git
-    cd dossier
-    ```
-
-1. Build and start Docker containers:
-
-    ```sh
-    docker-compose up --build -d
-    ```
-
-## português
-
-Dossier, um lar para seus arquivos
-
-## Requisitos
-
-* Git
-* Docker
-* Docker Compose
-
-## Instalação
-
-1. Clone o repositório:
-
-    ```sh
-    git clone https://github.com/Felipe-Cavalca/dossier.git
-    cd dossier
-    ```
-
-1. Construa e inicie os containers Docker:
-
-    ```sh
-    docker-compose up --build -d
-    ```
+As funcionalidades em desenvolvimento e futuras ideias estão organizadas nas [issues do repositório](https://github.com/Felipe-Cavalca/dossier/issues).
