@@ -59,7 +59,7 @@ services:
   tests:
     image: ghcr.io/felipe-cavalca/bifrostphp-tests:latest
     volumes:
-      - ./tests/tests
+      - ./tests:/tests
     ports:
       - 81:80
     networks:
