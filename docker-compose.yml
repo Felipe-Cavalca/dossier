@@ -1,114 +1,72 @@
 services:
 
-  api:
-    # image: scriptplayer/dossier_api
-    build:
-      context: ./api
-      dockerfile: ./Dockerfile.dev
-    container_name: api
-    environment:
-      # Configurações do php
-      PHP_DISPLAY_ERRORS: 1
-      PHP_DISPLAY_STARTUP_ERRORS: 1
-
-      # Configurações do redis
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-
-      # Configurações da sessão
-      PHP_SESSION_SAVE_HANDLER: redis
-      PHP_SESSION_SAVE_PATH: tcp://redis:6379
-      PHP_SESSION_GC_MAXLIFETIME: 43200
-      PHP_SESSION_COOKIE_LIFETIME: 43200
-
-      # Configuração de conexão com o banco
-      SQL_DRIVER: PostgreSQL
-      SQL_HOST: database
-      SQL_PORT: 5432
-      SQL_DATABASE: bifrost
-      SQL_USER: bifrost
-      SQL_PASSWORD: passwordBifrost
-    volumes:
-      - dossier-storage:/storage
-      - ./api:/var/www/html
-    ports:
-      - "28080:80"
-    networks:
-      - dossier-network-public
-      - dossier-network-back
-    depends_on:
-      - redis
-      - database
-    mem_limit: 512m
-    cpus: '0.25'
-
   app:
-    # image: scriptplayer/dossier_app
     build:
       context: ./app
       dockerfile: ./Dockerfile
-    container_name: app
-    environment:
-      API_HOST: http://api:80
+    env_file:
+      - .env
     volumes:
       - ./app:/usr/local/apache2/htdocs
     ports:
       - "80:80"
     networks:
       - dossier-network-public
-    depends_on:
-      - api
-    mem_limit: 512m
-    cpus: '0.25'
+
+  api:
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile.dev
+    env_file:
+      - .env
+    volumes:
+      - ./api:/var/www/html
+    networks:
+      - dossier-network-public
+      - dossier-network-back
 
   redis:
     image: redis:alpine3.20
-    container_name: redis
     volumes:
       - dossier-redis_data:/data
     ports:
       - "6379:6379"
     networks:
       - dossier-network-back
-    mem_limit: 1024m
-    cpus: '0.25'
 
   database:
-    # image: scriptplayer/dossier_db
     build:
       context: ./database
       dockerfile: ./Dockerfile
-    container_name: database
-    environment:
-      POSTGRES_USER: bifrost
-      POSTGRES_PASSWORD: passwordBifrost
-      POSTGRES_DB: bifrost
-      POSTGRES_HOST: database
+    env_file:
+      - .env
     volumes:
       - dossier-database_data:/var/lib/postgresql/data
     ports:
-      - "25432:5432"
+      - "5432:5432"
     networks:
       - dossier-network-back
-    mem_limit: 512m
-    cpus: '0.25'
 
   webdav:
-    # image: scriptplayer/dossier_webdav
     build:
       context: ./webdav
       dockerfile: ./Dockerfile
-    container_name: webdav
     ports:
       - "8080:80"
     networks:
       - dossier-network-public
-    mem_limit: 512m
-    cpus: '0.25'
+
+  tests:
+    image: ghcr.io/felipe-cavalca/bifrostphp-tests:latest
+    volumes:
+      - ./tests:/tests
+    ports:
+      - 81:80
+    networks:
+      - dossier-network-public
+      - dossier-network-back
 
 volumes:
-  dossier-storage:
-    name: dossier-storage
   dossier-redis_data:
     name: dossier-redis_data
   dossier-database_data:
@@ -117,6 +75,5 @@ volumes:
 networks:
   dossier-network-public:
     name: dossier-network-public
-    # external: true
   dossier-network-back:
     name: dossier-network-back
