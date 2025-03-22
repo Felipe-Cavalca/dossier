@@ -1,8 +1,7 @@
 services:
 
   api:
-    image: scriptplayer/dossier_api
-    container_name: api
+    image: scriptplayer/dossier-api:latest
     environment:
       # Configurações da sessão
       PHP_SESSION_SAVE_HANDLER: redis
@@ -26,39 +25,70 @@ services:
     networks:
       - dossier-network-public
       - dossier-network-back
-    depends_on:
-      - redis
-      - database
-    mem_limit: 512m
-    cpus: '0.25'
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.15"
 
   app:
-    image: scriptplayer/dossier_app
-    container_name: app
+    image: scriptplayer/dossier-app:latest
     environment:
       API_HOST: http://api:80
     ports:
       - "80:80"
     networks:
       - dossier-network-public
-    depends_on:
-      - api
-    mem_limit: 512m
-    cpus: '0.25'
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      resources:
+        limits:
+          memory: 64m
+          cpus: "0.05"
 
   redis:
     image: redis:alpine3.20
-    container_name: redis
     volumes:
       - dossier-redis_data:/data
     networks:
       - dossier-network-back
-    mem_limit: 1024m
-    cpus: '0.25'
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      resources:
+        limits:
+          memory: 512m
+          cpus: "0.25"
 
   database:
-    image: scriptplayer/dossier_db
-    container_name: database
+    image: scriptplayer/dossier-db
     environment:
       POSTGRES_USER: bifrost
       POSTGRES_PASSWORD: passwordBifrost
@@ -68,18 +98,28 @@ services:
       - dossier-database_data:/var/lib/postgresql/data
     networks:
       - dossier-network-back
-    mem_limit: 512m
-    cpus: '0.25'
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      resources:
+        limits:
+          memory: 512m
+          cpus: "0.25"
 
   webdav:
-    image: scriptplayer/dossier_webdav
-    container_name: webdav
+    image: scriptplayer/dossier-webdav
     ports:
       - "8080:80"
     networks:
       - dossier-network-public
-    mem_limit: 512m
-    cpus: '0.25'
 
 volumes:
   dossier-storage:
