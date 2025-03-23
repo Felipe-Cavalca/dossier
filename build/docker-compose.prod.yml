@@ -1,8 +1,45 @@
 services:
 
+  app:
+    image: ghcr.io/felipe-cavalca/dossier-app:latest
+    environment:
+      API_HOST: http://api:80
+    ports:
+      - "80:80"
+    networks:
+      - dossier-network-public
+    deploy:
+      mode: replicated
+      replicas: 2
+
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+
+      rollback_config:
+        parallelism: 1
+        delay: 5s
+        failure_action: continue
+        order: stop-first
+
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 60s
+
+      resources:
+        limits:
+          memory: 64m
+          cpus: "0.05"
+        reservations:
+          memory: 32m
+          cpus: "0.01"
+
   api:
-    image: scriptplayer/dossier_api
-    container_name: api
+    image: ghcr.io/felipe-cavalca/dossier-api:latest
     environment:
       # Configurações da sessão
       PHP_SESSION_SAVE_HANDLER: redis
@@ -21,44 +58,77 @@ services:
       SQL_DATABASE: bifrost
       SQL_USER: bifrost
       SQL_PASSWORD: passwordBifrost
-    volumes:
-      - dossier-storage:/storage
     networks:
       - dossier-network-public
       - dossier-network-back
-    depends_on:
-      - redis
-      - database
-    mem_limit: 512m
-    cpus: '0.25'
+    deploy:
+      mode: replicated
+      replicas: 3
 
-  app:
-    image: scriptplayer/dossier_app
-    container_name: app
-    environment:
-      API_HOST: http://api:80
-    ports:
-      - "80:80"
-    networks:
-      - dossier-network-public
-    depends_on:
-      - api
-    mem_limit: 512m
-    cpus: '0.25'
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+
+      rollback_config:
+        parallelism: 1
+        delay: 5s
+        failure_action: continue
+        order: stop-first
+
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 60s
+
+      resources:
+        limits:
+          memory: 100m
+          cpus: "0.10"
+        reservations:
+          memory: 32m
+          cpus: "0.01"
 
   redis:
     image: redis:alpine3.20
-    container_name: redis
     volumes:
       - dossier-redis_data:/data
     networks:
       - dossier-network-back
-    mem_limit: 1024m
-    cpus: '0.25'
+    deploy:
+      mode: replicated
+      replicas: 1
+
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+
+      rollback_config:
+        parallelism: 1
+        delay: 5s
+        failure_action: continue
+        order: stop-first
+
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 60s
+
+      resources:
+        limits:
+          memory: 512m
+          cpus: "0.25"
+        reservations:
+          memory: 32m
+          cpus: "0.01"
 
   database:
-    image: scriptplayer/dossier_db
-    container_name: database
+    image: ghcr.io/felipe-cavalca/dossier-database:latest
     environment:
       POSTGRES_USER: bifrost
       POSTGRES_PASSWORD: passwordBifrost
@@ -68,22 +138,44 @@ services:
       - dossier-database_data:/var/lib/postgresql/data
     networks:
       - dossier-network-back
-    mem_limit: 512m
-    cpus: '0.25'
+    deploy:
+      mode: replicated
+      replicas: 1
+
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+
+      rollback_config:
+        parallelism: 1
+        delay: 5s
+        failure_action: continue
+        order: stop-first
+
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 60s
+
+      resources:
+        limits:
+          memory: 512m
+          cpus: "0.25"
+        reservations:
+          memory: 32m
+          cpus: "0.01"
 
   webdav:
-    image: scriptplayer/dossier_webdav
-    container_name: webdav
+    image: ghcr.io/felipe-cavalca/dossier-webdav:latest
     ports:
       - "8080:80"
     networks:
       - dossier-network-public
-    mem_limit: 512m
-    cpus: '0.25'
 
 volumes:
-  dossier-storage:
-    name: dossier-storage
   dossier-redis_data:
     name: dossier-redis_data
   dossier-database_data:
@@ -92,6 +184,5 @@ volumes:
 networks:
   dossier-network-public:
     name: dossier-network-public
-    # external: true
   dossier-network-back:
     name: dossier-network-back
