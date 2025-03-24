@@ -18,12 +18,12 @@ class User
 
     public function getById(UUID $id): array
     {
-        return $this->search(["u.id" => $id])[0] ?? [];
+        return $this->search(["u.id" => (string) $id])[0] ?? [];
     }
 
     public function getByEmail(Email $email): array
     {
-        return $this->search(["u.email" => $email])[0] ?? [];
+        return $this->search(["u.email" => (string) $email])[0] ?? [];
     }
 
     public function getAll(): array
@@ -80,7 +80,7 @@ class User
                 "LEFT JOIN users_log ulu ON ulu.original_id = u.id AND ulu.action = 'UPDATE'",
                 "JOIN roles r ON r.id = u.role_id",
             ],
-            where: ["u.id" => $userId]
+            where: ["u.id" => (string) $userId]
         )[0] ?? [];
     }
 }
