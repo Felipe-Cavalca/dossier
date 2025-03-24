@@ -2,7 +2,8 @@
 
 namespace Bifrost\Class;
 
-use Bifrost\Include\DatabaseProperties;
+use Bifrost\DataTypes\Email;
+use Bifrost\DataTypes\UUID;
 use Bifrost\Model\User as UserModel;
 
 class User
@@ -11,8 +12,8 @@ class User
     private array $userData = [];
 
     public function __construct(
-        string $id = null,
-        string $email = null,
+        ?UUID $id = null,
+        ?Email $email = null,
     ) {
         $this->userModel = new UserModel();
 
@@ -46,7 +47,7 @@ class User
 
     public function __toString(): string
     {
-        return json_encode($this->userModel->print($this->id));
+        return json_encode($this->userModel->print(new UUID((string) $this->id)));
     }
 
     public function validatePassword(string $password): bool

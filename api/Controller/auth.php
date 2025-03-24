@@ -13,6 +13,7 @@ use Bifrost\Include\Controller;
 use Bifrost\Interface\ControllerInterface;
 use Bifrost\Core\Post;
 use Bifrost\Core\Session;
+use Bifrost\DataTypes\Email;
 
 class Auth implements ControllerInterface
 {
@@ -29,7 +30,7 @@ class Auth implements ControllerInterface
     public function login()
     {
         $post = new Post();
-        $user = new User(email: $post->email);
+        $user = new User(email: new Email($post->email));
 
         if (!isset($user->email) || !$user->validatePassword($post->password)) {
             return HttpError::unauthorized("Usuário ou senha invalidos");

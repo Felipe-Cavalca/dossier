@@ -16,6 +16,7 @@ use Bifrost\Core\Session;
 use Bifrost\Class\User as ClassUser;
 use Bifrost\Core\Database;
 use Bifrost\Core\Post;
+use Bifrost\DataTypes\UUID;
 use Bifrost\Enum\HttpStatusCode;
 use Bifrost\Enum\Field;
 use Bifrost\Model\User as ModelUser;
@@ -44,7 +45,7 @@ class User implements ControllerInterface
     }
 
     #[Method("GET")]
-    #[Auth("user", "manager", "admin")]
+    #[Auth("manager", "admin")]
     #[Cache("get_usuario", 60, ["userId"])]
     #[Details([
         "description" => "Lista usuarios do sistema"
@@ -110,7 +111,7 @@ class User implements ControllerInterface
             ],
             returning: "id"
         );
-        $user = new ClassUser(id: $id);
+        $user = new ClassUser(id: new UUID($id));
 
         return new HttpResponse(
             statusCode: HttpStatusCode::CREATED,
