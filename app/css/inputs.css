@@ -1,5 +1,5 @@
 input {
-    width: 300px;
+    width: 100%;
     padding: 10px;
     font-size: 16px;
     border-radius: 12px;
@@ -7,6 +7,7 @@ input {
     background-color: var(--input-bgColor);
     color: var(--input-color);
     outline: none;
+    padding-right: 25px;
 }
 
 input::placeholder {
@@ -24,9 +25,6 @@ input:invalid {
     background-repeat: no-repeat;
     background-position: right 1px center;
     background-size: 25px 25px;
-    padding-right: 25px;
-    width: calc(300px - 15px);
-    /* width do input - width do background-image */
 }
 
 input:invalid {
