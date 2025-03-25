@@ -1,9 +1,8 @@
 button,
 a.button {
-    background-color: var(--color-primary);
-    color: var(--button-colorText);
-    border: none;
-    border-radius: 12px;
+    background-color: var(--button-bg-color);
+    color: var(--button-color-text);
+    border-radius: 30px;
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
@@ -11,29 +10,33 @@ a.button {
 
 button.secondary,
 a.button.secondary {
-    background-color: var(--color-secondary);
+    background-color: var(--button-secondary-bg-color);
+    color: var(--button-secondary-color-text);
+    border: 2px solid var(--button-border-color);
 }
 
 button:hover,
 a.button:hover {
-    background-color: var(--button-hover-bgColor);
+    background-color: var(--button-hover-bg-color);
+    color: var(--button-color-text);
 }
 
 button:active,
 a.button:active {
-    background-color: var(--button-active-bgColor);
+    background-color: var(--button-active-bg-color);
 }
 
 button:disabled,
 a.button:disabled {
-    background-color: var(--button-disabled-bgColor);
+    background-color: var(--button-disabled-bg-color);
     color: var(--button-color-disabled);
     cursor: not-allowed;
 }
 
 button[type="submit"] {
     color: var(--button-submit-color);
-    background-color: var(--button-submit-bfColor);
+    background-color: var(--button-submit-bg-color);
+    border: none;
 }
 
 button[type="submit"]::after {
@@ -42,16 +45,16 @@ button[type="submit"]::after {
 
 button.danger,
 a.button.danger {
-    background-color: var(--button-danger-bgColor);
+    background-color: var(--button-danger-bg-color);
     color: var(--button-danger-color);
 }
 
 button.danger:hover,
 a.button.danger:hover {
-    background-color: var(--button-danger-hover-bgColor);
+    background-color: var(--button-danger-hover-bg-color);
 }
 
 button.danger:active,
 a.button.danger:active {
-    background-color: var(--button-active-bgColor);
+    background-color: var(--button-active-bg-color);
 }
