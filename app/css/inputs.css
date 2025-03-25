@@ -2,21 +2,15 @@ input {
     width: 300px;
     padding: 10px;
     font-size: 16px;
-    border-radius: 8px;
-    border: 2px solid transparent;
+    border-radius: 12px;
+    border: 1px solid;
     background-color: var(--input-bgColor);
     color: var(--input-color);
     outline: none;
-    font-family: 'JetBrains Mono', monospace;
 }
 
 input::placeholder {
     color: var(--input-placeholder-color);
-}
-
-input:valid {
-    border-color: var(--input-valid-border-color);
-    box-shadow: 0 0 10px var(--input-valid-border-color);
 }
 
 input:invalid {
@@ -24,8 +18,19 @@ input:invalid {
     box-shadow: 0 0 10px var(--input-invalid-border-color);
 }
 
-input[required]:placeholder-shown {
-    border-bottom: 2px solid var(--input-required-border-color);
+input[required]:placeholder-shown,
+input:invalid {
+    background-image: url("/assets/icons/alert.png");
+    background-repeat: no-repeat;
+    background-position: right 1px center;
+    background-size: 25px 25px;
+    padding-right: 25px;
+    width: calc(300px - 15px);
+    /* width do input - width do background-image */
+}
+
+input:invalid {
+    background-image: url("/assets/icons/warning.png");
 }
 
 input:placeholder-shown {
