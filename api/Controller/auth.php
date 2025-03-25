@@ -52,4 +52,13 @@ class Auth implements ControllerInterface
         return HttpResponse::success("Usuário logado com sucesso");
     }
 
+    #[Details([
+        "description" => "Realiza o logout do usuário"
+    ])]
+    public function logout()
+    {
+        $session = new Session();
+        $session->destroy();
+        return HttpResponse::success("Usuário deslogado com sucesso");
+    }
 }
