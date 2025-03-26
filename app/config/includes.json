@@ -8,7 +8,8 @@
     ],
     "jsFiles": [
         "/libs/customComponents-1.8.4-29.min.js",
-        "/libs/notyf/notyf.min.js"
+        "/libs/notyf/notyf.min.js",
+        "/js/global/funcoes.js"
     ],
     "metaData": {
         "meta": [
