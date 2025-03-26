@@ -32,8 +32,11 @@ const afterSend = async (response) => {
     button.innerHTML = originalTextButton;
 
     if (data.isSuccess) {
-        alert().success(data.message);
+        alert().success("Cadastro realizado com sucesso, você será redirecionado para a página inicial");
         document.querySelector("form").reset();
+        setInterval(() => {
+            window.location.href = "/";
+        }, 2000);
     } else {
         alert().error(data.message);
     }
