@@ -16,6 +16,7 @@ use Bifrost\Core\Session;
 use Bifrost\Class\User as ClassUser;
 use Bifrost\Core\Database;
 use Bifrost\Core\Post;
+use Bifrost\DataTypes\UUID;
 use Bifrost\Enum\HttpStatusCode;
 use Bifrost\Enum\Field;
 use Bifrost\Model\User as ModelUser;
@@ -44,7 +45,7 @@ class User implements ControllerInterface
     }
 
     #[Method("GET")]
-    #[Auth("user", "manager", "admin")]
+    #[Auth("manager", "admin")]
     #[Cache("get_usuario", 60, ["userId"])]
     #[Details([
         "description" => "Lista usuarios do sistema"
@@ -58,11 +59,13 @@ class User implements ControllerInterface
     #[Method("POST")]
     #[RequiredFields([
         "name" => Field::STRING,
-        "userName" => Field::STRING,
         "email" => Field::EMAIL,
         "password" => Field::STRING,
     ])]
     #[Details([
+        "OptionalFields" => [
+            "userName" => Field::STRING
+        ],
         "description" => "Cria um novo usuário no sistema"
     ])]
     public function new_user()
@@ -80,12 +83,21 @@ class User implements ControllerInterface
             ]);
         }
 
-        $userValidate = $userModel->search(
-            ["or" => [
-                "userName" => $post->userName,
-                "email" => $post->email,
-            ]]
-        );
+        $userName = empty($post->userName) ? null : $post->userName;
+
+        if (empty($userName)) {
+            $userValidate = $userModel->search([
+                "email" => $post->email
+            ]);
+        } else {
+            $userValidate = $userModel->search(
+                ["or" => [
+                    "userName" => $userName,
+                    "email" => $post->email,
+                ]]
+            );
+        }
+
         if (!empty($userValidate)) {
             $fieldsToCheck = [
                 "email" => "Já existe um usuário com o email cadastrado",
@@ -94,7 +106,7 @@ class User implements ControllerInterface
             foreach ($fieldsToCheck as $field => $errorMessage) {
                 $fieldDatabase = strtolower($field);
                 if (!empty($userValidate[0][$fieldDatabase]) && $userValidate[0][$fieldDatabase] == $post->$field) {
-                    return HttpError::badRequest($errorMessage);
+                    return HttpError::badRequest($errorMessage, ["fieldError" => $field]);
                 }
             }
         }
@@ -103,14 +115,14 @@ class User implements ControllerInterface
             table: "users",
             data: [
                 "name" => $post->name,
-                "userName" => $post->userName,
+                "userName" => $userName,
                 "email" => $post->email,
                 "password" => password_hash($post->password, PASSWORD_DEFAULT),
                 "role_id" => $role["id"]
             ],
             returning: "id"
         );
-        $user = new ClassUser(id: $id);
+        $user = new ClassUser(id: new UUID($id));
 
         return new HttpResponse(
             statusCode: HttpStatusCode::CREATED,

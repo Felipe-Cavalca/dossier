@@ -3,6 +3,8 @@
 namespace Bifrost\Model;
 
 use Bifrost\Core\Database;
+use Bifrost\DataTypes\Email;
+use Bifrost\DataTypes\UUID;
 
 class User
 {
@@ -14,14 +16,14 @@ class User
         $this->database = new Database();
     }
 
-    public function getById(string $id): array
+    public function getById(UUID $id): array
     {
-        return $this->search(["u.id" => $id])[0] ?? [];
+        return $this->search(["u.id" => (string) $id])[0] ?? [];
     }
 
-    public function getByEmail(string $email): array
+    public function getByEmail(Email $email): array
     {
-        return $this->search(["u.email" => $email])[0] ?? [];
+        return $this->search(["u.email" => (string) $email])[0] ?? [];
     }
 
     public function getAll(): array
@@ -45,7 +47,7 @@ class User
         );
     }
 
-    public function search(array $conditions)
+    public function search(array $conditions): array
     {
         return $this->database->select(
             table: $this->table . " u",
@@ -60,7 +62,7 @@ class User
         );
     }
 
-    public function print(string $userId)
+    public function print(UUID $userId): array
     {
         return $this->database->select(
             table: $this->table . " u",
@@ -78,7 +80,7 @@ class User
                 "LEFT JOIN users_log ulu ON ulu.original_id = u.id AND ulu.action = 'UPDATE'",
                 "JOIN roles r ON r.id = u.role_id",
             ],
-            where: ["u.id" => $userId]
+            where: ["u.id" => (string) $userId]
         )[0] ?? [];
     }
 }

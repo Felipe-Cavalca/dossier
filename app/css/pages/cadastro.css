@@ -1,32 +1,67 @@
-a {
-    text-decoration: none;
-    color: var(--cor-texto);
-    -webkit-tap-highlight-color: transparent;
-}
-
-button,
-input,
-span,
-div:has(a.button) {
-    margin-top: 25px;
-}
-
-button.danger::before,
-a.button.danger::before {
-    content: "\2B06  ";
-}
-
-button.danger:after,
-a.button.danger:after {
-    content: " \2B06";
-}
-
-.section-input {
+header, form{
     display: flex;
     flex-direction: column;
-    min-width: 80%;
-    justify-content: center;
     align-items: center;
     text-align: center;
-    padding-top: 100px;
+    gap: 10px;
+    padding: 20px;
+    margin-top: 50px;
+}
+
+header img {
+    width: 60px;
+    height: auto;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+header h2 {
+    font-size: 1rem;
+    font-weight: normal;
+    margin: 0;
+    max-width: 300px;
+}
+
+c-card {
+    min-height: 200px;
+    max-width: 25rem;
+    width: 100%;
+    padding: 20px;
+    text-align: left;
+    align-items: center;
+}
+
+c-card section {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+c-card section:last-child {
+    margin-bottom: 0;
+}
+
+form label {
+    width: 55px;
+    margin-right: 10px;
+    text-align: left;
+    margin-bottom: 5px;
+    width: auto;
+}
+
+form input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+form span {
+    margin-top: 5px;
+}
+
+form button {
+    width: 100%;
 }

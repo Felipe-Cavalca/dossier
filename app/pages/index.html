@@ -9,16 +9,6 @@
 </head>
 
 <body>
-    <c-alert>
-        <section slot="header">
-            {{name}} diz:
-        </section>
-        <section slot="body">
-            <h1>Mensagem customizada</h1>
-            <pre id="response-form"></pre>
-        </section>
-    </c-alert>
-
     <c-maximized id="section-header">
         <h1>Olá, seja bem-vindo ao {{name}}</h1>
         <h2>{{slogan}}</h2>
@@ -34,17 +24,16 @@
                 <h3>Login</h3>
                 <small>Faça login em sua conta {{name}}</small>
             </section>
-            <form action="/auth/login" method="POST">
+            <form action="/auth/login" method="POST" novalidate>
                 <section>
-                    <label for="email">Email</label>
-                    <input type="email" name="email" id="email" placeholder="fulano@email.com" required autocomplete="on"
-                        inputmode="email" autocapitalize="none">
-                    <span class="danger">
-                        <b>O email deve ser valido</b>
-                    </span>
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" id="email" placeholder="fulano@email.com" required
+                        autocomplete="email" inputmode="email" autocapitalize="none" maxlength="100"
+                        pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" title="Insira um email válido" />
+                    <span class="danger">Email inválido!</span>
                 </section>
                 <section>
-                    <label for="confirmPassword">Senha</label>
+                    <label for="confirmPassword">Senha:</label>
                     <input type="password" name="password" id="password" placeholder="***" required autocomplete="off">
                 </section>
                 <section>
