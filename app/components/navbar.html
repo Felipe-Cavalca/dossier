@@ -2,113 +2,169 @@
     @import url(/config/variaveis.css);
     @import url(/css/index.css);
 
-    nav {
+    :host {
+        display: flex;
+        flex-direction: column;
+        width: 60px;
+        height: 100vh;
+        background-color: #2c3e50;
+        color: white;
+        transition: width 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+
+    :host(.expanded),
+    :host(:hover):not(.fixed),
+    :host(:focus-within):not(.fixed) {
+        width: 200px;
+        box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
+        z-index: 10;
+    }
+
+    .logo {
         height: 60px;
-        background-color: #111014;
         display: flex;
-        justify-content: flex-end;
         align-items: center;
-        color: var(--color-text);
+        justify-content: center;
+        font-size: 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        flex-shrink: 0;
+        padding: 0;
     }
 
-    .links-container {
-        height: 100%;
+    .pin-toggle {
+        height: 50px;
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        transition: background 0.2s;
+        flex-shrink: 0;
         width: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
+        padding: 0;
+        outline: none;
+        box-shadow: none;
     }
 
+    .pin-toggle:hover {
+        background-color: #34495e;
+    }
 
-    nav a {
-        height: 100%;
-        padding: 0 20px;
+    nav {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 5px 0;
+        scrollbar-width: thin;
+        scrollbar-color: #888 transparent;
+    }
+
+    nav::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    nav::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 4px;
+    }
+
+    a {
         display: flex;
         align-items: center;
+        justify-content: center;
+        padding: 12px 0;
         text-decoration: none;
-        color: var(--color-text);
+        color: white;
+        transition: background 0.2s;
+        flex-shrink: 0;
     }
 
-
-    nav a:hover {
-        background-color: red;
+    a:hover {
+        background-color: #34495e;
     }
 
-    nav svg {
-        fill: var(--color-text);
+    a .icon {
+        font-size: 18px;
+        text-align: center;
     }
 
-
-    #sidebar-active {
+    a .label {
         display: none;
+        margin-left: 10px;
     }
 
-    .open-sidebar-button,
-    .close-sidebar-button {
-        display: none;
+    :host(.expanded) a,
+    :host(:hover):not(.fixed) a,
+    :host(:focus-within):not(.fixed) a {
+        justify-content: flex-start;
+        padding: 12px 20px;
     }
 
-    @media(max-width: 450px) {
-        .links-container {
-            flex-direction: column;
-            align-items: flex-start;
+    :host(.expanded) a .label,
+    :host(:hover):not(.fixed) a .label,
+    :host(:focus-within):not(.fixed) a .label {
+        display: inline;
+    }
 
-            position: fixed;
-            top: 0;
-            right: -100%;
-            z-index: 10;
-            width: 300px;
-
-            background-color: black;
-            box-shadow: -5px 0 5px rgba(0, 0, 0, 0.25);
-            transition: 0.75s ease-out;
-        }
-
-        nav a {
-            box-sizing: border-box;
-            height: auto;
-            width: 100%;
-            padding: 20px 30px;
-            justify-content: flex-start;
-        }
-
-        .open-sidebar-button,
-        .close-sidebar-button {
-            padding: 20px;
-            display: block;
-        }
-
-        #sidebar-active:checked~.links-container {
-            right: 0;
-        }
-
-        #sidebar-active:checked~#overlay {
-            height: 100%;
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 9;
-        }
+    div.logo img {
+        height: 95%;
     }
 </style>
 
+<div class="logo">
+    <img src="/assets/icons/folder.png" alt="logo">
+</div>
+<button class="pin-toggle" title="Fixar/Desafixar">📌</button>
 <nav>
-    <input type="checkbox" id="sidebar-active">
-    <label for="sidebar-active" class="open-sidebar-button">
-        <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 -960 960 960" width="32">
-            <path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z" />
-        </svg>
-    </label>
-    <label id="overlay" for="sidebar-active"></label>
-    <div class="links-container">
-        <label for="sidebar-active" class="close-sidebar-button">
-            <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 -960 960 960" width="32">
-                <path
-                    d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
-            </svg>
-        </label>
-
-        <a href="/pages/home.html">Home</a>
-    </div>
+    <a href="home.html"><span class="icon">🏠</span><span class="label">Início</span></a>
+    <a href="home.html"><span class="icon">📁</span><span class="label">Arquivos</span></a>
+    <a href="home.html"><span class="icon">🕓</span><span class="label">Recentes</span></a>
+    <a href="home.html"><span class="icon">🗑️</span><span class="label">Lixeira</span></a>
+    <a href="home.html"><span class="icon">⚙️</span><span class="label">Configurações</span></a>
 </nav>
+
+<script>
+    function initializeComponentScript(component) {
+        const parent = component.parentElement;
+
+        if (parent && getComputedStyle(parent).display !== 'flex') {
+            parent.style.display = 'flex';
+        }
+
+        component.style.display = 'block';
+        component.style.flexShrink = '0';
+
+        const next = component.nextElementSibling;
+        if (next && getComputedStyle(next).flexGrow === "0") {
+            next.style.flex = '1';
+            next.style.minWidth = '0';
+        }
+
+        const pinButton = component.shadowRoot.querySelector('.pin-toggle');
+        let isFixed = false;
+
+        const updateState = () => {
+            if (isFixed) {
+                component.classList.add('fixed');
+                component.classList.add('expanded');
+            } else {
+                component.classList.remove('fixed');
+                component.classList.remove('expanded');
+            }
+        };
+
+        pinButton.addEventListener('click', () => {
+            isFixed = !isFixed;
+            updateState();
+        });
+
+        updateState();
+    }
+</script>
