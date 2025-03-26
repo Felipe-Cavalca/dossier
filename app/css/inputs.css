@@ -48,12 +48,11 @@ input[required]:placeholder-shown:focus {
 
 input~span.danger,
 input:valid~span.danger {
-    display: block;
+    display: none;
     height: 24px;
-    opacity: 0;
     color: var(--span-danger-color);
 }
 
-input:not(:placeholder-shown):invalid~span.danger {
-    opacity: 1;
+input:not(:placeholder-shown):not(:focus):invalid~span.danger {
+    display: block;
 }
