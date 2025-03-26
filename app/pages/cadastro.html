@@ -9,44 +9,53 @@
 </head>
 
 <body>
-
-    <c-alert>
-        <div slot="header">Houve um erro ao cadastrar</div>
-        <pre slot="body">Ocorreu um erro ao tentar cadastrar, por favor, tente novamente.</pre>
-    </c-alert>
-
-    <div class="header">
+    <header>
         <img src="/assets/icons/folder.png" alt="Logo">
         <h1>{{name}}</h1>
         <h2>{{slogan}}</h2>
-    </div>
+    </header>
 
-    <form action="/user" method="POST">
-        <c-card>
-            <section>
-                <label for="nome">Nome:</label>
-                <input type="text" name="name" id="name" placeholder="Fulano de Tal" required autocomplete="on"
-                    autocapitalize="words">
-            </section>
-            <section>
-                <label for="username">Usuário:</label>
-                <input type="text" name="userName" id="userName" placeholder="fulano123" autocomplete="on"
-                    autocapitalize="none">
-            </section>
-            <section>
-                <label for="email">Email:</label>
-                <input type="email" name="email" id="email" placeholder="fulano@email.com" required autocomplete="on"
-                    inputmode="email" autocapitalize="none">
-            </section>
-            <section>
-                <label for="confirmPassword">Senha:</label>
-                <input type="password" name="password" id="password" placeholder="" required autocomplete="off" minlength="3">
-            </section>
-            <section>
-                <button type="submit">Criar conta</button>
-            </section>
-        </c-card>
-    </form>
+    <main>
+        <form action="/user" method="POST" novalidate>
+            <c-card>
+                <section>
+                    <label for="name">Nome:</label>
+                    <input type="text" name="name" id="name" placeholder="Fulano de Tal" required autocomplete="name"
+                        minlength="3" maxlength="50" autocapitalize="words" pattern="^[A-Za-zÀ-ÿ ]+$"
+                        title="Apenas letras e espaços (até 50 caracteres)" inputmode="latin-name" spellcheck="true"
+                        autofocus />
+                    <span class="danger">Insira o nome corretamente</span>
+                </section>
+
+                <section>
+                    <label for="userName">Usuário:</label>
+                    <input type="text" name="userName" id="userName" placeholder="fulano123" autocomplete="on"
+                        autocapitalize="none" minlength="3" maxlength="50" pattern="^[A-Za-z0-9_]{3,50}$"
+                        title="Somente letras, números e underline (3 a 50 caracteres)" inputmode="latin" />
+                    <span class="danger">Esse nome de usuário não pode ser usado no momento.</span>
+                </section>
+
+                <section>
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" id="email" placeholder="fulano@email.com" required
+                        autocomplete="email" inputmode="email" autocapitalize="none" maxlength="100"
+                        pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" title="Insira um email válido" />
+                    <span class="danger">Email inválido!</span>
+                </section>
+
+                <section>
+                    <label for="password">Senha:</label>
+                    <input type="password" name="password" id="password" required autocomplete="off" placeholder=""
+                        minlength="3" />
+                    <span class="danger">Senha muito curta</span>
+                </section>
+
+                <section>
+                    <button type="submit">Criar conta</button>
+                </section>
+            </c-card>
+        </form>
+    </main>
 </body>
 
 </html>
