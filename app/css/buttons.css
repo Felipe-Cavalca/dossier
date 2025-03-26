@@ -6,6 +6,7 @@ a.button {
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
+    border: none;
 }
 
 button.secondary,
@@ -27,9 +28,10 @@ a.button:active {
 }
 
 button:disabled,
+button[type="submit"]:disabled,
 a.button:disabled {
     background-color: var(--button-disabled-bg-color);
-    color: var(--button-color-disabled);
+    color: var(--button-disabled-color);
     cursor: not-allowed;
 }
 
@@ -37,10 +39,6 @@ button[type="submit"] {
     color: var(--button-submit-color);
     background-color: var(--button-submit-bg-color);
     border: none;
-}
-
-button[type="submit"]::after {
-    content: " >>";
 }
 
 button.danger,

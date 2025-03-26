@@ -48,6 +48,7 @@
 
     --button-secondary-bg-color: var(--color-secondary);
     --button-border-color: #ffffff00;
+    --button-disabled-color: #747474;
 
     --input-color: var(--color-text);
 
