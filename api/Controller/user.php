@@ -59,11 +59,13 @@ class User implements ControllerInterface
     #[Method("POST")]
     #[RequiredFields([
         "name" => Field::STRING,
-        "userName" => Field::STRING,
         "email" => Field::EMAIL,
         "password" => Field::STRING,
     ])]
     #[Details([
+        "OptionalFields" => [
+            "userName" => Field::STRING
+        ],
         "description" => "Cria um novo usuário no sistema"
     ])]
     public function new_user()
