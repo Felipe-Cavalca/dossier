@@ -83,12 +83,21 @@ class User implements ControllerInterface
             ]);
         }
 
-        $userValidate = $userModel->search(
-            ["or" => [
-                "userName" => $post->userName,
-                "email" => $post->email,
-            ]]
-        );
+        $userName = empty($post->userName) ? null : $post->userName;
+
+        if (empty($userName)) {
+            $userValidate = $userModel->search([
+                "email" => $post->email
+            ]);
+        } else {
+            $userValidate = $userModel->search(
+                ["or" => [
+                    "userName" => $userName,
+                    "email" => $post->email,
+                ]]
+            );
+        }
+
         if (!empty($userValidate)) {
             $fieldsToCheck = [
                 "email" => "Já existe um usuário com o email cadastrado",
@@ -97,7 +106,7 @@ class User implements ControllerInterface
             foreach ($fieldsToCheck as $field => $errorMessage) {
                 $fieldDatabase = strtolower($field);
                 if (!empty($userValidate[0][$fieldDatabase]) && $userValidate[0][$fieldDatabase] == $post->$field) {
-                    return HttpError::badRequest($errorMessage);
+                    return HttpError::badRequest($errorMessage, ["fieldError" => $field]);
                 }
             }
         }
@@ -106,7 +115,7 @@ class User implements ControllerInterface
             table: "users",
             data: [
                 "name" => $post->name,
-                "userName" => $post->userName,
+                "userName" => $userName,
                 "email" => $post->email,
                 "password" => password_hash($post->password, PASSWORD_DEFAULT),
                 "role_id" => $role["id"]
