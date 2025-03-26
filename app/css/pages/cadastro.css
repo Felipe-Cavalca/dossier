@@ -17,14 +17,12 @@
     font-size: 1.5rem;
     font-weight: bold;
     margin: 0;
-    color: #1a1a1a;
 }
 
 .header h2 {
     font-size: 1rem;
     font-weight: normal;
     margin: 0;
-    color: #666;
     max-width: 300px;
 }
 
@@ -40,6 +38,10 @@ c-card {
 c-card section {
     width: 100%;
     margin-bottom: 30px;
+}
+
+c-card section:last-child {
+    margin-bottom: 0;
 }
 
 form label {
