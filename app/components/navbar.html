@@ -1,170 +1,181 @@
 <style>
-    @import url(/config/variaveis.css);
-    @import url(/css/index.css);
-
-    :host {
-        display: flex;
-        flex-direction: column;
-        width: 60px;
-        height: 100vh;
-        background-color: #2c3e50;
-        color: white;
-        transition: width 0.3s ease;
-        overflow: hidden;
-        position: relative;
-    }
-
-    :host(.expanded),
-    :host(:hover):not(.fixed),
-    :host(:focus-within):not(.fixed) {
-        width: 200px;
-        box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
-        z-index: 10;
-    }
-
-    .logo {
-        height: 60px;
+    .navbar {
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        flex-shrink: 0;
-        padding: 0;
+        justify-content: space-between;
+        height: 56px;
+        background-color: var(--nav-bg-color);
+        color: var(--nav-color);
+        padding: 0 1rem;
+        font-family: sans-serif;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
     }
 
-    .pin-toggle {
-        height: 50px;
+    .menu-btn {
         background: none;
         border: none;
-        color: white;
         cursor: pointer;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        transition: background 0.2s;
-        flex-shrink: 0;
-        width: 100%;
-        padding: 0;
-        outline: none;
-        box-shadow: none;
-    }
-
-    .pin-toggle:hover {
-        background-color: #34495e;
-    }
-
-    nav {
-        flex: 1;
-        overflow-y: auto;
-        overflow-x: hidden;
-        display: flex;
         flex-direction: column;
-        padding: 5px 0;
-        scrollbar-width: thin;
-        scrollbar-color: #888 transparent;
+        gap: 4px;
+        padding: 8px;
     }
 
-    nav::-webkit-scrollbar {
-        width: 6px;
+    .menu-btn span {
+        width: 22px;
+        height: 2px;
+        background-color: var(--nav-color);
     }
 
-    nav::-webkit-scrollbar-thumb {
-        background-color: #888;
-        border-radius: 4px;
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #999;
+        object-fit: cover;
     }
 
-    a {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 12px 0;
-        text-decoration: none;
-        color: white;
-        transition: background 0.2s;
-        flex-shrink: 0;
+    .drawer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 240px;
+        height: 100%;
+        background: var(--nav-bg-color);
+        color: var(--nav-color);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        overflow-y: auto;
+        z-index: 1100;
+        padding-top: 56px;
     }
 
-    a:hover {
-        background-color: #34495e;
+    .drawer.open {
+        transform: translateX(0);
     }
 
-    a .icon {
-        font-size: 18px;
-        text-align: center;
-    }
-
-    a .label {
+    .drawer-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1099;
         display: none;
-        margin-left: 10px;
     }
 
-    :host(.expanded) a,
-    :host(:hover):not(.fixed) a,
-    :host(:focus-within):not(.fixed) a {
-        justify-content: flex-start;
-        padding: 12px 20px;
+    .drawer-overlay.show {
+        display: block;
     }
 
-    :host(.expanded) a .label,
-    :host(:hover):not(.fixed) a .label,
-    :host(:focus-within):not(.fixed) a .label {
-        display: inline;
+    .drawer-content a {
+        display: block;
+        padding: 0.75rem 1rem;
+        text-decoration: none;
+        color: var(--nav-color);
     }
 
-    div.logo img {
-        height: 95%;
+    .drawer-content a:hover {
+        background-color: var(--nav-color-hover);
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        color: var(--nav-color);
+        background: none;
+        border: none;
+        cursor: pointer;
     }
 </style>
 
-<div class="logo">
-    <img src="/assets/icons/folder.png" alt="logo">
+<div class="navbar">
+    <button class="menu-btn" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="logo"></div>
+    <img id="avatar" class="user-avatar" alt="Avatar">
 </div>
-<button class="pin-toggle" title="Fixar/Desafixar">📌</button>
-<nav>
-    <a href="home.html"><span class="icon">🏠</span><span class="label">Início</span></a>
-    <a href="home.html"><span class="icon">📁</span><span class="label">Arquivos</span></a>
-    <a href="home.html"><span class="icon">🕓</span><span class="label">Recentes</span></a>
-    <a href="home.html"><span class="icon">🗑️</span><span class="label">Lixeira</span></a>
-    <a href="home.html"><span class="icon">⚙️</span><span class="label">Configurações</span></a>
-</nav>
+
+<div class="drawer" id="drawer">
+    <button id="closeDrawer" class="close-btn" aria-label="Fechar menu">×</button>
+    <div class="drawer-content">
+        <a href="#home">Home</a>
+        <a href="#servicos">Serviços</a>
+        <a href="#contato">Contato</a>
+        <a href="#sobre">Sobre</a>
+    </div>
+</div>
+<div class="drawer-overlay" id="drawerOverlay"></div>
 
 <script>
-    function initializeComponentScript(component) {
-        const parent = component.parentElement;
+    function initializeComponentScript(root) {
+        const toggle = root.shadowRoot.getElementById("menuToggle");
+        const drawer = root.shadowRoot.getElementById("drawer");
+        const overlay = root.shadowRoot.getElementById("drawerOverlay");
+        const closeBtn = root.shadowRoot.getElementById("closeDrawer");
+        const avatar = root.shadowRoot.getElementById("avatar");
 
-        if (parent && getComputedStyle(parent).display !== 'flex') {
-            parent.style.display = 'flex';
+        // Define imagem de avatar (via atributo)
+        const avatarUrl = root.getAttribute("avatar");
+        avatar.src = avatarUrl || "https://www.gravatar.com/avatar/?d=mp";
+
+        // Adiciona margin-top no body se ainda não tiver
+        const marginTop = "56px";
+        const bodyStyle = getComputedStyle(document.body);
+        if (bodyStyle.marginTop === "0px") {
+            document.body.style.marginTop = marginTop;
         }
 
-        component.style.display = 'block';
-        component.style.flexShrink = '0';
-
-        const next = component.nextElementSibling;
-        if (next && getComputedStyle(next).flexGrow === "0") {
-            next.style.flex = '1';
-            next.style.minWidth = '0';
+        function openDrawer() {
+            drawer.classList.add("open");
+            overlay.classList.add("show");
+            document.body.classList.add("drawer-open");
         }
 
-        const pinButton = component.shadowRoot.querySelector('.pin-toggle');
-        let isFixed = false;
+        function closeDrawer() {
+            drawer.classList.remove("open");
+            overlay.classList.remove("show");
+            document.body.classList.remove("drawer-open");
+        }
 
-        const updateState = () => {
-            if (isFixed) {
-                component.classList.add('fixed');
-                component.classList.add('expanded');
+        toggle.addEventListener("click", openDrawer);
+        closeBtn.addEventListener("click", closeDrawer);
+        overlay.addEventListener("click", closeDrawer);
+
+        // Swipe gesture para abrir (apenas do lado esquerdo)
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const swipeThreshold = 70;
+
+        document.addEventListener("touchstart", (e) => {
+            // Só ativa se o toque começar bem na borda esquerda (< 30px)
+            if (e.touches[0].clientX < 30) {
+                touchStartX = e.touches[0].clientX;
             } else {
-                component.classList.remove('fixed');
-                component.classList.remove('expanded');
+                touchStartX = 0;
             }
-        };
-
-        pinButton.addEventListener('click', () => {
-            isFixed = !isFixed;
-            updateState();
         });
 
-        updateState();
+        document.addEventListener("touchmove", (e) => {
+            touchEndX = e.touches[0].clientX;
+        });
+
+        document.addEventListener("touchend", () => {
+            if (touchStartX && touchEndX - touchStartX > swipeThreshold) {
+                openDrawer();
+            }
+            touchStartX = 0;
+            touchEndX = 0;
+        });
     }
 </script>
