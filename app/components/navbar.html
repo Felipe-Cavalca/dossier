@@ -94,6 +94,10 @@
         border: none;
         cursor: pointer;
     }
+
+    .hidden {
+        display: none !important;
+    }
 </style>
 
 <div class="navbar">
@@ -109,32 +113,14 @@
 <div class="drawer" id="drawer">
     <button id="closeDrawer" class="close-btn" aria-label="Fechar menu">×</button>
     <div class="drawer-content">
-        <a href="#home">Home</a>
-        <a href="#servicos">Serviços</a>
-        <a href="#contato">Contato</a>
-        <a href="#sobre">Sobre</a>
+        <a data-roles="admin,manager,user,visitor" href="#home">Home</a>
     </div>
 </div>
 <div class="drawer-overlay" id="drawerOverlay"></div>
 
 <script>
     function initializeComponentScript(root) {
-        const toggle = root.shadowRoot.getElementById("menuToggle");
-        const drawer = root.shadowRoot.getElementById("drawer");
-        const overlay = root.shadowRoot.getElementById("drawerOverlay");
-        const closeBtn = root.shadowRoot.getElementById("closeDrawer");
-        const avatar = root.shadowRoot.getElementById("avatar");
-
-        // Define imagem de avatar (via atributo)
-        const avatarUrl = root.getAttribute("avatar");
-        avatar.src = avatarUrl || "https://www.gravatar.com/avatar/?d=mp";
-
-        // Adiciona margin-top no body se ainda não tiver
-        const marginTop = "56px";
-        const bodyStyle = getComputedStyle(document.body);
-        if (bodyStyle.marginTop === "0px") {
-            document.body.style.marginTop = marginTop;
-        }
+        let $ = root;
 
         function openDrawer() {
             drawer.classList.add("open");
@@ -146,6 +132,24 @@
             drawer.classList.remove("open");
             overlay.classList.remove("show");
             document.body.classList.remove("drawer-open");
+        }
+
+        const toggle = $.shadowRoot.getElementById("menuToggle");
+        const drawer = $.shadowRoot.getElementById("drawer");
+        const overlay = $.shadowRoot.getElementById("drawerOverlay");
+        const closeBtn = $.shadowRoot.getElementById("closeDrawer");
+        const avatar = $.shadowRoot.getElementById("avatar");
+
+        // Define imagem de avatar (via atributo)
+        const avatarUrl = $.getAttribute("avatar");
+        avatar.src = avatarUrl || "https://www.gravatar.com/avatar/?d=mp";
+
+        // Adiciona margin-top no body se ainda não tiver
+        const marginTop = "56px";
+        const bodyStyle = getComputedStyle(document.body);
+
+        if (bodyStyle.marginTop === "0px") {
+            document.body.style.marginTop = marginTop;
         }
 
         toggle.addEventListener("click", openDrawer);
@@ -176,6 +180,15 @@
             }
             touchStartX = 0;
             touchEndX = 0;
+        });
+
+        // Filtra os menus por role de forma segura
+        const userRole = localStorage.getItem("userRole") || "visitor"; // Padrão para visitor
+        $.shadowRoot.querySelectorAll("[data-roles]").forEach(el => {
+            const roles = el.dataset.roles.split(",").map(r => r.trim());
+            if (!roles.includes(userRole)) {
+                el.classList.add("hidden");
+            }
         });
     }
 </script>

@@ -43,7 +43,8 @@ function alert() {
     // Função que você pode customizar
     function redirecionarParaLogin() {
         // Se quiser, pode validar URL atual antes de redirecionar
-        if (!window.location.pathname.startsWith('/')) {
+        const allowedPaths = ['/', '/cadastro.html'];
+        if (!allowedPaths.some(path => window.location.pathname.startsWith(path))) {
             window.location.href = "/";
         }
     }

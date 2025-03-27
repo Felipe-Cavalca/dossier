@@ -27,7 +27,8 @@ const bifrost = new Bifrost(
 
             if (data.isSuccess) {
                 alert().success("Login realizado com sucesso, você será redirecionado para a página inicial");
-                document.querySelector("form").reset();
+                localStorage.setItem("user.id", data.id);
+                localStorage.setItem("user.role", data.role);
                 setInterval(() => {
                     window.location.href = "home.html";
                 }, 2000);
