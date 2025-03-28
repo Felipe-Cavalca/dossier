@@ -165,7 +165,7 @@
 
         document.addEventListener("touchstart", (e) => {
             // Só ativa se o toque começar bem na borda esquerda (< 30px)
-            if (e.touches[0].clientX < 30) {
+            if (e.touches[0].clientX < 300) {
                 touchStartX = e.touches[0].clientX;
             } else {
                 touchStartX = 0;
