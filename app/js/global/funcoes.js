@@ -43,9 +43,9 @@ function alert() {
     // Função que você pode customizar
     function redirecionarParaLogin() {
         // Se quiser, pode validar URL atual antes de redirecionar
-        const allowedPaths = ['/', '/cadastro.html'];
+        const allowedPaths = ['/pages/', '/pages/cadastro.html'];
         if (!allowedPaths.some(path => window.location.pathname.startsWith(path))) {
-            window.location.href = "/";
+            window.location.href = "/pages/index.html";
         }
     }
 })();
