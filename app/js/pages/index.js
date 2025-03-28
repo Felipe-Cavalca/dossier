@@ -19,20 +19,21 @@ const bifrost = new Bifrost(
             button.innerHTML = "Entrando...";
             return true;
         }, async (response) => {
-            let data = await response.json();
+            let bodyResponse = await response.json();
 
             let button = document.querySelector("button[type=submit]");
             button.disabled = false;
             button.innerHTML = originalTextButton;
 
-            if (data.isSuccess) {
+            if (bodyResponse.isSuccess) {
                 alert().success("Login realizado com sucesso, você será redirecionado para a página inicial");
-                document.querySelector("form").reset();
+                localStorage.setItem("user.id", bodyResponse.data.id);
+                localStorage.setItem("user.role", bodyResponse.data.role);
                 setInterval(() => {
                     window.location.href = "home.html";
                 }, 2000);
             } else {
-                alert().error(data.message);
+                alert().error(bodyResponse.message);
             }
         });
     }

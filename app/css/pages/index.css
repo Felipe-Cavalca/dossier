@@ -46,6 +46,10 @@ form input {
     box-sizing: border-box;
 }
 
+form span {
+    margin-top: 15px;
+}
+
 form button {
     margin-top: 30px;
     min-width: 30%;

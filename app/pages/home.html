@@ -3,16 +3,23 @@
 
 <head>
     <title>Home</title>
+    <link rel="stylesheet" href="../css/pages/home.css" media="print" onload="this.media='all'">
+    <script src="../core/core.js"></script>
 </head>
 
 <body>
     <c-navbar></c-navbar>
 
-    <h1>Logou</h1>
+    <header>
+        <img src="/assets/logo.png" alt="Logo">
+        <h1>{{name}}</h1>
+        <h2>{{slogan}}</h2>
+    </header>
 
-    <script src="../core/core.js"></script>
-    <script defer>
-        const bifrost = new Bifrost( );
+    <script>
+        const bifrost = new Bifrost((bifrost) => {
+            bifrost.replaceTextInElement("body", bifrost.config);
+        });
     </script>
 </body>
 

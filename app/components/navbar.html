@@ -1,114 +1,197 @@
 <style>
-    @import url(/config/variaveis.css);
-    @import url(/css/index.css);
-
-    nav {
-        height: 60px;
-        background-color: #111014;
+    .navbar {
         display: flex;
-        justify-content: flex-end;
         align-items: center;
-        color: var(--color-text);
+        justify-content: space-between;
+        height: 56px;
+        background-color: var(--nav-bg-color);
+        color: var(--nav-color);
+        padding: 0 1rem;
+        font-family: sans-serif;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
     }
 
-    .links-container {
+    .menu-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 8px;
+    }
+
+    .menu-btn span {
+        width: 22px;
+        height: 2px;
+        background-color: var(--nav-color);
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #999;
+        object-fit: cover;
+    }
+
+    .drawer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 240px;
         height: 100%;
+        background: var(--nav-bg-color);
+        color: var(--nav-color);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        overflow-y: auto;
+        z-index: 1100;
+        padding-top: 56px;
+    }
+
+    .drawer.open {
+        transform: translateX(0);
+    }
+
+    .drawer-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-    }
-
-
-    nav a {
         height: 100%;
-        padding: 0 20px;
-        display: flex;
-        align-items: center;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1099;
+        display: none;
+    }
+
+    .drawer-overlay.show {
+        display: block;
+    }
+
+    .drawer-content a {
+        display: block;
+        padding: 0.75rem 1rem;
         text-decoration: none;
-        color: var(--color-text);
+        color: var(--nav-color);
     }
 
-
-    nav a:hover {
-        background-color: red;
+    .drawer-content a:hover {
+        background-color: var(--nav-color-hover);
     }
 
-    nav svg {
-        fill: var(--color-text);
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        color: var(--nav-color);
+        background: none;
+        border: none;
+        cursor: pointer;
     }
 
-
-    #sidebar-active {
-        display: none;
-    }
-
-    .open-sidebar-button,
-    .close-sidebar-button {
-        display: none;
-    }
-
-    @media(max-width: 450px) {
-        .links-container {
-            flex-direction: column;
-            align-items: flex-start;
-
-            position: fixed;
-            top: 0;
-            right: -100%;
-            z-index: 10;
-            width: 300px;
-
-            background-color: black;
-            box-shadow: -5px 0 5px rgba(0, 0, 0, 0.25);
-            transition: 0.75s ease-out;
-        }
-
-        nav a {
-            box-sizing: border-box;
-            height: auto;
-            width: 100%;
-            padding: 20px 30px;
-            justify-content: flex-start;
-        }
-
-        .open-sidebar-button,
-        .close-sidebar-button {
-            padding: 20px;
-            display: block;
-        }
-
-        #sidebar-active:checked~.links-container {
-            right: 0;
-        }
-
-        #sidebar-active:checked~#overlay {
-            height: 100%;
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 9;
-        }
+    .hidden {
+        display: none !important;
     }
 </style>
 
-<nav>
-    <input type="checkbox" id="sidebar-active">
-    <label for="sidebar-active" class="open-sidebar-button">
-        <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 -960 960 960" width="32">
-            <path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z" />
-        </svg>
-    </label>
-    <label id="overlay" for="sidebar-active"></label>
-    <div class="links-container">
-        <label for="sidebar-active" class="close-sidebar-button">
-            <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 -960 960 960" width="32">
-                <path
-                    d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
-            </svg>
-        </label>
+<div class="navbar">
+    <button class="menu-btn" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="logo"></div>
+    <img id="avatar" class="user-avatar" alt="Avatar">
+</div>
 
-        <a href="/pages/home.html">Home</a>
+<div class="drawer" id="drawer">
+    <button id="closeDrawer" class="close-btn" aria-label="Fechar menu">×</button>
+    <div class="drawer-content">
+        <a data-roles="admin,manager,user,visitor" href="#home">Home</a>
+        <a data-roles="admin" href="#">Organizaçôes</a>
+        <a data-roles="admin,manager" href="#">Grupos</a>
     </div>
-</nav>
+</div>
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<script>
+    function initializeComponentScript(root) {
+        let $ = root;
+
+        function openDrawer() {
+            drawer.classList.add("open");
+            overlay.classList.add("show");
+            document.body.classList.add("drawer-open");
+        }
+
+        function closeDrawer() {
+            drawer.classList.remove("open");
+            overlay.classList.remove("show");
+            document.body.classList.remove("drawer-open");
+        }
+
+        const toggle = $.shadowRoot.getElementById("menuToggle");
+        const drawer = $.shadowRoot.getElementById("drawer");
+        const overlay = $.shadowRoot.getElementById("drawerOverlay");
+        const closeBtn = $.shadowRoot.getElementById("closeDrawer");
+        const avatar = $.shadowRoot.getElementById("avatar");
+
+        // Define imagem de avatar (via atributo)
+        const avatarUrl = $.getAttribute("avatar");
+        avatar.src = avatarUrl || "https://www.gravatar.com/avatar/?d=mp";
+
+        // Adiciona margin-top no body se ainda não tiver
+        const marginTop = "56px";
+        const bodyStyle = getComputedStyle(document.body);
+
+        if (bodyStyle.marginTop === "0px") {
+            document.body.style.marginTop = marginTop;
+        }
+
+        toggle.addEventListener("click", openDrawer);
+        closeBtn.addEventListener("click", closeDrawer);
+        overlay.addEventListener("click", closeDrawer);
+
+        // Swipe gesture para abrir (apenas do lado esquerdo)
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const swipeThreshold = 70;
+
+        document.addEventListener("touchstart", (e) => {
+            // Só ativa se o toque começar bem na borda esquerda (< 30px)
+            if (e.touches[0].clientX < 300) {
+                touchStartX = e.touches[0].clientX;
+            } else {
+                touchStartX = 0;
+            }
+        });
+
+        document.addEventListener("touchmove", (e) => {
+            touchEndX = e.touches[0].clientX;
+        });
+
+        document.addEventListener("touchend", () => {
+            if (touchStartX && touchEndX - touchStartX > swipeThreshold) {
+                openDrawer();
+            }
+            touchStartX = 0;
+            touchEndX = 0;
+        });
+
+        // Filtra os menus por role de forma segura
+        const userRole = localStorage.getItem("user.role") ?? "visitor"; // Padrão para visitor
+        console.log("[Dossier][Navbar] User role:", userRole);
+        $.shadowRoot.querySelectorAll("[data-roles]").forEach(el => {
+            const roles = el.dataset.roles.split(",").map(r => r.trim());
+            if (!roles.includes(userRole)) {
+                el.classList.add("hidden");
+            }
+        });
+    }
+</script>
