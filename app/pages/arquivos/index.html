@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Home</title>
+    <script src="../../core/core.js"></script>
+    <link rel="stylesheet" href="/css/pages/arquivos/index.css" media="print" onload="this.media='all'">
+</head>
+
+<body>
+    <c-navbar></c-navbar>
+
+    <c-card></c-card>
+
+    <section id="category-section">
+        <h2>Categorias</h2>
+
+        <ul id="category-list">
+            <template class="category-template" id="category-template">
+                <li>
+                    <c-card class="category-card">
+                        <div class="image">
+                            <img src="/assets/icons/folder.png" alt="Arquivos" width="100" height="100">
+                        </div>
+                        <div class="text">
+                            <p class="title"></p>
+                            <p class="size">
+                                <small>25kb</small>
+                            </p>
+                        </div>
+                    </c-card>
+                </li>
+            </template>
+        </ul>
+    </section>
+
+
+
+
+    <ul id="lista"></ul>
+
+    <template id="item-template">
+        <li>
+            <c-card class="item"></c-card>
+        </li>
+    </template>
+
+
+
+
+
+    <script>
+        /*
+        const arquivos = [
+            { nome: "arquivo1.txt" },
+            { nome: "arquivo2.jpg" },
+            { nome: "arquivo3.pdf" }
+        ];
+
+        const lista = document.getElementById("lista");
+        const template = document.getElementById("item-template");
+
+        arquivos.forEach(arq => {
+            const clone = template.content.cloneNode(true);
+            clone.querySelector(".item").textContent = arq.nome;
+            lista.appendChild(clone);
+        });
+        */
+
+        function loadCategory() {
+            const category = [
+                { name: "PDF" },
+                { name: "JPG" },
+                { name: "PNG" },
+                { name: "MP3" },
+                { name: "MP4" },
+                { name: "TXT" },
+                { name: "DOCX" },
+                { name: "XLSX" },
+                { name: "PPTX" },
+                { name: "ZIP" },
+                { name: "RAR" },
+                { name: "HTML" },
+                { name: "CSS" },
+                { name: "JS" },
+                { name: "JSON" },
+                { name: "XML" },
+                { name: "CSV" },
+                { name: "YAML" },
+                { name: "MD" },
+                { name: "SVG" },
+                { name: "GIF" },
+                { name: "BMP" },
+                { name: "TIFF" },
+                { name: "WEBP" },
+                { name: "AVI" },
+                { name: "MKV" },
+                { name: "MOV" },
+                { name: "WMV" },
+                { name: "FLV" },
+                { name: "MPG" },
+                { name: "MPEG" },
+                { name: "3GP" },
+                { name: "OGG" },
+                { name: "WAV" },
+                { name: "AAC" },
+                { name: "FLAC" }
+            ];
+
+            const lista = document.getElementById("category-list");
+            const template = document.getElementById("category-template");
+
+            category.forEach(cat => {
+                const clone = template.content.cloneNode(true);
+                clone.querySelector("p.title").textContent = cat.name;
+                lista.appendChild(clone);
+            });
+        }
+
+        loadCategory();
+
+    </script>
+
+    <script>
+        const bifrost = new Bifrost((bifrost) => {
+            bifrost.replaceTextInElement("body", bifrost.config);
+        });
+    </script>
+</body>
+
+</html>
