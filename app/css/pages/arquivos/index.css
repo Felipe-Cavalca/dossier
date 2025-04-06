@@ -2,6 +2,22 @@ template {
     display: none;
 }
 
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+c-card {
+    animation: fadeInUp 0.5s ease-out;
+}
+
 section#category-section {
     margin-top: 0px;
     padding-top: 10px;
