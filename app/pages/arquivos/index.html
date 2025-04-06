@@ -3,14 +3,16 @@
 
 <head>
     <title>Home</title>
-    <script src="../../core/core.js"></script>
+    <script src="/core/core.js"></script>
     <link rel="stylesheet" href="/css/pages/arquivos/index.css" media="print" onload="this.media='all'">
 </head>
 
 <body>
     <c-navbar></c-navbar>
 
-    <c-card></c-card>
+    <template>
+        <c-card></c-card>
+    </template>
 
     <section id="category-section">
         <h2>Categorias</h2>
@@ -34,90 +36,116 @@
         </ul>
     </section>
 
+    <section id="files-section">
+        <h2>Arquivos</h2>
 
-
-
-    <ul id="lista"></ul>
-
-    <template id="item-template">
-        <li>
-            <c-card class="item"></c-card>
-        </li>
-    </template>
-
-
-
-
+        <ul id="files-list" class="files-tables">
+            <template class="file-template" id="file-template">
+                <li>
+                    <c-card class="file-card">
+                        <div class="image">
+                            <img src="/assets/icons/folder.png" alt="Arquivos" width="100" height="100">
+                        </div>
+                        <div class="name">
+                            <p>nome_arquivo</p>
+                        </div>
+                        <div class="modified">
+                            <p>12/12/2023</p>
+                        </div>
+                        <div class="size">
+                            <p>25kb</p>
+                        </div>
+                    </c-card>
+                </li>
+            </template>
+    </section>
 
     <script>
-        /*
-        const arquivos = [
-            { nome: "arquivo1.txt" },
-            { nome: "arquivo2.jpg" },
-            { nome: "arquivo3.pdf" }
-        ];
-
-        const lista = document.getElementById("lista");
-        const template = document.getElementById("item-template");
-
-        arquivos.forEach(arq => {
-            const clone = template.content.cloneNode(true);
-            clone.querySelector(".item").textContent = arq.nome;
-            lista.appendChild(clone);
-        });
-        */
-
-        function loadCategory() {
-            const category = [
-                { name: "PDF" },
-                { name: "JPG" },
-                { name: "PNG" },
-                { name: "MP3" },
-                { name: "MP4" },
-                { name: "TXT" },
-                { name: "DOCX" },
-                { name: "XLSX" },
-                { name: "PPTX" },
-                { name: "ZIP" },
-                { name: "RAR" },
-                { name: "HTML" },
-                { name: "CSS" },
-                { name: "JS" },
-                { name: "JSON" },
-                { name: "XML" },
-                { name: "CSV" },
-                { name: "YAML" },
-                { name: "MD" },
-                { name: "SVG" },
-                { name: "GIF" },
-                { name: "BMP" },
-                { name: "TIFF" },
-                { name: "WEBP" },
-                { name: "AVI" },
-                { name: "MKV" },
-                { name: "MOV" },
-                { name: "WMV" },
-                { name: "FLV" },
-                { name: "MPG" },
-                { name: "MPEG" },
-                { name: "3GP" },
-                { name: "OGG" },
-                { name: "WAV" },
-                { name: "AAC" },
-                { name: "FLAC" }
-            ];
-
-            const lista = document.getElementById("category-list");
+        function loadCategory(categories) {
+            const list = document.getElementById("category-list");
             const template = document.getElementById("category-template");
 
-            category.forEach(cat => {
+            if (!list || !template) {
+                console.warn("[Dossier][RenderCategory] Elementos necessários não encontrados.");
+                return;
+            }
+
+            // Limpa a lista antes de adicionar novamente (caso recarregue)
+            list.innerHTML = "";
+
+            const fragment = document.createDocumentFragment();
+
+            categories.forEach(category => {
                 const clone = template.content.cloneNode(true);
-                clone.querySelector("p.title").textContent = cat.name;
-                lista.appendChild(clone);
+                const title = clone.querySelector("p.title");
+                if (title) {
+                    title.textContent = category.name;
+                }
+                fragment.appendChild(clone);
             });
+
+            list.appendChild(fragment);
         }
 
-        loadCategory();
+        function loadFiles(files) {
+            const list = document.getElementById("files-list");
+            const template = document.getElementById("file-template");
+
+
+            if (!list || !template) {
+                console.warn("[Dossier][RenderFiles] Elementos necessários não encontrados.");
+                return;
+            }
+
+            // Limpa a lista antes de adicionar novamente (caso recarregue)
+            list.innerHTML = "";
+
+            const fragment = document.createDocumentFragment();
+
+            files.forEach(file => {
+                const clone = template.content.cloneNode(true);
+                const name = clone.querySelector(".name p");
+                const modified = clone.querySelector(".modified p");
+                const size = clone.querySelector(".size p");
+
+                if (name) {
+                    name.textContent = file.name;
+                }
+                if (modified) {
+                    modified.textContent = file.modified;
+                }
+                if (size) {
+                    size.textContent = file.size;
+                }
+
+                fragment.appendChild(clone);
+            });
+
+            list.appendChild(fragment);
+        }
+
+        let categoryes = [
+            { name: "imagens" },
+            { name: "documentos" },
+            { name: "musicas" },
+            { name: "videos" },
+            { name: "programas" },
+            { name: "arquivos" },
+            { name: "outros" }
+        ];
+
+        let files = [
+            { name: "arquivo1.txt", modified: "12/12/2023 15:12:12", size: "25kb" },
+            { name: "arquivo2.txt cs sc sccsceccecece ec ec ec e e", modified: "13/12/2023 14:10:12", size: "26kb" },
+            { name: "arquivo3.txt", modified: "14/12/2023 15:12:12", size: "27kb" },
+            { name: "arquivo4.txt", modified: "15/12/2023 15:12:12", size: "28kb" },
+            { name: "arquivo5.txt", modified: "16/12/2023 15:12:12", size: "29kb" },
+            { name: "arquivo6.txt", modified: "17/12/2023 15:12:12", size: "30kb" }
+        ]
+
+
+        loadCategory(categoryes);
+        loadFiles(files);
 
     </script>
 
