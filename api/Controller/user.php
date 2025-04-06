@@ -76,7 +76,7 @@ class User implements ControllerInterface
         $database = new Database();
 
         // Cadastra o usuário com a role de visitor
-        $role = $roleModel->getByCode("visitor");
+        $role = $roleModel->getByCode("user");
         if (empty($role)) {
             return HttpError::badRequest("Role inválida", [
                 "role" => "Role inválida"
