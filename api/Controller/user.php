@@ -12,15 +12,13 @@ use Bifrost\Attributes\RequiredFields;
 use Bifrost\Class\HttpError;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Core\Request;
-use Bifrost\Core\Session;
-use Bifrost\Class\User as ClassUser;
-use Bifrost\Core\Database;
+use Bifrost\Class\User as UserClass;
 use Bifrost\Core\Post;
-use Bifrost\DataTypes\UUID;
+use Bifrost\DataTypes\Email;
 use Bifrost\Enum\HttpStatusCode;
 use Bifrost\Enum\Field;
-use Bifrost\Model\User as ModelUser;
-use Bifrost\Model\Role as ModelRole;
+use Bifrost\Model\User as UserModel;
+use Bifrost\Class\Role as RoleClass;
 
 class User implements ControllerInterface
 {
@@ -52,7 +50,7 @@ class User implements ControllerInterface
     ])]
     public function get_users()
     {
-        $model = new ModelUser();
+        $model = new UserModel();
         return HttpResponse::success("Users in system", $model->getAll());
     }
 
@@ -68,61 +66,31 @@ class User implements ControllerInterface
         ],
         "description" => "Cria um novo usuário no sistema"
     ])]
-    public function new_user()
+    public function new_user(): HttpError|HttpResponse
     {
         $post = new Post();
-        $roleModel = new ModelRole();
-        $userModel = new ModelUser();
-        $database = new Database();
 
-        // Cadastra o usuário com a role de visitor
-        $role = $roleModel->getByCode("visitor");
-        if (empty($role)) {
-            return HttpError::badRequest("Role inválida", [
-                "role" => "Role inválida"
-            ]);
-        }
-
+        $name = $post->name;
         $userName = empty($post->userName) ? null : $post->userName;
+        $email = new Email($post->email);
+        $password = $post->password;
 
-        if (empty($userName)) {
-            $userValidate = $userModel->search([
-                "email" => $post->email
+        if (UserClass::exists(email: $email, userName: $userName)) {
+            return HttpError::badRequest("User already exists", [
+                "email" => $email,
+                "userName" => $userName
             ]);
-        } else {
-            $userValidate = $userModel->search(
-                ["or" => [
-                    "userName" => $userName,
-                    "email" => $post->email,
-                ]]
-            );
         }
 
-        if (!empty($userValidate)) {
-            $fieldsToCheck = [
-                "email" => "Já existe um usuário com o email cadastrado",
-                "userName" => "Já existe um usuário com o nome de usuário cadastrado"
-            ];
-            foreach ($fieldsToCheck as $field => $errorMessage) {
-                $fieldDatabase = strtolower($field);
-                if (!empty($userValidate[0][$fieldDatabase]) && $userValidate[0][$fieldDatabase] == $post->$field) {
-                    return HttpError::badRequest($errorMessage, ["fieldError" => $field]);
-                }
-            }
-        }
+        $roleClass = new RoleClass();
 
-        $id = $database->insert(
-            table: "users",
-            data: [
-                "name" => $post->name,
-                "userName" => $userName,
-                "email" => $post->email,
-                "password" => password_hash($post->password, PASSWORD_DEFAULT),
-                "role_id" => $role["id"]
-            ],
-            returning: "id"
+        $user = UserClass::new(
+            name: $name,
+            email: $email,
+            password: $password,
+            userName: $userName,
+            role: $roleClass,
         );
-        $user = new ClassUser(id: new UUID($id));
 
         return new HttpResponse(
             statusCode: HttpStatusCode::CREATED,

@@ -14,6 +14,8 @@ use Bifrost\Core\Settings;
 use Bifrost\Enum\Path;
 use Bifrost\Class\HttpError;
 use Bifrost\Interface\ControllerInterface;
+use Bifrost\Class\EntityNotFoundException;
+use Bifrost\Class\EntityDuplicateException;
 use ReflectionMethod;
 
 /**
@@ -71,6 +73,10 @@ final class Request
             return HttpError::internalServerError($erro->getMessage());
         } catch (\TypeError $erro) {
             return HttpError::internalServerError($erro->getMessage());
+        } catch (EntityNotFoundException $e) {
+            return HttpError::notFound("{$e->entity} não encontrado", $e->params);
+        } catch (EntityDuplicateException $e) {
+            return HttpError::conflict("{$e->entity} já existe", $e->params);
         }
     }
 

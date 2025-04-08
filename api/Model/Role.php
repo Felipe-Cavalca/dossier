@@ -3,31 +3,19 @@
 namespace Bifrost\Model;
 
 use Bifrost\Core\Database;
+use Bifrost\DataTypes\UUID;
+use Bifrost\Core\Cache;
 
 class Role
 {
-    private string $table = "roles";
-    private Database $database;
+    private static string $table = "roles";
+    private static int $expireCache = 3600;
 
-    public function __construct()
+    public static function search(array $conditions): array
     {
-        $this->database = new Database();
-    }
-
-    public function getAll(): array
-    {
-        return $this->database->select(
-            table: $this->table . " r",
-            fields: [
-                "r.*",
-            ]
-        );
-    }
-
-    public function search(array $conditions)
-    {
-        return $this->database->select(
-            table: $this->table . " r",
+        $database = new Database();
+        return $database->select(
+            table: self::$table . " r",
             fields: [
                 "r.*",
             ],
@@ -35,8 +23,33 @@ class Role
         );
     }
 
-    public function getByCode(string $code): array
+    public static function getById(UUID $id): array
     {
-        return $this->search(["r.code" => $code])[0] ?? [];
+        $cache = new Cache();
+        $cacheKey = "role:id:" . (string) $id;
+
+        $cached = $cache->get(key: $cacheKey, expire: self::$expireCache);
+
+        if ($cached === false) {
+            $cached = self::search(["r.id" => (string) $id])[0] ?? [];
+            $cache->set(key: $cacheKey, value: $cached, expire: self::$expireCache);
+        }
+
+        return $cached;
+    }
+
+    public static function getByCode(string $code): array
+    {
+        $cache = new Cache();
+        $cacheKey = "role:code:" . $code;
+
+        $cached = $cache->get(key: $cacheKey, expire: self::$expireCache);
+
+        if ($cached === false) {
+            $cached = self::search(["r.code" => $code])[0] ?? [];
+            $cache->set(key: $cacheKey, value: $cached, expire: self::$expireCache);
+        }
+
+        return $cached;
     }
 }

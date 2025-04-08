@@ -5,6 +5,7 @@ namespace Bifrost\Controller;
 use Bifrost\Attributes\Details;
 use Bifrost\Attributes\Method;
 use Bifrost\Attributes\RequiredFields;
+use Bifrost\Attributes\Auth as AuthAttribute;
 use Bifrost\Class\HttpError;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Class\User;
@@ -30,10 +31,18 @@ class Auth implements ControllerInterface
     public function login()
     {
         $post = new Post();
-        $user = new User(email: new Email($post->email));
+        $email = new Email($post->email);
+        $password = $post->password;
+        $errorMessage = "Usuário ou senha invalidos";
 
-        if (!isset($user->email) || !$user->validatePassword($post->password)) {
-            return HttpError::unauthorized("Usuário ou senha invalidos");
+        if (!User::exists(email: $email)) {
+            return HttpError::unauthorized($errorMessage);
+        }
+
+        $user = new User(email: $email);
+
+        if (!$user->validatePassword($password)) {
+            return HttpError::unauthorized($errorMessage);
         }
 
         $session = new Session();
@@ -43,7 +52,7 @@ class Auth implements ControllerInterface
     }
 
     #[Method("GET")]
-    #[Auth("user", "manager", "admin")]
+    #[AuthAttribute("user", "manager", "admin")]
     #[Details([
         "description" => "Valida se o usuário está logado"
     ])]

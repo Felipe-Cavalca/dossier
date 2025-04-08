@@ -92,4 +92,13 @@ class HttpError extends \Error
             data: $data
         );
     }
+
+    public static function conflict(string $details, array|string $data = []): HttpError
+    {
+        return new self(
+            statusCode: HttpStatusCode::CONFLICT,
+            details: $details,
+            data: $data
+        );
+    }
 }
