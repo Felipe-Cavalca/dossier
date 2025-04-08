@@ -62,7 +62,7 @@ class User
         return json_encode([
             "id" => (string) $this->id,
             "name" => $this->name,
-            "username" => $this->username,
+            "userName" => $this->username,
             "email" => (string) $this->email,
             "role" => (string) $this->role->code,
         ]);
