@@ -64,7 +64,7 @@ class User
             "name" => $this->name,
             "username" => $this->username,
             "email" => (string) $this->email,
-            "role" => (string) $this->role->id,
+            "role" => (string) $this->role->code,
         ]);
     }
 

@@ -49,11 +49,7 @@ class User
         return $database->select(
             table: self::$table . " u",
             fields: [
-                "u.*",
-                "r.code AS role",
-            ],
-            join: [
-                "JOIN roles r ON r.id = u.role_id",
+                "u.*"
             ],
             where: $conditions
         );
