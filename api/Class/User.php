@@ -113,7 +113,6 @@ class User
         return $result;
     }
 
-
     public static function new(
         string $name,
         Email $email,
