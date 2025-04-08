@@ -112,6 +112,14 @@ class User
 
     public static function exists(array $conditions): bool
     {
+        static $localCache = [];
+
+        $key = md5(json_encode($conditions));
+
+        if (array_key_exists($key, $localCache)) {
+            return $localCache[$key];
+        }
+
         $database = new Database();
         $result = $database->select(
             table: self::$table,
@@ -120,6 +128,7 @@ class User
             limit: "1",
         );
 
-        return !empty($result);
+        $localCache[$key] = !empty($result);
+        return $localCache[$key];
     }
 }

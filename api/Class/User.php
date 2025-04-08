@@ -83,17 +83,6 @@ class User
 
     public static function exists(?string $userName = null, ?Email $email = null): bool
     {
-        static $localCache = [];
-
-        $key = md5(json_encode([$userName, (string) $email]));
-
-        if (array_key_exists($key, $localCache)) {
-            return $localCache[$key];
-        }
-
-        // monta condição
-        $conditions = [];
-
         if ($userName !== null && $email !== null) {
             $conditions["or"] = [
                 "userName" => $userName,
@@ -103,14 +92,13 @@ class User
             $conditions["email"] = (string) $email;
         } elseif ($userName !== null) {
             $conditions["userName"] = $userName;
-        } else {
-            $localCache[$key] = false;
+        }
+
+        if (empty($conditions)) {
             return false;
         }
 
-        $result = UserModel::exists($conditions);
-        $localCache[$key] = $result;
-        return $result;
+        return UserModel::exists($conditions);
     }
 
     public static function new(
