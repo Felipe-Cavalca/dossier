@@ -5,31 +5,27 @@ namespace Bifrost\Model;
 use Bifrost\Core\Database;
 use Bifrost\DataTypes\Email;
 use Bifrost\DataTypes\UUID;
+use Bifrost\Class\Role as Role;
 
 class User
 {
-    private string $table = "users";
-    private Database $database;
+    private static string $table = "users";
 
-    public function __construct()
+    public static function getById(UUID $id): array
     {
-        $this->database = new Database();
+        return self::search(["u.id" => (string) $id])[0] ?? [];
     }
 
-    public function getById(UUID $id): array
+    public static function getByEmail(Email $email): array
     {
-        return $this->search(["u.id" => (string) $id])[0] ?? [];
+        return self::search(["u.email" => (string) $email])[0] ?? [];
     }
 
-    public function getByEmail(Email $email): array
+    public static function getAll(): array
     {
-        return $this->search(["u.email" => (string) $email])[0] ?? [];
-    }
-
-    public function getAll(): array
-    {
-        return $this->database->select(
-            table: $this->table . " u",
+        $database = new Database();
+        return $database->select(
+            table: self::$table . " u",
             fields: [
                 "u.id",
                 "r.name AS role",
@@ -47,10 +43,11 @@ class User
         );
     }
 
-    public function search(array $conditions): array
+    public static function search(array $conditions): array
     {
-        return $this->database->select(
-            table: $this->table . " u",
+        $database = new Database();
+        return $database->select(
+            table: self::$table . " u",
             fields: [
                 "u.*",
                 "r.code AS role",
@@ -62,10 +59,11 @@ class User
         );
     }
 
-    public function print(UUID $userId): array
+    public static function getAllData(UUID $userId): array
     {
-        return $this->database->select(
-            table: $this->table . " u",
+        $database = new Database();
+        return $database->select(
+            table: self::$table . " u",
             fields: [
                 "u.id",
                 "r.name AS role",
@@ -82,5 +80,46 @@ class User
             ],
             where: ["u.id" => (string) $userId]
         )[0] ?? [];
+    }
+
+    public static function newUser(
+        string $name,
+        Email $email,
+        string $password,
+        Role $role,
+        ?string $userName = null,
+    ): array {
+        $database = new Database();
+
+        $userData = [
+            "name" => $name,
+            "email" => (string) $email,
+            "password" => password_hash($password, PASSWORD_DEFAULT),
+            "username" => $userName,
+            "role_id" => (string) $role->id
+        ];
+
+        $id = $database->insert(
+            table: self::$table,
+            data: $userData,
+            returning: "*"
+        );
+
+        $userData["id"] = $id;
+
+        return $userData;
+    }
+
+    public static function exists(array $conditions): bool
+    {
+        $database = new Database();
+        $result = $database->select(
+            table: self::$table,
+            fields: ["*"],
+            where: $conditions,
+            limit: "1",
+        );
+
+        return !empty($result);
     }
 }

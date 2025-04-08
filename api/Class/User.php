@@ -5,53 +5,135 @@ namespace Bifrost\Class;
 use Bifrost\DataTypes\Email;
 use Bifrost\DataTypes\UUID;
 use Bifrost\Model\User as UserModel;
+use Bifrost\Class\Role as Role;
+use Bifrost\Class\EntityNotFoundException;
+use Bifrost\Class\EntityDuplicateException;
 
 class User
 {
-    protected UserModel $userModel;
-    private array $userData = [];
+    public UUID $id;
+    public string $name;
+    public string $username;
+    public Email $email;
+    public string $password;
+    private UUID $roleId;
+    private ?Role $cachedRole = null;
 
     public function __construct(
         ?UUID $id = null,
         ?Email $email = null,
+        array $allData = [],
     ) {
-        $this->userModel = new UserModel();
-
-        if ($id !== null) {
-            $userData = $this->userModel->getById($id);
+        if ($allData !== null && !empty($allData)) {
+            $userData = $allData;
+        } elseif ($id !== null) {
+            $userData = UserModel::getById($id);
         } elseif ($email !== null) {
-            $userData = $this->userModel->getByEmail($email);
+            $userData = UserModel::getByEmail($email);
         }
 
         if (empty($userData)) {
-            return;
+            throw new EntityNotFoundException("User", [
+                "id" => $id,
+                "email" => $email,
+            ]);
         }
 
-        $this->userData = $userData;
+        $this->id = new UUID($userData["id"]);
+        $this->name = $userData["name"];
+        $this->username = $userData["username"];
+        $this->email = new Email($userData["email"]);
+        $this->password = $userData["password"];
+        $this->roleId = new UUID($userData["role_id"]);
     }
 
     public function __get(string $property): mixed
     {
-        return $this->userData[$property] ?? null;
-    }
+        switch ($property) {
+            case "role":
+                return $this->getRole();
+        }
 
-    public function __set(string $property, mixed $value): void
-    {
-        $this->userData[$property] = $value;
-    }
-
-    public function __isset(string $property): bool
-    {
-        return isset($this->userData[$property]);
+        return null;
     }
 
     public function __toString(): string
     {
-        return json_encode($this->userModel->print(new UUID((string) $this->id)));
+        return json_encode([
+            "id" => (string) $this->id,
+            "name" => $this->name,
+            "username" => $this->username,
+            "email" => (string) $this->email,
+            "role" => (string) $this->role->id,
+        ]);
+    }
+
+    private function getRole(): Role
+    {
+        if ($this->cachedRole === null) {
+            $this->cachedRole = new Role($this->roleId);
+        }
+        return $this->cachedRole;
     }
 
     public function validatePassword(string $password): bool
     {
         return password_verify($password, $this->password);
+    }
+
+    public static function exists(?string $userName = null, ?Email $email = null): bool
+    {
+        static $localCache = [];
+
+        $key = md5(json_encode([$userName, (string) $email]));
+
+        if (array_key_exists($key, $localCache)) {
+            return $localCache[$key];
+        }
+
+        // monta condição
+        $conditions = [];
+
+        if ($userName !== null && $email !== null) {
+            $conditions["or"] = [
+                "userName" => $userName,
+                "email"    => (string) $email,
+            ];
+        } elseif ($email !== null) {
+            $conditions["email"] = (string) $email;
+        } elseif ($userName !== null) {
+            $conditions["userName"] = $userName;
+        } else {
+            $localCache[$key] = false;
+            return false;
+        }
+
+        $result = UserModel::exists($conditions);
+        $localCache[$key] = $result;
+        return $result;
+    }
+
+
+    public static function new(
+        string $name,
+        Email $email,
+        string $password,
+        Role $role,
+        ?string $userName = null,
+    ): self {
+
+        if (self::exists(email: $email, userName: $userName)) {
+            throw new EntityDuplicateException("User");
+        }
+
+        $dataUser = UserModel::newUser(
+            name: $name,
+            email: $email,
+            password: $password,
+            userName: $userName,
+            role: $role
+        );
+
+        return new self(allData: $dataUser);
     }
 }
