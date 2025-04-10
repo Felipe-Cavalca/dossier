@@ -1,0 +1,177 @@
+[
+    {
+        "name": "valida OPTION do novo usuario",
+        "description": "Valida a opção do novo usuario",
+        "endpoint": "/user/new_user",
+        "method": "OPTIONS",
+        "tests": {
+            "status_code": 200,
+            "body": {
+                "statusCode": 200,
+                "isSuccess": true,
+                "message": "Informações do endpoint",
+                "data": {
+                    "Methods": [
+                        "POST"
+                    ],
+                    "Fields": {
+                        "name": "Texto",
+                        "email": "Email",
+                        "password": "Texto"
+                    },
+                    "OptionalFields": {
+                        "userName": "Texto"
+                    },
+                    "description": "Cria um novo usuário no sistema"
+                }
+            }
+        }
+    },
+    {
+        "name": "POST sem o name",
+        "description": "Valida o post do novo usuario sem o campo name",
+        "endpoint": "/user/new_user",
+        "method": "POST",
+        "body": {
+            "email": "test@teste.com",
+            "password": "123",
+            "userName": "testTestilson"
+        },
+        "tests": {
+            "status_code": 400,
+            "body": {
+                "statusCode": 400,
+                "isSuccess": false,
+                "message": "Campos inválidos",
+                "data": {
+                    "name": "Campo não encontrado"
+                },
+                "help": "for more information send this request with OPTIONS method"
+            }
+        }
+    },
+    {
+        "name": "POST sem o email",
+        "description": "Valida o post do novo usuario sem o campo email",
+        "endpoint": "/user/new_user",
+        "method": "POST",
+        "body": {
+            "name": "test",
+            "password": "123",
+            "userName": "testTestilson"
+        },
+        "tests": {
+            "status_code": 400,
+            "body": {
+                "statusCode": 400,
+                "isSuccess": false,
+                "message": "Campos inválidos",
+                "data": {
+                    "email": "Campo não encontrado"
+                },
+                "help": "for more information send this request with OPTIONS method"
+            }
+        }
+    },
+    {
+        "name": "POST com o email inválido",
+        "description": "Valida o post do novo usuario com o campo email inválido",
+        "endpoint": "/user/new_user",
+        "method": "POST",
+        "body": {
+            "name": "test",
+            "email": "test@teste",
+            "password": "123",
+            "userName": "testTestilson"
+        },
+        "tests": {
+            "status_code": 400,
+            "body": {
+                "statusCode": 400,
+                "isSuccess": false,
+                "message": "Campos inválidos",
+                "data": {
+                    "email": "Tipo de campo inválido"
+                },
+                "help": "for more information send this request with OPTIONS method"
+            }
+        }
+    },
+    {
+        "name": "POST sem o password",
+        "description": "Valida o post do novo usuario sem o campo password",
+        "endpoint": "/user/new_user",
+        "method": "POST",
+        "body": {
+            "name": "test",
+            "email": "test@teste.com",
+            "userName": "testTestilson"
+        },
+        "tests": {
+            "status_code": 400,
+            "body": {
+                "statusCode": 400,
+                "isSuccess": false,
+                "message": "Campos inválidos",
+                "data": {
+                    "password": "Campo não encontrado"
+                },
+                "help": "for more information send this request with OPTIONS method"
+            }
+        }
+    },
+    {
+        "name": "POST cadastrando o usuario",
+        "description": "Valida o post do novo usuario com todos os campos",
+        "endpoint": "/user/new_user",
+        "method": "POST",
+        "body": {
+            "name": "test",
+            "email": "test@teste.com",
+            "password": "123",
+            "userName": "testTestilson"
+        },
+        "tests": {
+            "status_code": 201,
+            "json_schema": {
+                "type": "object",
+                "properties": {
+                    "statusCode": {
+                        "type": "integer",
+                        "required": true
+                    },
+                    "isSuccess": {
+                        "type": "boolean",
+                        "required": true
+                    },
+                    "data": {
+                        "type": "object",
+                        "required": true,
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "name": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "userName": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "email": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "role": {
+                                "type": "string",
+                                "required": true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+]
