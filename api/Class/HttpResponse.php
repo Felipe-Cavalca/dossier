@@ -44,7 +44,7 @@ class HttpResponse
             "statusCode" => $statusCode->value,
             "isSuccess" => $statusCode->isSuccess(),
             "message" => $message,
-            "timestamp" => $dateTime->format('Y-m-d H:i:s.uP'),
+            // "timestamp" => $dateTime->format('Y-m-d H:i:s.uP'),
         ];
 
         if (!empty($data)) {

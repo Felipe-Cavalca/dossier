@@ -76,10 +76,7 @@ class User implements ControllerInterface
         $password = $post->password;
 
         if (UserClass::exists(email: $email, userName: $userName)) {
-            return HttpError::badRequest("User already exists", [
-                "email" => $email,
-                "userName" => $userName
-            ]);
+            return HttpError::badRequest("User already exists");
         }
 
         $roleClass = new RoleClass();
