@@ -17,7 +17,7 @@ class User
     public Email $email;
     public string $password;
     private UUID $roleId;
-    private ?Role $cachedRole = null;
+    private ?Role $roleClass = null;
 
     public function __construct(
         ?UUID $id = null,
@@ -70,10 +70,10 @@ class User
 
     private function getRole(): Role
     {
-        if ($this->cachedRole === null) {
-            $this->cachedRole = new Role($this->roleId);
+        if (empty($this->roleClass)) {
+            $this->roleClass = new Role($this->roleId);
         }
-        return $this->cachedRole;
+        return $this->roleClass;
     }
 
     public function validatePassword(string $password): bool
