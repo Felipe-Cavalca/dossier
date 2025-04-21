@@ -113,7 +113,7 @@ class User
             throw new EntityDuplicateException("User");
         }
 
-        $dataUser = UserModel::newUser(
+        $dataUser = UserModel::new(
             name: $name,
             email: $email,
             password: $password,
