@@ -24,16 +24,16 @@ class Auth implements AttributesInterface
 
     public function beforeRun(): mixed
     {
-        if (!self::isLogged()) {
+        if (!$this->isLogged()) {
             return HttpError::unauthorized("Usuário não autenticado");
         }
 
-        if (!self::hasRole()) {
+        if (!$this->hasRole()) {
             return HttpError::forbidden("Usuário não autorizado");
         }
 
         $database = new Database();
-        $database->setSystemIdentifier(["user_id" => $this->session->userId]);
+        $database->setSystemIdentifier(["user_id" => (string) $this->session->user->id]);
 
         return null;
     }
@@ -50,20 +50,17 @@ class Auth implements AttributesInterface
         ];
     }
 
-    public static function isLogged(): bool
+    public function isLogged(): bool
     {
-        $session = new Session();
-        return isset($session->logged) && $session->logged;
+        return isset($this->session->logged) && $this->session->logged;
     }
 
-    public static function hasRole(): bool
+    public function hasRole(): bool
     {
         if (empty(self::$roles)) {
             return true;
         }
 
-        $session = new Session();
-        $user = (new ModelUser())->getById($session->userId);
-        return in_array($user["role"], self::$roles);
+        return in_array($this->session->user->role->code, self::$roles);
     }
 }
