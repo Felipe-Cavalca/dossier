@@ -47,7 +47,7 @@ class Auth implements ControllerInterface
 
         $session = new Session();
         $session->logged = true;
-        $session->userId = $user->id;
+        $session->user = $user;
         return HttpResponse::success("Usuário logado com sucesso", $user);
     }
 
