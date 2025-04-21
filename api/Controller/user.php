@@ -50,8 +50,7 @@ class User implements ControllerInterface
     ])]
     public function get_users()
     {
-        $model = new UserModel();
-        return HttpResponse::success("Users in system", $model->getAll());
+        return HttpResponse::success("Users in system", UserModel::getAll());
     }
 
     #[Method("POST")]
