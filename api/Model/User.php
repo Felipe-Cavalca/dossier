@@ -78,7 +78,7 @@ class User
         )[0] ?? [];
     }
 
-    public static function newUser(
+    public static function new(
         string $name,
         Email $email,
         string $password,
