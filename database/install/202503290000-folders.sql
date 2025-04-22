@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS folders (
     name VARCHAR(255) NOT NULL CHECK (
         name ~ '^[^\\/:*?"<>|]{1,255}$'
     ),
-    UNIQUE (user_id, parent_id, name)
+    UNIQUE (parent_id, name)
 );
 
 -- Para casos onde o parent_id é null
