@@ -20,6 +20,8 @@ enum Field: string
     case URL = 'Url';
     case BASE64 = 'Base64';
     case FILE_PATH = 'Caminho de arquivo';
+    case FILE_NAME = 'Nome de arquivo';
+    case FOLDER_NAME = 'Nome da pasta';
     case JSON = 'JSON';
 
     public function validate($val): bool
@@ -40,6 +42,7 @@ enum Field: string
             self::URL => filter_var($val, FILTER_VALIDATE_URL) !== false,
             self::BASE64 => is_string($val) && base64_decode($val, true) !== false,
             self::FILE_PATH => is_string($val),
+            self::FOLDER_NAME => self::validateFolderName($val),
             self::JSON => json_decode($val) !== null,
             default => false,
         };
@@ -111,5 +114,15 @@ enum Field: string
             return false;
         }
         return preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $val) === 1;
+    }
+
+    private static function validateFolderName(string $val): bool
+    {
+        if (!is_string($val)) {
+            return false;
+        }
+
+        // Check for invalid characters and length (1 to 255)
+        return preg_match('/^[^\\/:*?"<>|]{1,255}$/', $val) === 1;
     }
 }

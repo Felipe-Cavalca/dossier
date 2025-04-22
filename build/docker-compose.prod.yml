@@ -58,6 +58,9 @@ services:
       SQL_DATABASE: bifrost
       SQL_USER: bifrost
       SQL_PASSWORD: passwordBifrost
+
+      # Configuração do tempo do cache para as consultas
+      CACHE_QUERY_TIME: 40
     networks:
       - dossier-network-public
       - dossier-network-back

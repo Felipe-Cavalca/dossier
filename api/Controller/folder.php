@@ -2,21 +2,84 @@
 
 namespace Bifrost\Controller;
 
-use Bifrost\Core\Database;
+use Bifrost\Attributes\Auth;
 use Bifrost\Attributes\Cache;
+use Bifrost\Attributes\Details;
 use Bifrost\Attributes\Method;
 use Bifrost\Attributes\RequiredFields;
 use Bifrost\Attributes\RequiredParams;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Class\HttpError;
 use Bifrost\Class\Folder as FolderClass;
+use Bifrost\Core\Database;
+use Bifrost\Core\Post;
+use Bifrost\Core\Request;
+use Bifrost\Core\Session;
+use Bifrost\DataTypes\FilePath;
+use Bifrost\DataTypes\FolderName;
+use Bifrost\DataTypes\UUID;
+use Bifrost\Enum\Field;
 use Bifrost\Enum\HttpStatusCode;
+use Bifrost\Include\Controller;
 use Bifrost\Interface\ControllerInterface;
 
 class Folder implements ControllerInterface
 {
+    use Controller;
 
-    public function __construct() {}
+    public function index()
+    {
+        $controller = "folder";
+        switch ($_SERVER["REQUEST_METHOD"]) {
+            case "POST":
+                return Request::run($controller, "new");
+            case "OPTIONS":
+                return HttpResponse::returnAttributes("infos", [
+                    "new" => Request::getOptionsAttributes($controller, "new")
+                ]);
+            default:
+                return HttpError::methodNotAllowed("Method not allowed");
+        }
+    }
+
+    #[Method("POST")]
+    #[RequiredFields([
+        "name" => Field::FILE_PATH,
+    ])]
+    #[Auth("user", "manager", "admin")]
+    #[Details([
+        "OptionalFields" => [
+            "parent_id" => Field::UUID
+        ],
+        "description" => "Cria um novo usuário no sistema"
+    ])]
+    public function new()
+    {
+        $post = new Post();
+        $session = new Session();
+
+        $name = new FolderName($post->name);
+        $user = $session->user;
+        $parent = $post->parent_id ? new FolderClass(id: new UUID($post->parent_id)) : null;
+        $reference = $parent ?? $user;
+
+        if (FolderClass::exists(name: $name, reference: $reference)) {
+            return HttpError::badRequest("Folder already exists");
+        }
+
+        $folder = FolderClass::new(
+            user: $user,
+            name: $name,
+            parent: $parent
+        );
+
+        return new HttpResponse(
+            statusCode: HttpStatusCode::CREATED,
+            message: "Folder created",
+            data: (string) $folder
+        );
+    }
+
 
     #[Method("GET")]
     #[RequiredParams([
@@ -45,37 +108,6 @@ class Folder implements ControllerInterface
         );
     }
 
-    #[Method("POST")]
-    #[RequiredFields([
-        "user_id" => FILTER_VALIDATE_INT,
-        // "parent_id" => FILTER_VALIDATE_INT,
-        "name" => FILTER_SANITIZE_SPECIAL_CHARS,
-    ])]
-    public function create(): array
-    {
-        $database = new Database();
-        $folder = new FolderClass();
-
-        $database->setSystemIdentifier([
-            "user_id" => $_POST["user_id"]
-        ]);
-
-        $dataInsert = [
-            "user_id" => (int) $_POST["user_id"],
-            "parent_id" => (int) $_POST["parent_id"] ?? null,
-            "name" => (string) $_POST["name"]
-        ];
-
-        $insert = $database->insert("folder", $dataInsert);
-
-        $folder = new FolderClass($insert, $_POST["user_id"]);
-
-        return HttpResponse::success(
-            message: "Pasta criada com sucesso",
-            data: $folder
-        );
-    }
-
     #[Method("GET")]
     #[RequiredParams([
         "user_id" => FILTER_VALIDATE_INT,
@@ -94,7 +126,7 @@ class Folder implements ControllerInterface
         $content = $folder->getContent();
 
         if (empty($content)) {
-            throw HttpError::notFound("Nenhum conteudo encontrado",[
+            throw HttpError::notFound("Nenhum conteudo encontrado", [
                 "folder" => $folder
             ]);
         }
