@@ -6,6 +6,8 @@ use Bifrost\Core\Database;
 use Bifrost\DataTypes\Email;
 use Bifrost\DataTypes\UUID;
 use Bifrost\Class\Role as Role;
+use Bifrost\Core\Cache;
+use Bifrost\Core\Settings;
 
 class User
 {
@@ -13,12 +15,12 @@ class User
 
     public static function getById(UUID $id): array
     {
-        return self::search(["u.id" => (string) $id])[0] ?? [];
+        return self::search(["u.id" => (string) $id]) ?? [];
     }
 
     public static function getByEmail(Email $email): array
     {
-        return self::search(["u.email" => (string) $email])[0] ?? [];
+        return self::search(["u.email" => (string) $email]) ?? [];
     }
 
     public static function getAll(): array
@@ -30,7 +32,7 @@ class User
                 "u.id",
                 "r.name AS role",
                 "u.name",
-                "u.username",
+                "u.userName",
                 "u.email",
                 "ulc.changed AS created",
                 "COALESCE(ulu.changed, ulc.changed) AS updated",
@@ -43,39 +45,35 @@ class User
         );
     }
 
-    public static function search(array $conditions): array
+    public static function search(array $conditions): ?array
     {
         $database = new Database();
-        return $database->select(
-            table: self::$table . " u",
-            fields: [
-                "u.*"
-            ],
-            where: $conditions
-        );
-    }
+        $settings = new Settings();
+        $cache = new Cache();
 
-    public static function getAllData(UUID $userId): array
-    {
-        $database = new Database();
-        return $database->select(
-            table: self::$table . " u",
-            fields: [
-                "u.id",
-                "r.name AS role",
-                "u.name",
-                "u.username",
-                "u.email",
-                "ulc.changed AS created",
-                "COALESCE(ulu.changed, ulc.changed) AS updated",
-            ],
-            join: [
-                "JOIN users_log ulc ON ulc.original_id = u.id AND ulc.action = 'INSERT'",
-                "LEFT JOIN users_log ulu ON ulu.original_id = u.id AND ulu.action = 'UPDATE'",
-                "JOIN roles r ON r.id = u.role_id",
-            ],
-            where: ["u.id" => (string) $userId]
-        )[0] ?? [];
+        $user = $cache->get("get-user-" . json_encode($conditions), function () use ($database, $conditions) {
+            return $database->select(
+                table: self::$table . " u",
+                fields: [
+                    "u.*"
+                ],
+                where: $conditions,
+                limit: 1
+            );
+        }, $settings->CACHE_QUERY_TIME);
+
+        $user = $user[0] ?? null;
+
+        if (!empty($user)) {
+            $user["id"] = new UUID($user["id"]);
+            $user["role_id"] = new UUID($user["role_id"]);
+            $user["name"] = (string) $user["name"];
+            $user["userName"] = (string) ($user["userName"] ?? $user["username"]);
+            $user["email"] = new Email($user["email"]);
+            $user["password"] = (string) $user["password"];
+        }
+
+        return $user;
     }
 
     public static function new(
@@ -91,7 +89,7 @@ class User
             "name" => $name,
             "email" => (string) $email,
             "password" => password_hash($password, PASSWORD_DEFAULT),
-            "username" => $userName,
+            "userName" => $userName,
             "role_id" => (string) $role->id
         ];
 
@@ -119,7 +117,7 @@ class User
         $database = new Database();
         $result = $database->select(
             table: self::$table,
-            fields: ["*"],
+            fields: ["1"],
             where: $conditions,
             limit: "1",
         );

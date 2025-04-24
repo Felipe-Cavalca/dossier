@@ -37,4 +37,14 @@ class Role
         $this->name = $roleData["name"];
         $this->description = $roleData["description"];
     }
+
+    public function __toString()
+    {
+        return json_encode([
+            "id" => (string) $this->id,
+            "code" => $this->code,
+            "name" => $this->name,
+            "description" => $this->description,
+        ]);
+    }
 }

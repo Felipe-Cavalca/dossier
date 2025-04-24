@@ -37,8 +37,8 @@ enum Field: string
             self::NULL => is_null($val),
             self::CPF => self::validateCPF($val),
             self::CNPJ => self::validateCNPJ($val),
-            self::UUID => self::validateUUID($val),
-            self::EMAIL => filter_var($val, FILTER_VALIDATE_EMAIL) !== false,
+            self::UUID => self::validateUUID((string) $val),
+            self::EMAIL => filter_var((string) $val, FILTER_VALIDATE_EMAIL) !== false,
             self::URL => filter_var($val, FILTER_VALIDATE_URL) !== false,
             self::BASE64 => is_string($val) && base64_decode($val, true) !== false,
             self::FILE_PATH => is_string($val),
@@ -110,7 +110,7 @@ enum Field: string
 
     private static function validateUUID($val): bool
     {
-        if(!is_string($val)) {
+        if (!is_string($val)) {
             return false;
         }
         return preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $val) === 1;
