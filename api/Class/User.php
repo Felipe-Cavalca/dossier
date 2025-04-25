@@ -9,14 +9,19 @@ use Bifrost\Class\Role as Role;
 use Bifrost\Class\EntityNotFoundException;
 use Bifrost\Class\EntityDuplicateException;
 
+/**
+ * @property UUID id
+ * @property string name
+ * @property string userName
+ * @property Email email
+ * @property string password
+ * @property Role role
+ */
 class User
 {
-    public UUID $id;
-    public string $name;
-    public string $username;
-    public Email $email;
-    public string $password;
-    private UUID $roleId;
+    public ?UUID $id = null;
+    private ?Email $email = null;
+    private array $data = [];
     private ?Role $roleClass = null;
 
     public function __construct(
@@ -24,54 +29,76 @@ class User
         ?Email $email = null,
         array $allData = [],
     ) {
-        if ($allData !== null && !empty($allData)) {
-            $userData = $allData;
-        } elseif ($id !== null) {
-            $userData = UserModel::getById($id);
-        } elseif ($email !== null) {
-            $userData = UserModel::getByEmail($email);
+        if (!empty($id)) {
+            $this->id = $id;
+        }
+        if (!empty($email)) {
+            $this->email = $email;
         }
 
-        if (empty($userData)) {
-            throw new EntityNotFoundException("User", [
-                "id" => $id,
-                "email" => $email,
-            ]);
+        if (!empty($allData)) {
+            $this->data = $allData;
         }
-
-        $this->id = new UUID($userData["id"]);
-        $this->name = $userData["name"];
-        $this->username = $userData["username"];
-        $this->email = new Email($userData["email"]);
-        $this->password = $userData["password"];
-        $this->roleId = new UUID($userData["role_id"]);
     }
 
+    /**
+     * Retorna os dados do usuário
+     * @param string $property nome da propriedade
+     * @return mixed valor da prorpiedade
+     */
     public function __get(string $property): mixed
     {
         switch ($property) {
             case "role":
                 return $this->getRole();
+            case "id":
+            case "email":
+                if (!empty($this->$property)) {
+                    return $this->$property;
+                }
+            case "role_id":
+            case "name":
+            case "userName":
+            case "password":
+                if (empty($this->data)) {
+                    $this->data = $this->getData();
+                }
+                return $this->data[$property] ?? null;
         }
 
         return null;
     }
 
+    private function getData(): array
+    {
+        if (!empty($this->id)) {
+            $data = UserModel::getById($this->id);
+            $this->email = new Email($data["email"]);
+            return $data;
+        }
+        if (!empty($this->email)) {
+            $data = UserModel::getByEmail($this->email);
+            $this->id = new UUID($data["id"]);
+            return $data;
+        }
+        return [];
+    }
+
     public function __toString(): string
     {
         return json_encode([
-            "id" => (string) $this->id,
+            "id" => (string) $this->__get("id"),
             "name" => $this->name,
-            "userName" => $this->username,
-            "email" => (string) $this->email,
-            "role" => (string) $this->role->code,
+            "userName" => $this->userName,
+            "email" => (string) $this->__get("email"),
+            "role" => json_decode((string) $this->role),
         ]);
     }
 
     private function getRole(): Role
     {
         if (empty($this->roleClass)) {
-            $this->roleClass = new Role($this->roleId);
+            $this->roleClass = new Role(new UUID($this->role_id));
         }
         return $this->roleClass;
     }
