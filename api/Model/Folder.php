@@ -167,6 +167,19 @@ class Folder
     }
 
     /**
+     * Valida se um UUID é um id de pasta
+     * @param UUID $id id a ser verificado
+     * @return bool valida se o ID é valido como id de pasta
+     */
+    public static function validId(UUID $id): bool
+    {
+        $database = new Database();
+        $id = (string) $id;
+        $result = $database->query(query: "SELECT EXISTS ( SELECT 1 FROM folders WHERE id = '" . $id . "' ) AS exists", returnFirst: true);
+        return !empty($result);
+    }
+
+    /**
      * Cria uma nova pasta no banco de dados
      * @param User $user Usuário dono da pasta
      * @param FolderName $name Nome da pasta

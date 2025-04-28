@@ -11,17 +11,16 @@ use Bifrost\Attributes\RequiredParams;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Class\HttpError;
 use Bifrost\Class\Folder as FolderClass;
-use Bifrost\Core\Database;
 use Bifrost\Core\Post;
 use Bifrost\Core\Request;
 use Bifrost\Core\Session;
-use Bifrost\DataTypes\FilePath;
 use Bifrost\DataTypes\FolderName;
 use Bifrost\DataTypes\UUID;
 use Bifrost\Enum\Field;
 use Bifrost\Enum\HttpStatusCode;
 use Bifrost\Include\Controller;
 use Bifrost\Interface\ControllerInterface;
+use Bifrost\Model\Folder as ModelFolder;
 
 class Folder implements ControllerInterface
 {
@@ -60,10 +59,21 @@ class Folder implements ControllerInterface
 
         $name = new FolderName($post->name);
         $user = $session->user;
-        $parent = $post->parent_id ? new FolderClass(id: new UUID($post->parent_id)) : null;
-        $reference = $parent ?? $user;
+        $parent = null;
 
-        if (FolderClass::exists(name: $name, reference: $reference)) {
+        if ($post->parent_id) {
+            $id = new UUID($post->parent_id);
+            if (!ModelFolder::validId(id: $id)) {
+                return HttpError::badRequest("Parent ID is not valid", [
+                    "fieldName" => "parent_id",
+                    "fieldValue" => (string) $post->parent_id
+                ]);
+            }
+
+            $parent = new FolderClass(id: new UUID($post->parent_id));
+        }
+
+        if (FolderClass::exists(name: $name, reference: $parent ?? $user)) {
             return HttpError::badRequest("Folder already exists");
         }
 
