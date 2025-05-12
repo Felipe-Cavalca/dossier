@@ -1,6 +1,5 @@
-// Suas funções aqui
+// Cria o notfy globalmente
 var notyf;
-
 function alert() {
     if (notyf == undefined) {
         notyf = new Notyf({
