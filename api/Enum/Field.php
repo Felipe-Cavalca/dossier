@@ -19,7 +19,6 @@ enum Field: string
     case CPF = 'Cpf';
     case CNPJ = 'Cnpj';
     case EMAIL = 'Email';
-    case UUID = 'Uuid';
     case URL = 'Url';
     case BASE64 = 'Base64';
     case FILE_PATH = 'Caminho de arquivo';
