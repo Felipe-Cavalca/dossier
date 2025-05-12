@@ -18,13 +18,11 @@ use Bifrost\DataTypes\FolderName;
 use Bifrost\DataTypes\UUID;
 use Bifrost\Enum\Field;
 use Bifrost\Enum\HttpStatusCode;
-use Bifrost\Include\Controller;
 use Bifrost\Interface\ControllerInterface;
 use Bifrost\Model\Folder as ModelFolder;
 
 class Folder implements ControllerInterface
 {
-    use Controller;
 
     public function index()
     {

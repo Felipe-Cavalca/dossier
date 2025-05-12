@@ -21,6 +21,13 @@ class Session
         self::$data = &$_SESSION['session_instance']['data'];
     }
 
+    public function __destruct()
+    {
+        if(empty(self::$data)) {
+            $this->destroy();
+        }
+    }
+
     public function __toString(): string
     {
         return json_encode(self::$data);
@@ -48,6 +55,9 @@ class Session
 
     public function destroy(): void
     {
-        session_destroy();
+        if (session_status() == PHP_SESSION_ACTIVE) {
+            session_unset();
+            session_destroy();
+        }
     }
 }

@@ -2,6 +2,9 @@
 
 namespace Bifrost\Enum;
 
+/**
+ * Enum para representar os tipos de dados suportados.
+ */
 enum Field: string
 {
     case INTEGER = 'Número inteiro';
@@ -16,13 +19,13 @@ enum Field: string
     case CPF = 'Cpf';
     case CNPJ = 'Cnpj';
     case EMAIL = 'Email';
-    case UUID = 'Uuid';
     case URL = 'Url';
     case BASE64 = 'Base64';
     case FILE_PATH = 'Caminho de arquivo';
     case FILE_NAME = 'Nome de arquivo';
     case FOLDER_NAME = 'Nome da pasta';
     case JSON = 'JSON';
+    case UUID = 'UUID';
 
     public function validate($val): bool
     {
@@ -44,10 +47,16 @@ enum Field: string
             self::FILE_PATH => is_string($val),
             self::FOLDER_NAME => self::validateFolderName($val),
             self::JSON => json_decode($val) !== null,
+            self::UUID => self::validateUUID($val),
             default => false,
         };
     }
 
+    /**
+     * Valida CPF.
+     * @param string $val CPF a ser validado.
+     * @return bool Retorna true se o CPF for válido, caso contrário, false.
+     */
     private static function validateCPF($val): bool
     {
         $val = preg_replace('/\D/', '', $val);
@@ -77,6 +86,11 @@ enum Field: string
         return true;
     }
 
+    /**
+     * Valida CNPJ.
+     * @param string $val CNPJ a ser validado.
+     * @return bool Retorna true se o CNPJ for válido, caso contrário, false.
+     */
     private static function validateCNPJ($val): bool
     {
         $val = preg_replace('/\D/', '', $val);
@@ -108,9 +122,9 @@ enum Field: string
         return true;
     }
 
-    private static function validateUUID($val): bool
+    private static function validateUUID($val = null): bool
     {
-        if (!is_string($val)) {
+        if (empty($val)) {
             return false;
         }
         return preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $val) === 1;

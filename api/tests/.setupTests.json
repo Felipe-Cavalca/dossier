@@ -7,6 +7,6 @@
         "headers": {
             "content-type": "application/json; charset=utf-8"
         },
-        "response_time_max": 1
+        "response_time_max": 0.5
     }
 }

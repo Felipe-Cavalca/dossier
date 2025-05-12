@@ -10,7 +10,6 @@ use Bifrost\Class\HttpError;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Class\User;
 use Bifrost\Enum\Field;
-use Bifrost\Include\Controller;
 use Bifrost\Interface\ControllerInterface;
 use Bifrost\Core\Post;
 use Bifrost\Core\Session;
@@ -18,7 +17,11 @@ use Bifrost\DataTypes\Email;
 
 class Auth implements ControllerInterface
 {
-    use Controller;
+
+    public function index()
+    {
+        return HttpResponse::success("API Auth");
+    }
 
     #[Method("POST")]
     #[RequiredFields([

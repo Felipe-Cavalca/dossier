@@ -184,7 +184,7 @@
         });
 
         // Filtra os menus por role de forma segura
-        const userRole = localStorage.getItem("user.role") ?? "visitor"; // Padrão para visitor
+        const userRole = localStorage.getItem("user.role.id") ?? "visitor"; // Padrão para visitor
         console.log("[Dossier][Navbar] User role:", userRole);
         $.shadowRoot.querySelectorAll("[data-roles]").forEach(el => {
             const roles = el.dataset.roles.split(",").map(r => r.trim());

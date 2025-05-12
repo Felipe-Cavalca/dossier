@@ -2,7 +2,6 @@
 
 namespace Bifrost\Controller;
 
-use Bifrost\Include\Controller;
 use Bifrost\Interface\ControllerInterface;
 use Bifrost\Attributes\Auth;
 use Bifrost\Attributes\Cache;
@@ -22,7 +21,6 @@ use Bifrost\Class\Role as RoleClass;
 
 class User implements ControllerInterface
 {
-    use Controller;
 
     public function index()
     {
