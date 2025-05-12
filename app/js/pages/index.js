@@ -6,10 +6,7 @@ const bifrost = new Bifrost(
     },
     (bifrost) => {
         bifrost.form("form", () => {
-            alert().success("Form submitted successfully!");
-            // return false;
-        }, async (response) => {
-            document.querySelector("c-alert").style.display = 'block'
+            let invalido = document.querySelector("input:invalid");
 
             if (invalido) {
                 alert().error("Preencha todos os campos corretamente");
