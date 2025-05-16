@@ -1,0 +1,83 @@
+<?php
+
+namespace Bifrost\Class;
+
+use Bifrost\Core\Session;
+use Bifrost\Class\User;
+use Bifrost\Core\Database;
+use Bifrost\DataTypes\Email;
+
+class Auth
+{
+    /**
+     * Valida se o usuário está logado
+     * função verifica se o logged é true na sessão
+     * @return bool
+     */
+    public static function isLogged(): bool
+    {
+        $session = new Session();
+        return $session->logged ?? false;
+    }
+
+    /**
+     * Verifica se o usuário está autenticado
+     * @param Email $email
+     * @param string $password
+     * @return bool Usuario autenticado e logado
+     */
+    public static function autenticate(Email $email, string $password): bool
+    {
+        $user = new User(email: $email);
+
+        if (!$user->validatePassword($password)) {
+            return false;
+        }
+
+        $session = new Session();
+        $session->logged = true;
+        $session->user = $user;
+
+        return true;
+    }
+
+    /**
+     * Logout do usuário
+     * @return void
+     */
+    public static function logout(): void
+    {
+        $session = new Session();
+        $session->destroy();
+    }
+
+    /**
+     * Verifica se o usuário tem a role passada
+     * @param array $role
+     * @return bool
+     */
+    public static function hasRole(array $role): bool
+    {
+        $session = new Session();
+        if (!isset($session->user)) {
+            return false;
+        }
+
+        if (!($session->user instanceof User)) {
+            return false;
+        }
+
+        return $session->user->hasRole($role);
+    }
+
+    /**
+     * Coloca o id do usuário logado como identificados no banco de dados para os logs
+     * @return void
+     */
+    public static function setIdentifierOnDatabase(): void
+    {
+        $session = new Session();
+        $database = new Database();
+        $database->setSystemIdentifier(["user_id" => (string) $session->user->id]);
+    }
+}
