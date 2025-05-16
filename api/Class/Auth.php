@@ -6,6 +6,7 @@ use Bifrost\Core\Session;
 use Bifrost\Class\User;
 use Bifrost\Core\Database;
 use Bifrost\DataTypes\Email;
+use Bifrost\Model\User as ModelUser;
 
 class Auth
 {
@@ -17,6 +18,18 @@ class Auth
     public static function isLogged(): bool
     {
         $session = new Session();
+
+        if (!$session->logged) {
+            return false;
+        }
+
+        if (!ModelUser::exists(["id" => (string) $session->user->id])) {
+            return false;
+        }
+
+        // Recria o usuário caso um admin tenha mudado alugum dado
+        $session->user = new User(id: $session->user->id);
+
         return $session->logged ?? false;
     }
 
