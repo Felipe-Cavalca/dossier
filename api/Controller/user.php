@@ -26,13 +26,13 @@ class User implements ControllerInterface
     {
         switch ($_SERVER["REQUEST_METHOD"]) {
             case "GET":
-                return Request::run("user", "get_users");
+                return Request::run("user", "all");
             case "POST":
                 return Request::run("user", "new");
             case "OPTIONS":
                 $controller = "user";
                 return HttpResponse::returnAttributes("infos", [
-                    "list_all" => Request::getOptionsAttributes($controller, "get_users"),
+                    "all" => Request::getOptionsAttributes($controller, "all"),
                     "new" => Request::getOptionsAttributes($controller, "new")
                 ]);
             default:
@@ -42,11 +42,11 @@ class User implements ControllerInterface
 
     #[Method("GET")]
     #[Auth("manager", "admin")]
-    #[Cache("get_usuario", 60, ["userId"])]
+    #[Cache("get_usuario", 60)]
     #[Details([
         "description" => "Lista usuarios do sistema"
     ])]
-    public function get_users()
+    public function all()
     {
         return HttpResponse::success("Users in system", UserModel::getAll());
     }
