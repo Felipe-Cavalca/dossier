@@ -125,4 +125,19 @@ class User
         $localCache[$key] = !empty($result);
         return $localCache[$key];
     }
+
+    /**
+     * Deleta um usuário e todos os seus dados relacionados
+     * @param UUID $id id do usuário
+     * @return bool true se o usuário foi deletado
+     * @throws \Exception
+     */
+    public static function delete(UUID $id): bool
+    {
+        $database = new Database();
+        return $database->query(
+            delete: self::$table,
+            where: ["id" => (string) $id],
+        );
+    }
 }

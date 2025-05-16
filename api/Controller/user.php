@@ -38,12 +38,15 @@ class User implements ControllerInterface
                 return Request::run("user", "all");
             case "POST":
                 return Request::run("user", "new");
+            case "DELETE":
+                return Request::run("user", "delete");
             case "OPTIONS":
                 $controller = "user";
                 return HttpResponse::returnAttributes("infos", [
                     "all" => Request::getOptionsAttributes($controller, "all"),
                     "get" => Request::getOptionsAttributes($controller, "get"),
-                    "new" => Request::getOptionsAttributes($controller, "new")
+                    "new" => Request::getOptionsAttributes($controller, "new"),
+                    "delete" => Request::getOptionsAttributes($controller, "delete"),
                 ]);
             default:
                 return HttpError::methodNotAllowed("Method not allowed");
@@ -128,5 +131,34 @@ class User implements ControllerInterface
             message: "User found",
             data: $user
         );
+    }
+
+    #[Method("DELETE")]
+    #[RequiredParams([
+        "id" => Field::UUID
+    ])]
+    #[Auth("manager", "admin")]
+    #[Details([
+        "description" => "Deleta um usuário e todos os seus dados relacionados"
+    ])]
+    public function delete(): HttpError|HttpResponse
+    {
+        $get = new Get();
+
+        if (!UserModel::exists(["id" => $get->id])) {
+            return HttpError::notFound("User not found");
+        }
+
+        $id = new UUID($get->id);
+
+        if (UserModel::delete($id)) {
+            return new HttpResponse(
+                statusCode: HttpStatusCode::OK,
+                message: "User deleted",
+                data: []
+            );
+        }
+
+        return HttpError::internalServerError("Error deleting user");
     }
 }
