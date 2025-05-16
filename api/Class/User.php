@@ -6,7 +6,6 @@ use Bifrost\DataTypes\Email;
 use Bifrost\DataTypes\UUID;
 use Bifrost\Model\User as UserModel;
 use Bifrost\Class\Role as Role;
-use Bifrost\Class\EntityNotFoundException;
 use Bifrost\Class\EntityDuplicateException;
 
 /**
@@ -103,6 +102,11 @@ class User
         return $this->roleClass;
     }
 
+    /**
+     * Valida se a senha passada é a mesma do usuário
+     * @param string $password senha a ser validada
+     * @return bool true se a senha for válida, false caso contrário
+     */
     public function validatePassword(string $password): bool
     {
         return password_verify($password, $this->password);
@@ -149,5 +153,15 @@ class User
         );
 
         return new self(allData: $dataUser);
+    }
+
+    /**
+     * Verifica se o usuário tem a role passada
+     * @param array $roles nome da role a ser verificada
+     * @return bool usuario tem a role
+     */
+    public function hasRole(array $roles): bool
+    {
+        return in_array($this->role->code, $roles);
     }
 }
