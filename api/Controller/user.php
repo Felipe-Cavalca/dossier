@@ -8,6 +8,7 @@ use Bifrost\Attributes\Cache;
 use Bifrost\Attributes\Details;
 use Bifrost\Attributes\Method;
 use Bifrost\Attributes\RequiredFields;
+use Bifrost\Attributes\RequiredParams;
 use Bifrost\Class\HttpError;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Core\Request;
@@ -18,6 +19,8 @@ use Bifrost\Enum\HttpStatusCode;
 use Bifrost\Enum\Field;
 use Bifrost\Model\User as UserModel;
 use Bifrost\Class\Role as RoleClass;
+use Bifrost\Core\Get;
+use Bifrost\DataTypes\UUID;
 
 class User implements ControllerInterface
 {
@@ -26,6 +29,12 @@ class User implements ControllerInterface
     {
         switch ($_SERVER["REQUEST_METHOD"]) {
             case "GET":
+                $get = new Get();
+
+                if (isset($get->id)) {
+                    return Request::run("user", "get");
+                }
+
                 return Request::run("user", "all");
             case "POST":
                 return Request::run("user", "new");
@@ -33,6 +42,7 @@ class User implements ControllerInterface
                 $controller = "user";
                 return HttpResponse::returnAttributes("infos", [
                     "all" => Request::getOptionsAttributes($controller, "all"),
+                    "get" => Request::getOptionsAttributes($controller, "get"),
                     "new" => Request::getOptionsAttributes($controller, "new")
                 ]);
             default:
@@ -46,7 +56,7 @@ class User implements ControllerInterface
     #[Details([
         "description" => "Lista usuarios do sistema"
     ])]
-    public function all()
+    public function all(): array
     {
         return HttpResponse::success("Users in system", UserModel::getAll());
     }
@@ -89,6 +99,33 @@ class User implements ControllerInterface
         return new HttpResponse(
             statusCode: HttpStatusCode::CREATED,
             message: "User created",
+            data: $user
+        );
+    }
+
+    #[Method("GET")]
+    #[RequiredParams([
+        "id" => Field::UUID
+    ])]
+    #[Auth("manager", "admin")]
+    #[Cache("get_usuario", 60)]
+    #[Details([
+        "description" => "Lista um usuário do sistema"
+    ])]
+    public function get(): HttpError|HttpResponse
+    {
+        $get = new Get();
+
+        if (!UserModel::exists(["id" => $get->id])) {
+            return HttpError::notFound("User not found");
+        }
+
+        $id = new UUID($get->id);
+        $user = new UserClass(id: $id);
+
+        return new HttpResponse(
+            statusCode: HttpStatusCode::OK,
+            message: "User found",
             data: $user
         );
     }
