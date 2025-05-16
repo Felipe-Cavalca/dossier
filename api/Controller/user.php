@@ -28,12 +28,12 @@ class User implements ControllerInterface
             case "GET":
                 return Request::run("user", "get_users");
             case "POST":
-                return Request::run("user", "new_user");
+                return Request::run("user", "new");
             case "OPTIONS":
                 $controller = "user";
                 return HttpResponse::returnAttributes("infos", [
                     "list_all" => Request::getOptionsAttributes($controller, "get_users"),
-                    "new_user" => Request::getOptionsAttributes($controller, "new_user")
+                    "new" => Request::getOptionsAttributes($controller, "new")
                 ]);
             default:
                 return HttpError::methodNotAllowed("Method not allowed");
@@ -63,7 +63,7 @@ class User implements ControllerInterface
         ],
         "description" => "Cria um novo usuário no sistema"
     ])]
-    public function new_user(): HttpError|HttpResponse
+    public function new(): HttpError|HttpResponse
     {
         $post = new Post();
 
