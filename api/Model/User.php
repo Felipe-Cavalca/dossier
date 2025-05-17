@@ -125,4 +125,35 @@ class User
         $localCache[$key] = !empty($result);
         return $localCache[$key];
     }
+
+    /**
+     * Atualiza os dados de um usuário
+     * @param UUID $id id do usuário
+     * @param array $data dados a serem atualizados
+     * @return bool true se o usuário foi atualizado
+     */
+    public static function update(UUID $id, array $data): bool
+    {
+        $database = new Database();
+        return $database->update(
+            table: self::$table,
+            data: $data,
+            where: ["id" => (string) $id],
+        );
+    }
+
+    /**
+     * Deleta um usuário e todos os seus dados relacionados
+     * @param UUID $id id do usuário
+     * @return bool true se o usuário foi deletado
+     * @throws \Exception
+     */
+    public static function delete(UUID $id): bool
+    {
+        $database = new Database();
+        return $database->query(
+            delete: self::$table,
+            where: ["id" => (string) $id],
+        );
+    }
 }
