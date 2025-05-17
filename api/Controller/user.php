@@ -38,6 +38,9 @@ class User implements ControllerInterface
                 return Request::run("user", "all");
             case "POST":
                 return Request::run("user", "new");
+            case "PUT":
+            case "PATCH":
+                return Request::run("user", "update");
             case "DELETE":
                 return Request::run("user", "delete");
             case "OPTIONS":
@@ -47,6 +50,7 @@ class User implements ControllerInterface
                     "get" => Request::getOptionsAttributes($controller, "get"),
                     "new" => Request::getOptionsAttributes($controller, "new"),
                     "delete" => Request::getOptionsAttributes($controller, "delete"),
+                    "update" => Request::getOptionsAttributes($controller, "update"),
                 ]);
             default:
                 return HttpError::methodNotAllowed("Method not allowed");
@@ -130,6 +134,59 @@ class User implements ControllerInterface
             statusCode: HttpStatusCode::OK,
             message: "User found",
             data: $user
+        );
+    }
+
+    #[Method("PUT", "PATCH")]
+    #[RequiredParams([
+        "id" => Field::UUID
+    ])]
+    #[Auth("manager", "admin")]
+    #[Details([
+        "description" => "Atualiza um usuário do sistema",
+        "optionalFields" => [
+            "name" => Field::STRING,
+            "email" => Field::EMAIL,
+            "password" => Field::STRING,
+            "userName" => Field::STRING,
+            "roleCode" => Field::STRING
+        ]
+    ])]
+    public function update()
+    {
+        $get = new Get();
+
+        if (!UserModel::exists(["id" => $get->id])) {
+            return HttpError::notFound("User not found");
+        }
+
+        $id = new UUID($get->id);
+        $post = new Post();
+        $user = new UserClass(id: $id);
+
+        if (!empty($post->name)) {
+            $user->name = $post->name;
+        }
+        if (!empty($post->email)) {
+            $user->email = new Email($post->email);
+        }
+        if (!empty($post->password)) {
+            $user->password = $post->password;
+        }
+        if (!empty($post->userName)) {
+            $user->userName = $post->userName;
+        }
+        if (!empty($post->roleCode)) {
+            $user->role = new RoleClass(code: $post->roleCode);
+        }
+
+        //Apaga obj usuario para atualizar no banco
+        unset($user);
+
+        return new HttpResponse(
+            statusCode: HttpStatusCode::OK,
+            message: "User updated",
+            data: []
         );
     }
 

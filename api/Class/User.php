@@ -22,6 +22,7 @@ class User
     private ?Email $email = null;
     private array $data = [];
     private ?Role $roleClass = null;
+    private array $updateFields = [];
 
     public function __construct(
         ?UUID $id = null,
@@ -37,6 +38,19 @@ class User
 
         if (!empty($allData)) {
             $this->data = $allData;
+        }
+    }
+
+    /**
+     * Atualiza os dados do usuário no banco de dados
+     */
+    public function __destruct()
+    {
+        if (!empty($this->updateFields)) {
+            UserModel::update(
+                id: $this->id,
+                data: $this->updateFields,
+            );
         }
     }
 
@@ -66,6 +80,33 @@ class User
         }
 
         return null;
+    }
+
+    public function __set(string $property, mixed $value): void
+    {
+        switch ($property) {
+            case "email":
+                if ($value instanceof Email) {
+                    $this->email = $value;
+                    $this->updateFields["email"] = (string) $value;
+                }
+                break;
+            case "role":
+                if ($value instanceof Role) {
+                    $this->roleClass = $value;
+                    $this->updateFields["role_id"] = (string) $value->id;
+                }
+                break;
+            case "password":
+                $this->data[$property] = password_hash($value, PASSWORD_DEFAULT);
+                $this->updateFields[$property] = $this->data[$property];
+                break;
+            case "name":
+            case "userName":
+                $this->data[$property] = $value;
+                $this->updateFields[$property] = $value;
+                break;
+        }
     }
 
     private function getData(): array
