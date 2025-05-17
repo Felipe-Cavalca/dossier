@@ -7,6 +7,7 @@ use Bifrost\Attributes\Cache;
 use Bifrost\Attributes\Details;
 use Bifrost\Attributes\Method;
 use Bifrost\Attributes\RequiredFields;
+use Bifrost\Attributes\OptionalFields;
 use Bifrost\Attributes\RequiredParams;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Class\HttpError;
@@ -44,10 +45,10 @@ class Folder implements ControllerInterface
         "name" => Field::FILE_PATH,
     ])]
     #[Auth("user", "manager", "admin")]
+    #[OptionalFields([
+        "parent_id" => Field::UUID
+    ])]
     #[Details([
-        "OptionalFields" => [
-            "parent_id" => Field::UUID
-        ],
         "description" => "Cria um novo usuário no sistema"
     ])]
     public function new()
