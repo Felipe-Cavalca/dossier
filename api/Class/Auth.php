@@ -23,12 +23,9 @@ class Auth
             return false;
         }
 
-        if (!ModelUser::exists(["id" => (string) $session->user->id])) {
+        if (!ModelUser::exists(["id" => (string) $session->userId])) {
             return false;
         }
-
-        // Recria o usuário caso um admin tenha mudado alugum dado
-        $session->user = new User(id: $session->user->id);
 
         return $session->logged ?? false;
     }
@@ -49,7 +46,7 @@ class Auth
 
         $session = new Session();
         $session->logged = true;
-        $session->user = $user;
+        $session->userId = $user->id;
 
         return true;
     }
