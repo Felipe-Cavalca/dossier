@@ -8,13 +8,12 @@ use Bifrost\Attributes\Details;
 use Bifrost\Attributes\Method;
 use Bifrost\Attributes\RequiredFields;
 use Bifrost\Attributes\OptionalFields;
-use Bifrost\Attributes\RequiredParams;
+use Bifrost\Class\Auth as ClassAuth;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Class\HttpError;
 use Bifrost\Class\Folder as FolderClass;
 use Bifrost\Core\Post;
 use Bifrost\Core\Request;
-use Bifrost\Core\Session;
 use Bifrost\DataTypes\FolderName;
 use Bifrost\DataTypes\UUID;
 use Bifrost\Enum\Field;
@@ -49,27 +48,26 @@ class Folder implements ControllerInterface
         "parent_id" => Field::UUID
     ])]
     #[Details([
-        "description" => "Cria um novo usuário no sistema"
+        "Description" => "Cria um novo usuário no sistema"
     ])]
     public function new()
     {
+        $user = ClassAuth::getCourentUser();
         $post = new Post();
-        $session = new Session();
 
         $name = new FolderName($post->name);
-        $user = $session->user;
         $parent = null;
 
         if ($post->parent_id) {
             $id = new UUID($post->parent_id);
-            if (!ModelFolder::validId(id: $id)) {
+            if (!FolderClass::validId($id)) {
                 return HttpError::badRequest("Parent ID is not valid", [
                     "fieldName" => "parent_id",
                     "fieldValue" => (string) $post->parent_id
                 ]);
             }
 
-            $parent = new FolderClass(id: new UUID($post->parent_id));
+            $parent = new FolderClass(id: $id);
         }
 
         if (FolderClass::exists(name: $name, reference: $parent ?? $user)) {
