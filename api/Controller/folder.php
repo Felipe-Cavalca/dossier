@@ -8,6 +8,7 @@ use Bifrost\Attributes\Details;
 use Bifrost\Attributes\Method;
 use Bifrost\Attributes\RequiredFields;
 use Bifrost\Attributes\OptionalFields;
+use Bifrost\Attributes\OptionalParams;
 use Bifrost\Class\Auth as ClassAuth;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Class\HttpError;
@@ -28,10 +29,14 @@ class Folder implements ControllerInterface
     {
         $controller = "folder";
         switch ($_SERVER["REQUEST_METHOD"]) {
+            case "GET":
+                return Request::run($controller, "list");
             case "POST":
                 return Request::run($controller, "new");
             case "OPTIONS":
                 return HttpResponse::returnAttributes("infos", [
+                    "list" => Request::getOptionsAttributes($controller, "list"),
+                    "all" => Request::getOptionsAttributes($controller, "all"),
                     "new" => Request::getOptionsAttributes($controller, "new")
                 ]);
             default:
@@ -84,6 +89,32 @@ class Folder implements ControllerInterface
             statusCode: HttpStatusCode::CREATED,
             message: "Folder created",
             data: (string) $folder
+        );
+    }
+
+    #[Auth("user", "manager", "admin")]
+    #[Cache("list-user", 60)]
+    #[Details(["Description" => "Retorna uma lista de pastas do usuário autenticado"])]
+    #[Method("GET")]
+    public function list(): HttpResponse
+    {
+        return new HttpResponse(
+            statusCode: HttpStatusCode::OK,
+            message: "Folders found",
+            data: ModelFolder::list(user: ClassAuth::getCourentUser())
+        );
+    }
+
+    #[Auth("manager", "admin")]
+    #[Cache("list-all", 60)]
+    #[Details(["Description" => "Retorna uma lista de pastas de todos os usuários"])]
+    #[Method("GET")]
+    public function all(): HttpResponse
+    {
+        return new HttpResponse(
+            statusCode: HttpStatusCode::OK,
+            message: "Folders found",
+            data: ModelFolder::list()
         );
     }
 }
