@@ -1,6 +1,6 @@
 # Dockerfile
 
-FROM php:7.4-apache
+FROM php:8.3-apache
 
 # Copia os arquivos do servidor web para a imagem
 COPY . /var/www/html
