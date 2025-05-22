@@ -21,17 +21,17 @@ class Auth implements AttributesInterface
 
     public function beforeRun(): mixed
     {
-        if (!ClassAuth::isLogged()) {
-            if (!isset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])) {
-                return HttpError::unauthorized("Credenciais Basic Auth não fornecidas");
-            }
-
+        if (isset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])) {
             $email = new Email($_SERVER['PHP_AUTH_USER']);
             $password = $_SERVER['PHP_AUTH_PW'];
 
             if (!ClassAuth::autenticate($email, $password)) {
-                return HttpError::unauthorized("Credenciais Basic Auth inválidas");
+                return HttpError::unauthorized("Credenciais inválidas");
             }
+        }
+
+        if (!ClassAuth::isLogged()) {
+            return HttpError::unauthorized("Usuário não autenticado");
         }
 
         if (!ClassAuth::hasRole(self::$roles)) {

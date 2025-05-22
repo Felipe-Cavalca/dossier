@@ -115,6 +115,16 @@ class Folder
     }
 
     /**
+     * Verifica se o ID é válido
+     * @param UUID $id ID da pasta
+     * @return bool se o ID é válido ou não
+     */
+    public static function validId(UUID $id): bool
+    {
+        return FolderModel::validId(id: $id);
+    }
+
+    /**
      * Cria uma nova pasta no sistema
      * @param User $user dono da pasta
      * @param FolderName $name nome da pasta

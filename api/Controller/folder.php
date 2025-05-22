@@ -7,13 +7,14 @@ use Bifrost\Attributes\Cache;
 use Bifrost\Attributes\Details;
 use Bifrost\Attributes\Method;
 use Bifrost\Attributes\RequiredFields;
-use Bifrost\Attributes\RequiredParams;
+use Bifrost\Attributes\OptionalFields;
+use Bifrost\Attributes\OptionalParams;
+use Bifrost\Class\Auth as ClassAuth;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Class\HttpError;
 use Bifrost\Class\Folder as FolderClass;
 use Bifrost\Core\Post;
 use Bifrost\Core\Request;
-use Bifrost\Core\Session;
 use Bifrost\DataTypes\FolderName;
 use Bifrost\DataTypes\UUID;
 use Bifrost\Enum\Field;
@@ -28,10 +29,14 @@ class Folder implements ControllerInterface
     {
         $controller = "folder";
         switch ($_SERVER["REQUEST_METHOD"]) {
+            case "GET":
+                return Request::run($controller, "list");
             case "POST":
                 return Request::run($controller, "new");
             case "OPTIONS":
                 return HttpResponse::returnAttributes("infos", [
+                    "list" => Request::getOptionsAttributes($controller, "list"),
+                    "all" => Request::getOptionsAttributes($controller, "all"),
                     "new" => Request::getOptionsAttributes($controller, "new")
                 ]);
             default:
@@ -44,31 +49,30 @@ class Folder implements ControllerInterface
         "name" => Field::FILE_PATH,
     ])]
     #[Auth("user", "manager", "admin")]
+    #[OptionalFields([
+        "parent_id" => Field::UUID
+    ])]
     #[Details([
-        "OptionalFields" => [
-            "parent_id" => Field::UUID
-        ],
-        "description" => "Cria um novo usuário no sistema"
+        "Description" => "Cria um novo usuário no sistema"
     ])]
     public function new()
     {
+        $user = ClassAuth::getCourentUser();
         $post = new Post();
-        $session = new Session();
 
         $name = new FolderName($post->name);
-        $user = $session->user;
         $parent = null;
 
         if ($post->parent_id) {
             $id = new UUID($post->parent_id);
-            if (!ModelFolder::validId(id: $id)) {
+            if (!FolderClass::validId($id)) {
                 return HttpError::badRequest("Parent ID is not valid", [
                     "fieldName" => "parent_id",
                     "fieldValue" => (string) $post->parent_id
                 ]);
             }
 
-            $parent = new FolderClass(id: new UUID($post->parent_id));
+            $parent = new FolderClass(id: $id);
         }
 
         if (FolderClass::exists(name: $name, reference: $parent ?? $user)) {
@@ -88,60 +92,29 @@ class Folder implements ControllerInterface
         );
     }
 
-
+    #[Auth("user", "manager", "admin")]
+    #[Cache("list-user", 60)]
+    #[Details(["Description" => "Retorna uma lista de pastas do usuário autenticado"])]
     #[Method("GET")]
-    #[RequiredParams([
-        "user_id" => FILTER_VALIDATE_INT
-    ])]
-    #[Cache("folder-list", 5)]
-    public function details(): array
+    public function list(): HttpResponse
     {
-        if (!empty($_GET["id"])) {
-            $folder = new FolderClass((int) $_GET["id"], $_GET["user_id"]);
-        } elseif (!empty($_GET["path"])) {
-            $folder = new FolderClass((string) $_GET["path"], $_GET["user_id"]);
-        } else {
-            throw HttpError::badRequest("Nenhum dos campos encontrados", [
-                "fieldName" => ["id", "path"],
-            ]);
-        }
-
-        if (!isset($folder->id)) {
-            throw HttpError::notFound("A pasta não existe");
-        }
-
-        return HttpResponse::success(
-            message: "Listagem de pastas",
-            data: $folder
+        return new HttpResponse(
+            statusCode: HttpStatusCode::OK,
+            message: "Folders found",
+            data: ModelFolder::list(user: ClassAuth::getCourentUser())
         );
     }
 
+    #[Auth("manager", "admin")]
+    #[Cache("list-all", 60)]
+    #[Details(["Description" => "Retorna uma lista de pastas de todos os usuários"])]
     #[Method("GET")]
-    #[RequiredParams([
-        "user_id" => FILTER_VALIDATE_INT,
-    ])]
-    // #[Cache("folder-list", 5)]
-    public function content(): array
+    public function all(): HttpResponse
     {
-        if (!empty($_GET["id"])) {
-            $folder = new FolderClass((int) $_GET["id"], (int) $_GET["user_id"]);
-        } elseif (!empty($_GET["path"])) {
-            $folder = new FolderClass((string) $_GET["path"], (int) $_GET["user_id"]);
-        } else {
-            $folder = new FolderClass(null, (int) $_GET["user_id"]);
-        }
-
-        $content = $folder->getContent();
-
-        if (empty($content)) {
-            throw HttpError::notFound("Nenhum conteudo encontrado", [
-                "folder" => $folder
-            ]);
-        }
-
-        return HttpResponse::success(
-            message: "Listagem de Conteudo",
-            data: $content
+        return new HttpResponse(
+            statusCode: HttpStatusCode::OK,
+            message: "Folders found",
+            data: ModelFolder::list()
         );
     }
 }

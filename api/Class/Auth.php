@@ -68,16 +68,13 @@ class Auth
      */
     public static function hasRole(array $role): bool
     {
-        $session = new Session();
-        if (!isset($session->user)) {
+        $user = self::getCourentUser();
+
+        if (!($user instanceof User)) {
             return false;
         }
 
-        if (!($session->user instanceof User)) {
-            return false;
-        }
-
-        return $session->user->hasRole($role);
+        return $user->hasRole($role);
     }
 
     /**
@@ -86,8 +83,18 @@ class Auth
      */
     public static function setIdentifierOnDatabase(): void
     {
-        $session = new Session();
         $database = new Database();
-        $database->setSystemIdentifier(["user_id" => (string) $session->user->id]);
+        $user = self::getCourentUser();
+        $database->setSystemIdentifier(["user_id" => (string) $user->id]);
+    }
+
+    /**
+     * Retorna o usuário logado na session
+     * @return User Usuário autenticado.
+     */
+    public static function getCourentUser(): User
+    {
+        $session = new Session();
+        return new User($session->userId);
     }
 }

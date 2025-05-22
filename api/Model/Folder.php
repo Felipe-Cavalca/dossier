@@ -208,4 +208,69 @@ class Folder
 
         return self::getById(new UUID($folderId));
     }
+
+    /**
+     * Retorna a listagem de pastas
+     * @param User $user Usuário dono da pasta
+     * @return array
+     */
+    public static function list(?User $user = null): array
+    {
+        if ($user) {
+            return self::getByUser($user);
+        }
+        return self::listAll();
+    }
+
+    /**
+     * Retorna todas as pastas do sistema
+     * @return array
+     */
+    private static function listAll(): array
+    {
+        $database = new Database();
+        $settings = new Settings();
+        $cache = new Cache();
+
+        $folders = $cache->get("list-all-folders", function () use ($database) {
+            return $database->query(
+                select: ["f.*", "fl.changed"],
+                from: "folders f",
+                join: [
+                    "JOIN folders_log fl ON fl.original_id = f.id"
+                ],
+                order: "fl.changed DESC"
+            );
+        }, $settings->CACHE_QUERY_TIME);
+
+        return $folders;
+    }
+
+    /**
+     * Retorna todas as pastas de um usuário
+     * @param User $user Usuário dono da pasta
+     * @return array
+     */
+    private static function getByUser(User $user): array
+    {
+        $database = new Database();
+        $settings = new Settings();
+        $cache = new Cache();
+
+        $folders = $cache->get("list-user-folders-" . (string) $user->id, function () use ($database, $user) {
+            return $database->query(
+                select: ["f.*", "fl.changed"],
+                from: "folders f",
+                join: [
+                    "JOIN folders_log fl ON fl.original_id = f.id"
+                ],
+                where: [
+                    "f.user_id" => (string) $user->id
+                ],
+                order: "fl.changed DESC"
+            );
+        }, $settings->CACHE_QUERY_TIME);
+
+        return $folders;
+    }
 }
