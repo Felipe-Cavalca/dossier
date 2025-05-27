@@ -37,6 +37,17 @@ class WebDAV
                     "DAV: 1,2"
                 ]);
                 return $xml;
+            case "MKCOL":
+                $response = $this->sendRequest(
+                    endpoint: "/webdav/mkcol?path=" . $path,
+                    method: "MKCOL"
+                );
+                if ($response === false || $response->isSuccess !== true) {
+                    $this->setHeader("HTTP/1.1 500 Internal Server Error");
+                } else {
+                    $this->setHeader("HTTP/1.1 201 Created");
+                }
+                break;
             default:
                 $this->setHeader("HTTP/1.1 405 Method Not Allowed");
         }

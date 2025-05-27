@@ -9,10 +9,13 @@ use Bifrost\Attributes\Method;
 use Bifrost\Attributes\Details;
 use Bifrost\Attributes\OptionalParams;
 use Bifrost\Class\Auth as ClassAuth;
+use Bifrost\Class\Folder;
 use Bifrost\Core\Database;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Core\Get;
 use Bifrost\DataTypes\FilePath;
+use Bifrost\DataTypes\FolderName;
+use Bifrost\DataTypes\UUID;
 use Bifrost\Enum\Field;
 use Bifrost\Enum\HttpStatusCode;
 
@@ -120,6 +123,54 @@ class Webdav implements ControllerInterface
             statusCode: HttpStatusCode::OK,
             message: "Listagem de pastas",
             data: ["xml" => $xml]
+        );
+    }
+
+    #[Auth("user", "manager", "admin")]
+    #[Details(["description" => "Cria um novo diretório"])]
+    #[Method("MKCOL")]
+    #[OptionalParams([
+        "path" => Field::STRING
+    ])]
+    public function MKCOL(): HttpResponse
+    {
+        $database = new Database();
+        $get = new Get();
+        $user = ClassAuth::getCourentUser();
+        $path = htmlspecialchars_decode($get->path ?? "/");
+        $parentName = dirname((string) $path);
+        $name = basename((string) $path);
+
+        $parent = null;
+        if ($parentName != "/") {
+            $parentData = $database->query(
+                select: "*",
+                from: "file_structure",
+                where: [
+                    "path" => $parentName,
+                    "user_id" => $user->id
+                ]
+            );
+
+            if (empty($parentData)) {
+                return new HttpResponse(
+                    statusCode: HttpStatusCode::NOT_FOUND,
+                    message: "Diretório pai não encontrado"
+                );
+            }
+
+            $parent = new Folder(id: new UUID($parentData[0]["id"] ?? null));
+        }
+
+        Folder::new(
+            user: $user,
+            name: new FolderName($name),
+            parent: $parent
+        );
+
+        return new HttpResponse(
+            statusCode: HttpStatusCode::CREATED,
+            message: "Diretório criado com sucesso"
         );
     }
 }
