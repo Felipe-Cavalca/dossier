@@ -1,15 +1,4 @@
-DROP TRIGGER IF EXISTS trg_refresh_on_folders ON folders;
-
-DROP TRIGGER IF EXISTS trg_refresh_on_files ON files;
-
-DROP FUNCTION IF EXISTS trg_refresh_user_file_structure ();
-
-DROP VIEW IF EXISTS file_structure;
-
-DROP MATERIALIZED VIEW IF EXISTS user_file_structure;
-
--- Create materialized view to show the folder and file structure of a user
-CREATE MATERIALIZED VIEW user_file_structure AS
+CREATE OR REPLACE VIEW file_structure AS
 WITH RECURSIVE
     folder_paths AS (
         SELECT
@@ -97,33 +86,3 @@ SELECT
     fi.size
 FROM files fi
     LEFT JOIN folder_paths fp ON fi.folder_id = fp.id;
-
--- Create normal view
-CREATE OR REPLACE VIEW file_structure AS
-SELECT *
-FROM user_file_structure;
-
--- Create indexes to optimize queries
-CREATE INDEX idx_objects_path ON user_file_structure (path);
-
-CREATE INDEX idx_objects_user_id ON user_file_structure (user_id);
-
-CREATE INDEX idx_objects_type_path ON user_file_structure (type, path);
-
--- Create function to refresh the view
-CREATE OR REPLACE FUNCTION trg_refresh_user_file_structure()
-RETURNS trigger AS $$
-BEGIN
-    REFRESH MATERIALIZED VIEW user_file_structure;
-    RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
-
--- Create triggers to refresh the view
-CREATE TRIGGER trg_refresh_on_folders
-AFTER INSERT OR UPDATE OR DELETE ON folders
-FOR EACH STATEMENT EXECUTE FUNCTION trg_refresh_user_file_structure();
-
-CREATE TRIGGER trg_refresh_on_files
-AFTER INSERT OR UPDATE OR DELETE ON files
-FOR EACH STATEMENT EXECUTE FUNCTION trg_refresh_user_file_structure();
