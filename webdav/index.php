@@ -66,6 +66,7 @@ class WebDAV
     {
         $url = $this->urlApi . $endpoint;
 
+        $this->headers["Depth"] = isset($this->headers["Depth"]) ? $this->headers["Depth"] : "1";
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
