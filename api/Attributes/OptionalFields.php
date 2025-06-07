@@ -3,7 +3,7 @@
 namespace Bifrost\Attributes;
 
 use Attribute;
-use Bifrost\Class\HttpError;
+use Bifrost\Class\HttpResponse;
 use Bifrost\Core\Post;
 use Bifrost\Enum\Field;
 use Bifrost\Include\AtrributesDefaultMethods;
@@ -33,7 +33,10 @@ class OptionalFields implements AttributesInterface
     public function beforeRun(): mixed
     {
         if (!$this->validateOptionalFields(self::$fields)) {
-            return HttpError::badRequest("Campos inválidos", $this->getErrors());
+            return HttpResponse::badRequest(
+                errors: $this->getErrors(),
+                message: "Invalid optional fields",
+            );
         }
         return null;
     }
@@ -63,7 +66,7 @@ class OptionalFields implements AttributesInterface
             }
 
             if (!static::validateType($field, $filter) && empty($this->errors[$field])) {
-                $this->errors[$field] = "Tipo de campo inválido";
+                $this->errors[$field] = "Invalid field type";
             }
         }
 
@@ -80,7 +83,7 @@ class OptionalFields implements AttributesInterface
      */
     private function getErrors(): array
     {
-        return $this->errors;
+        return ["fields" => $this->errors];
     }
 
     /**
