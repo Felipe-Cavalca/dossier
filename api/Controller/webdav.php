@@ -2,320 +2,175 @@
 
 namespace Bifrost\Controller;
 
-use DOMDocument;
-use SimpleXMLElement;
-use Bifrost\Interface\ControllerInterface;
-use Bifrost\Include\Controller;
-use Bifrost\Attributes\Method;
-use Bifrost\Attributes\RequiredFields;
-use Bifrost\Attributes\RequiredParams;
+use Bifrost\Attributes\Auth;
 use Bifrost\Attributes\Cache;
+use Bifrost\Interface\ControllerInterface;
+use Bifrost\Attributes\Method;
+use Bifrost\Attributes\Details;
+use Bifrost\Attributes\OptionalParams;
+use Bifrost\Class\Auth as ClassAuth;
+use Bifrost\Class\Folder;
 use Bifrost\Core\Database;
-use Bifrost\Class\HttpError;
 use Bifrost\Class\HttpResponse;
-use Bifrost\Model\File;
+use Bifrost\Core\Get;
+use Bifrost\DataTypes\FilePath;
+use Bifrost\DataTypes\FolderName;
+use Bifrost\DataTypes\UUID;
+use Bifrost\Enum\Field;
+use Bifrost\Enum\HttpStatusCode;
 
 class Webdav implements ControllerInterface
 {
-    private HttpResponse $response;
 
-    public function __construct()
-    {
-        $this->response = new HttpResponse();
-    }
+    public function index() {}
 
-    public function auth()
-    {
-        $usuario = $_POST["username"];
-        $password = $_POST["password"];
-
-        if ($usuario == "admin" && $password == "admin") {
-            return $this->response->buildResponse(
-                message: "Login feito com sucesso",
-            );
-        }
-
-        throw new HttpError("e401", ["Usuário ou senha inválidos"]);
-    }
-
-    public function GET()
-    {
-        $file = new File($_POST["path"]);
-
-        if ($file->isDir) {
-            return $this->response->buildResponseWebDav(
-                headers: [
-                    "HTTP/1.1 200 OK",
-                    "Content-Type: text/plain"
-                ],
-                return: implode("\n", $file->listFiles())
-            );
-        } elseif ($file->isFile) {
-            return $this->response->buildResponseWebDav(
-                return: $file->content
-            );
-        }
-
-        return $this->response->buildResponseWebDav(
-            status: false,
-            statusCode: 404,
-            message: "Arquivo não encontrado",
-            headers: [
-                "HTTP/1.1 404 Not Found",
-            ]
-        );
-    }
-
-    public function HEAD()
-    {
-        $file = new File($_POST["path"]);
-
-        if ($file->isDir) {
-            return $this->response->buildResponseWebDav(
-                headers: [
-                    "HTTP/1.1 200 OK",
-                    "Content-Type: text/plain"
-                ],
-            );
-        } elseif ($file->isFile) {
-            return $this->response->buildResponseWebDav(
-                headers: [
-                    "HTTP/1.1 200 OK",
-                    "Content-Type: " . $file->mimeType,
-                    "Content-Length: " . $file->size
-                ],
-            );
-        }
-
-        return $this->response->buildResponseWebDav(
-            status: false,
-            statusCode: 404,
-            message: "Arquivo não encontrado",
-            headers: [
-                "HTTP/1.1 404 Not Found",
-            ]
-        );
-    }
-
-    public function POST()
-    {
-        $file = new File($_POST["path"] ?? "/");
-
-        $_POST["content"] = base64_decode($_POST["content"] ?? "");
-
-        if (empty($_POST["content"])) {
-            $_POST["content"] = "";
-        }
-
-        if (!$file->isFile && !$file->isDir) {
-            $file->createFile($_POST["content"]);
-            return $this->response->buildResponseWebDav(
-                headers: [
-                    "HTTP/1.1 201 Created",
-                ]
-            );
-        }
-
-        if ($file->setContent($_POST["content"])) {
-            return $this->response->buildResponseWebDav(
-                headers: [
-                    "HTTP/1.1 200 OK",
-                ]
-            );
-        }
-
-        return $this->response->buildResponseWebDav(
-            headers: [
-                "HTTP/1.1 500 Internal Server Error",
-            ],
-            data: [
-                "content" => $_POST["content"]
-            ]
-        );
-    }
-
-    public function DELETE()
-    {
-        $file = new File($_POST["path"]);
-
-        if ($file->delete()) {
-            return $this->response->buildResponseWebDav(
-                headers: [
-                    "HTTP/1.1 204 No Content",
-                ]
-            );
-        }
-
-        return $this->response->buildResponseWebDav(
-            headers: [
-                "HTTP/1.1 404 Not Found",
-            ]
-        );
-    }
-
-    /**
-     * @todo Implementar o método PROPFIND da maneira correta, listando os dados dos arquivos do model File. está funcionando, mas não é o ideal
-     */
+    #[Auth("user", "manager", "admin")]
+    #[Details(["description" => "Retorna o conteúdo do arquivo ou diretório"])]
+    #[Method("PROPFIND")]
+    #[OptionalParams([
+        "path" => Field::STRING
+    ])]
     public function PROPFIND()
     {
-        function appendPropFindResponse($xml, $multistatus, $uri, $filePath)
-        {
-            $response = $xml->createElement('d:response');
-            $multistatus->appendChild($response);
+        $get = new Get();
+        $path = new FilePath(htmlspecialchars_decode($get->path ?? "/"));
+        $user = ClassAuth::getCourentUser();
+        $database = new Database();
+        $depth = $_SERVER['HTTP_DEPTH'] ?? '1';
 
-            $href = $xml->createElement('d:href', $uri);
-            $response->appendChild($href);
+        $xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+        $xml .= "<D:multistatus xmlns:D=\"DAV:\">\n";
 
-            $propstat = $xml->createElement('d:propstat');
-            $response->appendChild($propstat);
-
-            $prop = $xml->createElement('d:prop');
-            $propstat->appendChild($prop);
-
-            $resourcetype = $xml->createElement('d:resourcetype');
-            if (is_dir($filePath)) {
-                $collection = $xml->createElement('d:collection');
-                $resourcetype->appendChild($collection);
-            }
-            $prop->appendChild($resourcetype);
-
-            $prop->appendChild($xml->createElement('d:displayname', basename($filePath)));
-            $prop->appendChild($xml->createElement('d:getcontentlength', is_file($filePath) ? filesize($filePath) : '0'));
-            $prop->appendChild($xml->createElement('d:getlastmodified', file_exists($filePath) ? date(DATE_RFC1123, filemtime($filePath)) : ''));
-            $prop->appendChild($xml->createElement('d:getetag', is_file($filePath) ? md5_file($filePath) : ''));
-
-            // Adiciona informações de espaço em disco
-            if (is_dir($filePath)) {
-                $freeSpace = disk_free_space($filePath);
-                $totalSpace = disk_total_space($filePath);
-                $prop->appendChild($xml->createElement('d:quota-available-bytes', $freeSpace));
-                $prop->appendChild($xml->createElement('d:quota-used-bytes', $totalSpace - $freeSpace));
-            }
-
-            $statusCode = file_exists($filePath) ? '200 OK' : '404 Not Found';
-            $propstat->appendChild($xml->createElement('d:status', 'HTTP/1.1 ' . $statusCode));
-        }
-
-        $file = new File($_POST["path"]);
-        $depth = $_POST["depth"] ?? "1";
-
-        if (!$file->isFile && !$file->isDir) {
-            return $this->response->buildResponseWebDav(
-                headers: [
-                    "HTTP/1.1 404 Not Found",
+        // Se for a raiz, monta manualmente a resposta para "/"
+        if ((string)$path === "/") {
+            $xml .= "  <D:response>\n";
+            $xml .= "    <D:href>/</D:href>\n";
+            $xml .= "    <D:propstat>\n";
+            $xml .= "      <D:prop>\n";
+            $xml .= "        <D:displayname>/</D:displayname>\n";
+            $xml .= "        <D:resourcetype><D:collection/></D:resourcetype>\n";
+            $xml .= "        <D:getcontentlength>0</D:getcontentlength>\n";
+            $xml .= "        <D:getlastmodified>" . gmdate("D, d M Y H:i:s") . " GMT</D:getlastmodified>\n";
+            $xml .= "      </D:prop>\n";
+            $xml .= "      <D:status>HTTP/1.1 200 OK</D:status>\n";
+            $xml .= "    </D:propstat>\n";
+            $xml .= "  </D:response>\n";
+        } else {
+            // Busca o próprio diretório/arquivo normalmente
+            $result = $database->query(
+                select: "*",
+                from: "file_structure",
+                where: [
+                    "path" => (string) $path,
+                    "user_id" => (string) $user->id
                 ]
             );
-        }
-
-        $xml = new DOMDocument('1.0', 'utf-8');
-        $xml->formatOutput = true; // Facilita a leitura do XML
-        $multistatus = $xml->createElement('d:multistatus');
-        $multistatus->setAttribute('xmlns:d', 'DAV:');
-        $xml->appendChild($multistatus);
-
-        // Sempre adiciona a resposta para o recurso solicitado, mesmo se não existir
-        appendPropFindResponse($xml, $multistatus, $_POST["path"], $file->path);
-
-        // Se for um diretório e a profundidade for diferente de 0, adiciona os filhos
-        if ($file->isDir && $depth !== '0') {
-            $files = scandir($file->path);
-            foreach ($files as $fileList) {
-                if ($fileList !== '.' && $fileList !== '..') {
-                    $fullPath = $file->path . '/' . $fileList;
-                    $fullUri = $_POST["path"] . '/' . $fileList;
-                    appendPropFindResponse($xml, $multistatus, $fullUri, $fullPath);
+            foreach ($result as $row) {
+                $isDir = $row["type"] === "folder";
+                $href = $row["path"];
+                if ($isDir && substr($href, -1) !== "/") {
+                    $href .= "/";
                 }
+                $xml .= "  <D:response>\n";
+                $xml .= "    <D:href>" . htmlspecialchars($href) . "</D:href>\n";
+                $xml .= "    <D:propstat>\n";
+                $xml .= "      <D:prop>\n";
+                $xml .= "        <D:displayname>{$row["name"]}</D:displayname>\n";
+                $xml .= "        <D:resourcetype>" . ($isDir ? "<D:collection/>" : "") . "</D:resourcetype>\n";
+                $xml .= "        <D:getcontentlength>{$row["size"]}</D:getcontentlength>\n";
+                $xml .= "        <D:getlastmodified>" . gmdate("D, d M Y H:i:s", strtotime($row["modified"])) . " GMT</D:getlastmodified>\n";
+                $xml .= "      </D:prop>\n";
+                $xml .= "      <D:status>HTTP/1.1 200 OK</D:status>\n";
+                $xml .= "    </D:propstat>\n";
+                $xml .= "  </D:response>\n";
             }
         }
 
-        return $this->response->buildResponseWebDav(
-            headers: [
-                "HTTP/1.1 207 Multi-Status",
-                "Content-Type: application/xml; charset=\"utf-8\""
-            ],
-            return: $xml->saveXML()
-        );
-    }
-
-    public function MKCOL()
-    {
-        $file = new File($_POST["path"]);
-
-        if ($file->createDir()) {
-            return $this->response->buildResponseWebDav(
-                headers: [
-                    "HTTP/1.1 201 Created",
+        // Filhos (apenas se Depth > 0)
+        if ($depth !== '0') {
+            $children = $database->query(
+                select: "*",
+                from: "file_structure",
+                where: [
+                    "parent_path" => (string) $path,
+                    "user_id" => (string) $user->id
                 ]
             );
+            foreach ($children as $row) {
+                $isDir = $row["type"] === "folder";
+                $href = $row["path"];
+                if ($isDir && substr($href, -1) !== "/") {
+                    $href .= "/";
+                }
+                $xml .= "  <D:response>\n";
+                $xml .= "    <D:href>" . htmlspecialchars($href) . "</D:href>\n";
+                $xml .= "    <D:propstat>\n";
+                $xml .= "      <D:prop>\n";
+                $xml .= "        <D:displayname>{$row["name"]}</D:displayname>\n";
+                $xml .= "        <D:resourcetype>" . ($isDir ? "<D:collection/>" : "") . "</D:resourcetype>\n";
+                $xml .= "        <D:getcontentlength>{$row["size"]}</D:getcontentlength>\n";
+                $xml .= "        <D:getlastmodified>" . gmdate("D, d M Y H:i:s", strtotime($row["modified"])) . " GMT</D:getlastmodified>\n";
+                $xml .= "      </D:prop>\n";
+                $xml .= "      <D:status>HTTP/1.1 200 OK</D:status>\n";
+                $xml .= "    </D:propstat>\n";
+                $xml .= "  </D:response>\n";
+            }
         }
 
-        return $this->response->buildResponseWebDav(
-            headers: [
-                "HTTP/1.1 500 Internal Server Error",
-            ]
+        $xml .= "</D:multistatus>";
+
+        return new HttpResponse(
+            statusCode: HttpStatusCode::OK,
+            message: "Listagem de pastas",
+            data: ["xml" => $xml]
         );
     }
 
-    public function MOVE()
+    #[Auth("user", "manager", "admin")]
+    #[Details(["description" => "Cria um novo diretório"])]
+    #[Method("MKCOL")]
+    #[OptionalParams([
+        "path" => Field::STRING
+    ])]
+    public function MKCOL(): HttpResponse
     {
-        $origem = new File($_POST["path"]);
-        $destino = new File($_POST["destination"]);
+        $database = new Database();
+        $get = new Get();
+        $user = ClassAuth::getCourentUser();
+        $path = htmlspecialchars_decode($get->path ?? "/");
+        $parentName = dirname((string) $path);
+        $name = basename((string) $path);
 
-        if (rename($origem->path, $destino->path)) {
-            return $this->response->buildResponseWebDav(
-                headers: [
-                    "HTTP/1.1 201 Created",
+        $parent = null;
+        if ($parentName != "/") {
+            $parentData = $database->query(
+                select: "*",
+                from: "file_structure",
+                where: [
+                    "path" => $parentName,
+                    "user_id" => $user->id
                 ]
             );
+
+            if (empty($parentData)) {
+                return new HttpResponse(
+                    statusCode: HttpStatusCode::NOT_FOUND,
+                    message: "Diretório pai não encontrado"
+                );
+            }
+
+            $parent = new Folder(id: new UUID($parentData[0]["id"] ?? null));
         }
 
-        return $this->response->buildResponseWebDav(
-            headers: [
-                "HTTP/1.1 500 Internal Server Error",
-            ]
+        Folder::new(
+            user: $user,
+            name: new FolderName($name),
+            parent: $parent
         );
-    }
 
-    public function LOCK()
-    {
-        $lockToken = "opaquelocktoken:" . uniqid(); // Gera um token de bloqueio único
-
-        $body = <<<XML
-        <?xml version="1.0" encoding="utf-8"?>
-        <D:prop xmlns:D="DAV:">
-            <D:lockdiscovery>
-                <D:activelock>
-                    <D:locktype><D:write/></D:locktype>
-                    <D:lockscope><D:exclusive/></D:lockscope>
-                    <D:depth>infinity</D:depth>
-                    <D:owner>
-                        <D:href>http://example.com/</D:href>
-                    </D:owner>
-                    <D:timeout>Second-3600</D:timeout>
-                    <D:locktoken>
-                        <D:href>$lockToken</D:href>
-                    </D:locktoken>
-                </D:activelock>
-            </D:lockdiscovery>
-        </D:prop>
-        XML;
-
-        return $this->response->buildResponseWebDav(
-            headers: [
-                "HTTP/1.1 200 OK",
-                "Content-Type: application/xml; charset=\"utf-8\"",
-                "Lock-Token: <$lockToken>"
-            ],
-            return: $body
-        );
-    }
-
-    public function UNLOCK()
-    {
-        return $this->response->buildResponseWebDav(
-            headers: [
-                "HTTP/1.1 204 No Content",
-            ]
+        return new HttpResponse(
+            statusCode: HttpStatusCode::CREATED,
+            message: "Diretório criado com sucesso"
         );
     }
 }
