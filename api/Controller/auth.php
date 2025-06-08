@@ -7,7 +7,6 @@ use Bifrost\Attributes\Method;
 use Bifrost\Attributes\RequiredFields;
 use Bifrost\Attributes\Auth as AuthAttribute;
 use Bifrost\Class\Auth as ClassAuth;
-use Bifrost\Class\HttpError;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Enum\Field;
 use Bifrost\Interface\ControllerInterface;
@@ -38,7 +37,7 @@ class Auth implements ControllerInterface
 
         return ClassAuth::autenticate($email, $password) ?
             HttpResponse::success("Usuário logado com sucesso") :
-            HttpError::unauthorized("Usuário ou senha invalidos");
+            HttpResponse::unauthorized("Usuário ou senha invalidos");
     }
 
     #[Method("GET")]
