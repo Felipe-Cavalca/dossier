@@ -11,7 +11,6 @@ use Bifrost\Attributes\OptionalFields;
 use Bifrost\Attributes\OptionalParams;
 use Bifrost\Class\Auth as ClassAuth;
 use Bifrost\Class\HttpResponse;
-use Bifrost\Class\HttpError;
 use Bifrost\Class\Folder as FolderClass;
 use Bifrost\Core\Post;
 use Bifrost\Core\Request;
@@ -40,7 +39,7 @@ class Folder implements ControllerInterface
                     "new" => Request::getOptionsAttributes($controller, "new")
                 ]);
             default:
-                return HttpError::methodNotAllowed("Method not allowed");
+                return HttpResponse::methodNotAllowed("Method not allowed");
         }
     }
 
@@ -66,17 +65,20 @@ class Folder implements ControllerInterface
         if ($post->parent_id) {
             $id = new UUID($post->parent_id);
             if (!FolderClass::validId($id)) {
-                return HttpError::badRequest("Parent ID is not valid", [
-                    "fieldName" => "parent_id",
-                    "fieldValue" => (string) $post->parent_id
-                ]);
+                return HttpResponse::badRequest(
+                    errors: [
+                        "fieldName" => "parent_id",
+                        "fieldValue" => (string) $post->parent_id
+                    ],
+                    message: "Parent ID is not valid"
+                );
             }
 
             $parent = new FolderClass(id: $id);
         }
 
         if (FolderClass::exists(name: $name, reference: $parent ?? $user)) {
-            return HttpError::badRequest("Folder already exists");
+            return HttpResponse::badRequest([], "Folder already exists");
         }
 
         $folder = FolderClass::new(

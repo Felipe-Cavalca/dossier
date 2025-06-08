@@ -9,7 +9,8 @@
 
 namespace Bifrost\Core;
 
-use Bifrost\Class\HttpError;
+use Bifrost\Core\AppError;
+use Bifrost\Class\HttpResponse;
 
 /**
  * It is responsible for managing the system settings.
@@ -54,13 +55,16 @@ final class Settings
      *
      * @param string $param The name of the property to be returned.
      * @param bool $required Indicates whether the property is required.
-     * @uses HttpError::__construct()
+     * @uses AppError::__construct()
      * @return mixed
      */
     protected static function getEnv(string $param, bool $required = false): mixed
     {
         if ($required && !getenv($param)) {
-            throw HttpError::internalServerError("The environment variable '{$param}' is required.");
+            throw new AppError(HttpResponse::internalServerError(
+                message: "The environment variable '{$param}' is required.",
+                errors: ["{$param}" => "The environment variable '{$param}' is required."]
+            ));
         }
 
         return getenv($param) ?: null;

@@ -3,7 +3,7 @@
 namespace Bifrost\Attributes;
 
 use Attribute;
-use Bifrost\Class\HttpError;
+use Bifrost\Class\HttpResponse;
 use Bifrost\Interface\AttributesInterface;
 use Bifrost\Include\AtrributesDefaultMethods;
 use Bifrost\Core\Get;
@@ -36,7 +36,10 @@ class OptionalParams implements AttributesInterface
     public function beforeRun(): mixed
     {
         if (!$this->validateOptionalParams(self::$params)) {
-            return HttpError::badRequest("Parâmetros inválidos", $this->getErrors());
+            return HttpResponse::badRequest(
+                errors: $this->getErrors(),
+                message: "Invalid parameters"
+            );
         }
         return null;
     }
@@ -51,7 +54,7 @@ class OptionalParams implements AttributesInterface
         foreach (self::$params as $field => $filter) {
             $params[$field] = $filter->value ?? null;
         }
-        return ["Parâmetros" => $params];
+        return ["Params" => $params];
     }
 
     /**
@@ -70,7 +73,7 @@ class OptionalParams implements AttributesInterface
             }
 
             if (!static::validateType($field, $filter) && empty($this->errors[$field])) {
-                $this->errors[$field] = "Tipo de campo inválido";
+                $this->errors[$field] = "Invalid parameter type";
             }
         }
 
@@ -86,7 +89,7 @@ class OptionalParams implements AttributesInterface
      */
     private function getErrors(): array
     {
-        return $this->errors;
+        return ["params" => $this->errors];
     }
 
     /**

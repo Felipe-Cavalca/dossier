@@ -7,9 +7,9 @@ use Bifrost\Attributes\Auth;
 use Bifrost\Attributes\Cache;
 use Bifrost\Attributes\Details;
 use Bifrost\Attributes\Method;
+use Bifrost\Attributes\OptionalFields;
 use Bifrost\Attributes\RequiredFields;
 use Bifrost\Attributes\RequiredParams;
-use Bifrost\Class\HttpError;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Core\Request;
 use Bifrost\Class\User as UserClass;
@@ -30,40 +30,37 @@ class User implements ControllerInterface
         switch ($_SERVER["REQUEST_METHOD"]) {
             case "GET":
                 $get = new Get();
-
                 if (isset($get->id)) {
-                    return Request::run("user", "get");
+                    return Request::run($this, "get");
                 }
-
-                return Request::run("user", "all");
+                return Request::run($this, "all");
             case "POST":
-                return Request::run("user", "new");
+                return Request::run($this, "new");
             case "PUT":
             case "PATCH":
-                return Request::run("user", "update");
+                return Request::run($this, "update");
             case "DELETE":
-                return Request::run("user", "delete");
+                return Request::run($this, "delete");
             case "OPTIONS":
-                $controller = "user";
-                return HttpResponse::returnAttributes("infos", [
-                    "all" => Request::getOptionsAttributes($controller, "all"),
-                    "get" => Request::getOptionsAttributes($controller, "get"),
-                    "new" => Request::getOptionsAttributes($controller, "new"),
-                    "delete" => Request::getOptionsAttributes($controller, "delete"),
-                    "update" => Request::getOptionsAttributes($controller, "update"),
+                return HttpResponse::success("infos", [
+                    "all" => Request::getOptionsAttributes($this, "all"),
+                    "get" => Request::getOptionsAttributes($this, "get"),
+                    "new" => Request::getOptionsAttributes($this, "new"),
+                    "delete" => Request::getOptionsAttributes($this, "delete"),
+                    "update" => Request::getOptionsAttributes($this, "update"),
                 ]);
             default:
-                return HttpError::methodNotAllowed("Method not allowed");
+                return HttpResponse::methodNotAllowed("Method not allowed");
         }
     }
 
     #[Method("GET")]
     #[Auth("manager", "admin")]
-    #[Cache("get_usuario", 60)]
+    #[Cache(60)]
     #[Details([
         "description" => "Lista usuarios do sistema"
     ])]
-    public function all(): array
+    public function all(): HttpResponse
     {
         return HttpResponse::success("Users in system", UserModel::getAll());
     }
@@ -74,13 +71,13 @@ class User implements ControllerInterface
         "email" => Field::EMAIL,
         "password" => Field::STRING,
     ])]
-    #[Details([
-        "OptionalFields" => [
-            "userName" => Field::STRING
-        ],
-        "description" => "Cria um novo usuário no sistema"
+    #[OptionalFields([
+        "userName" => Field::STRING
     ])]
-    public function new(): HttpError|HttpResponse
+    #[Details([
+        "description" => "Create a new user in the system",
+    ])]
+    public function new(): HttpResponse
     {
         $post = new Post();
 
@@ -90,7 +87,10 @@ class User implements ControllerInterface
         $password = $post->password;
 
         if (UserClass::exists(email: $email, userName: $userName)) {
-            return HttpError::badRequest("User already exists");
+            return HttpResponse::badRequest([
+                "email" => (string) $email,
+                "userName" => $userName
+            ], "User already exists");
         }
 
         $roleClass = new RoleClass();
@@ -103,10 +103,9 @@ class User implements ControllerInterface
             role: $roleClass,
         );
 
-        return new HttpResponse(
-            statusCode: HttpStatusCode::CREATED,
-            message: "User created",
-            data: $user
+        return HttpResponse::created(
+            objName: "User",
+            data: $user->toArray()
         );
     }
 
@@ -115,25 +114,27 @@ class User implements ControllerInterface
         "id" => Field::UUID
     ])]
     #[Auth("manager", "admin")]
-    #[Cache("get_usuario", 60)]
+    #[Cache(60)]
     #[Details([
         "description" => "Lista um usuário do sistema"
     ])]
-    public function get(): HttpError|HttpResponse
+    public function get(): HttpResponse
     {
         $get = new Get();
 
         if (!UserModel::exists(["id" => $get->id])) {
-            return HttpError::notFound("User not found");
+            return HttpResponse::notFound([
+                "id" => $get->id
+            ], "User not found");
         }
 
         $id = new UUID($get->id);
         $user = new UserClass(id: $id);
 
         return new HttpResponse(
-            statusCode: HttpStatusCode::OK,
+            status: HttpStatusCode::OK,
             message: "User found",
-            data: $user
+            data: $user->toArray()
         );
     }
 
@@ -157,7 +158,7 @@ class User implements ControllerInterface
         $get = new Get();
 
         if (!UserModel::exists(["id" => $get->id])) {
-            return HttpError::notFound("User not found");
+            return HttpResponse::notFound([], "User not found");
         }
 
         $id = new UUID($get->id);
@@ -184,7 +185,7 @@ class User implements ControllerInterface
         unset($user);
 
         return new HttpResponse(
-            statusCode: HttpStatusCode::OK,
+            status: HttpStatusCode::OK,
             message: "User updated",
             data: []
         );
@@ -198,24 +199,24 @@ class User implements ControllerInterface
     #[Details([
         "description" => "Deleta um usuário e todos os seus dados relacionados"
     ])]
-    public function delete(): HttpError|HttpResponse
+    public function delete(): HttpResponse
     {
         $get = new Get();
 
         if (!UserModel::exists(["id" => $get->id])) {
-            return HttpError::notFound("User not found");
+            return HttpResponse::notFound([], "User not found");
         }
 
         $id = new UUID($get->id);
 
         if (UserModel::delete($id)) {
             return new HttpResponse(
-                statusCode: HttpStatusCode::OK,
+                status: HttpStatusCode::OK,
                 message: "User deleted",
                 data: []
             );
         }
 
-        return HttpError::internalServerError("Error deleting user");
+        return HttpResponse::internalServerError([], "Error deleting user");
     }
 }

@@ -4,7 +4,7 @@ namespace Bifrost\Attributes;
 
 use Bifrost\Class\Auth as ClassAuth;
 use Bifrost\Interface\AttributesInterface;
-use Bifrost\Class\HttpError;
+use Bifrost\Class\HttpResponse;
 use Bifrost\DataTypes\Email;
 
 #[\Attribute]
@@ -26,16 +26,16 @@ class Auth implements AttributesInterface
             $password = $_SERVER['PHP_AUTH_PW'];
 
             if (!ClassAuth::autenticate($email, $password)) {
-                return HttpError::unauthorized("Credenciais inválidas");
+                return HttpResponse::unauthorized("Invalid credentials");
             }
         }
 
         if (!ClassAuth::isLogged()) {
-            return HttpError::unauthorized("Usuário não autenticado");
+            return HttpResponse::unauthorized("User not authenticated");
         }
 
         if (!ClassAuth::hasRole(self::$roles)) {
-            return HttpError::forbidden("Usuário não autorizado");
+            return HttpResponse::forbidden("User not authorized");
         }
 
         ClassAuth::setIdentifierOnDatabase();
@@ -49,7 +49,7 @@ class Auth implements AttributesInterface
     {
         return [
             "Auth" => [
-                "Description" => "Necessário autenticação",
+                "Description" => "Authentication required",
                 "Roles" => self::$roles
             ]
         ];

@@ -3,7 +3,7 @@
 namespace Bifrost\Attributes;
 
 use Attribute;
-use Bifrost\Class\HttpError;
+use Bifrost\Class\HttpResponse;
 use Bifrost\Core\Post;
 use Bifrost\Enum\Field;
 use Bifrost\Include\AtrributesDefaultMethods;
@@ -36,7 +36,10 @@ class RequiredFields implements AttributesInterface
     public function beforeRun(): mixed
     {
         if (!$this->validateRequiredFields(self::$fields)) {
-            return HttpError::badRequest("Campos inválidos", $this->getErrors());
+            return HttpResponse::badRequest(
+                errors: $this->getErrors(),
+                message: "Invalid fields"
+            );
         }
         return null;
     }
@@ -70,11 +73,11 @@ class RequiredFields implements AttributesInterface
             }
 
             if (!static::existField($field)) {
-                $this->errors[$field] = "Campo não encontrado";
+                $this->errors[$field] = "Field not found";
             }
 
             if (!static::validateType($field, $filter) && empty($this->errors[$field])) {
-                $this->errors[$field] = "Tipo de campo inválido";
+                $this->errors[$field] = "Invalid field type";
             }
         }
 
@@ -90,7 +93,7 @@ class RequiredFields implements AttributesInterface
      */
     private function getErrors(): array
     {
-        return $this->errors;
+        return ["fields" => $this->errors];
     }
 
     /**

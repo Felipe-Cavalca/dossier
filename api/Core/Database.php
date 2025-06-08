@@ -2,11 +2,12 @@
 
 namespace Bifrost\Core;
 
-use PDO;
-use PDOException;
+use Bifrost\Class\HttpResponse;
+use Bifrost\Core\AppError;
 use Bifrost\Core\Functions;
 use Bifrost\Core\Settings;
-use Bifrost\Class\HttpError;
+use PDO;
+use PDOException;
 
 class Database
 {
@@ -204,11 +205,10 @@ class Database
             }
         } catch (PDOException $e) {
             // Lançar um erro de servidor interno com detalhes adicionais
-            $details = explode("\nDETAIL:", $e->errorInfo[2])[0];
-            throw HttpError::internalServerError(
-                details: $details,
-                additionalInfo: []
-            );
+            throw new AppError(HttpResponse::internalServerError(
+                errors: ["Database error" => $e->getMessage()],
+                message: "An error occurred while executing the database query."
+            ));
         }
     }
 
