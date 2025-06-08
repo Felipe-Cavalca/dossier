@@ -126,13 +126,25 @@ class User
 
     public function __toString(): string
     {
-        return json_encode([
+        return json_encode(
+            $this->toArray(),
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
+    }
+
+    /**
+     * Converte o objeto User em um array associativo.
+     * @return array Associative array com os dados do usuário.
+     */
+    public function toArray(): array
+    {
+        return [
             "id" => (string) $this->__get("id"),
             "name" => $this->name,
             "userName" => $this->userName,
             "email" => (string) $this->__get("email"),
-            "role" => json_decode((string) $this->role),
-        ]);
+            "role" => $this->role->toArray(),
+        ];
     }
 
     private function getRole(): Role
