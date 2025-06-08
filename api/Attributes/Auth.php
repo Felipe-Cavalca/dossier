@@ -26,16 +26,16 @@ class Auth implements AttributesInterface
             $password = $_SERVER['PHP_AUTH_PW'];
 
             if (!ClassAuth::autenticate($email, $password)) {
-                return HttpResponse::unauthorized("Credenciais inválidas");
+                return HttpResponse::unauthorized("Invalid credentials");
             }
         }
 
         if (!ClassAuth::isLogged()) {
-            return HttpResponse::unauthorized("Usuário não autenticado");
+            return HttpResponse::unauthorized("User not authenticated");
         }
 
         if (!ClassAuth::hasRole(self::$roles)) {
-            return HttpResponse::forbidden("Usuário não autorizado");
+            return HttpResponse::forbidden("User not authorized");
         }
 
         ClassAuth::setIdentifierOnDatabase();
@@ -49,7 +49,7 @@ class Auth implements AttributesInterface
     {
         return [
             "Auth" => [
-                "Description" => "Necessário autenticação",
+                "Description" => "Authentication required",
                 "Roles" => self::$roles
             ]
         ];
