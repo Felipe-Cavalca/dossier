@@ -4,6 +4,8 @@ namespace Bifrost\Class;
 
 use Bifrost\DataTypes\UUID;
 use Bifrost\Model\Role as RoleModel;
+use Bifrost\Class\HttpResponse;
+use Bifrost\Core\AppError;
 
 class Role
 {
@@ -26,10 +28,15 @@ class Role
         }
 
         if (empty($roleData)) {
-            throw HttpError::internalServerError("Role not found", [
-                "id" => $id,
-                "code" => $code,
-            ]);
+            throw new AppError(
+                HttpResponse::internalServerError(
+                    errors: [
+                        "id" => $id,
+                        "code" => $code,
+                    ],
+                    message: "Role not found"
+                )
+            );
         }
 
         $this->id = new UUID($roleData["id"]);

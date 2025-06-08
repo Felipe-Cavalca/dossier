@@ -9,7 +9,6 @@ use Bifrost\Attributes\Details;
 use Bifrost\Attributes\Method;
 use Bifrost\Attributes\RequiredFields;
 use Bifrost\Attributes\RequiredParams;
-use Bifrost\Class\HttpError;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Core\Request;
 use Bifrost\Class\User as UserClass;
@@ -53,7 +52,7 @@ class User implements ControllerInterface
                     "update" => Request::getOptionsAttributes($controller, "update"),
                 ]);
             default:
-                return HttpError::methodNotAllowed("Method not allowed");
+                return HttpResponse::methodNotAllowed("Method not allowed");
         }
     }
 
@@ -80,7 +79,7 @@ class User implements ControllerInterface
         ],
         "description" => "Cria um novo usuário no sistema"
     ])]
-    public function new(): HttpError|HttpResponse
+    public function new(): HttpResponse
     {
         $post = new Post();
 
@@ -90,7 +89,7 @@ class User implements ControllerInterface
         $password = $post->password;
 
         if (UserClass::exists(email: $email, userName: $userName)) {
-            return HttpError::badRequest("User already exists");
+            return HttpResponse::badRequest([], "User already exists");
         }
 
         $roleClass = new RoleClass();
@@ -119,12 +118,12 @@ class User implements ControllerInterface
     #[Details([
         "description" => "Lista um usuário do sistema"
     ])]
-    public function get(): HttpError|HttpResponse
+    public function get(): HttpResponse
     {
         $get = new Get();
 
         if (!UserModel::exists(["id" => $get->id])) {
-            return HttpError::notFound("User not found");
+            return HttpResponse::notFound([], "User not found");
         }
 
         $id = new UUID($get->id);
@@ -157,7 +156,7 @@ class User implements ControllerInterface
         $get = new Get();
 
         if (!UserModel::exists(["id" => $get->id])) {
-            return HttpError::notFound("User not found");
+            return HttpResponse::notFound([], "User not found");
         }
 
         $id = new UUID($get->id);
@@ -198,12 +197,12 @@ class User implements ControllerInterface
     #[Details([
         "description" => "Deleta um usuário e todos os seus dados relacionados"
     ])]
-    public function delete(): HttpError|HttpResponse
+    public function delete(): HttpResponse
     {
         $get = new Get();
 
         if (!UserModel::exists(["id" => $get->id])) {
-            return HttpError::notFound("User not found");
+            return HttpResponse::notFound([], "User not found");
         }
 
         $id = new UUID($get->id);
@@ -216,6 +215,6 @@ class User implements ControllerInterface
             );
         }
 
-        return HttpError::internalServerError("Error deleting user");
+        return HttpResponse::internalServerError([], "Error deleting user");
     }
 }

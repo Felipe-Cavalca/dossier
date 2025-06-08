@@ -55,7 +55,7 @@ final class Settings
      *
      * @param string $param The name of the property to be returned.
      * @param bool $required Indicates whether the property is required.
-     * @uses HttpError::__construct()
+     * @uses AppError::__construct()
      * @return mixed
      */
     protected static function getEnv(string $param, bool $required = false): mixed
