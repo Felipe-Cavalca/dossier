@@ -2,6 +2,7 @@
 
 namespace Bifrost\Class;
 
+use JsonSerializable;
 use Bifrost\DataTypes\Email;
 use Bifrost\DataTypes\UUID;
 use Bifrost\Model\User as UserModel;
@@ -16,7 +17,7 @@ use Bifrost\Class\EntityDuplicateException;
  * @property string password
  * @property Role role
  */
-class User
+class User implements JsonSerializable
 {
     public ?UUID $id = null;
     private ?Email $email = null;
@@ -109,6 +110,14 @@ class User
         }
     }
 
+    public function __toString(): string
+    {
+        return json_encode(
+            $this->toArray(),
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
+    }
+
     private function getData(): array
     {
         if (!empty($this->id)) {
@@ -124,14 +133,6 @@ class User
         return [];
     }
 
-    public function __toString(): string
-    {
-        return json_encode(
-            $this->toArray(),
-            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-        );
-    }
-
     /**
      * Converte o objeto User em um array associativo.
      * @return array Associative array com os dados do usuário.
@@ -143,8 +144,17 @@ class User
             "name" => $this->name,
             "userName" => $this->userName,
             "email" => (string) $this->__get("email"),
-            "role" => $this->role->toArray(),
+            "role" => $this->role,
         ];
+    }
+
+    /**
+     * Implementa a interface JsonSerializable para permitir a serialização do objeto em JSON.
+     * @return array Associative array com os dados do usuário para serialização em JSON.
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 
     private function getRole(): Role
@@ -165,8 +175,12 @@ class User
         return password_verify($password, $this->password);
     }
 
-    public static function exists(?string $userName = null, ?Email $email = null): bool
+    public static function exists(?string $userName = null, ?Email $email = null, ?UUID $id = null): bool
     {
+        if ($id !== null) {
+            $conditions['id'] = (string) $id;
+        }
+
         if ($userName !== null && $email !== null) {
             $conditions["or"] = [
                 "userName" => $userName,

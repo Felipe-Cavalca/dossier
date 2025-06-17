@@ -10,6 +10,7 @@ use Bifrost\Attributes\Method;
 use Bifrost\Attributes\OptionalFields;
 use Bifrost\Attributes\RequiredFields;
 use Bifrost\Attributes\RequiredParams;
+use Bifrost\Attributes\OptionalParams;
 use Bifrost\Class\HttpResponse;
 use Bifrost\Core\Request;
 use Bifrost\Class\User as UserClass;
@@ -122,7 +123,7 @@ class User implements ControllerInterface
     {
         $get = new Get();
 
-        if (!UserModel::exists(["id" => $get->id])) {
+        if (!UserClass::exists(id: new UUID($get->id))) {
             return HttpResponse::notFound([
                 "id" => $get->id
             ], "User not found");
@@ -157,7 +158,7 @@ class User implements ControllerInterface
     {
         $get = new Get();
 
-        if (!UserModel::exists(["id" => $get->id])) {
+        if (!UserClass::exists(id: new UUID($get->id))) {
             return HttpResponse::notFound([], "User not found");
         }
 
@@ -203,7 +204,7 @@ class User implements ControllerInterface
     {
         $get = new Get();
 
-        if (!UserModel::exists(["id" => $get->id])) {
+        if (!UserClass::exists(id: new UUID($get->id))) {
             return HttpResponse::notFound([], "User not found");
         }
 
