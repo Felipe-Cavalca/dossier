@@ -13,6 +13,23 @@ class User
 {
     private static string $table = "users";
 
+    /**
+     * Gera a chave de cache no formato 'user:campo:valor'.
+     *
+     * @param array $conditions Condições utilizadas na busca
+     * @return string Chave para o cache
+     */
+    private static function buildCacheKey(array $conditions): string
+    {
+        $parts = [];
+        foreach ($conditions as $field => $value) {
+            $field = str_replace('u.', '', $field);
+            $parts[] = "{$field}:{$value}";
+        }
+
+        return 'user:' . implode(':', $parts);
+    }
+
     public static function getById(UUID $id): array
     {
         return self::search(["u.id" => (string) $id]) ?? [];
@@ -51,7 +68,9 @@ class User
         $settings = new Settings();
         $cache = new Cache();
 
-        $user = $cache->get("get-user-" . json_encode($conditions), function () use ($database, $conditions) {
+        $cacheKey = self::buildCacheKey($conditions);
+
+        $user = $cache->get($cacheKey, function () use ($database, $conditions) {
             return $database->select(
                 table: self::$table . " u",
                 fields: [
