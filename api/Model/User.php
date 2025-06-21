@@ -13,23 +13,6 @@ class User
 {
     private static string $table = "users";
 
-    /**
-     * Gera a chave de cache no formato 'user:campo:valor'.
-     *
-     * @param array $conditions Condições utilizadas na busca
-     * @return string Chave para o cache
-     */
-    private static function buildCacheKey(array $conditions): string
-    {
-        $parts = [];
-        foreach ($conditions as $field => $value) {
-            $field = str_replace('u.', '', $field);
-            $parts[] = "{$field}:{$value}";
-        }
-
-        return 'user:' . implode(':', $parts);
-    }
-
     public static function getById(UUID $id): array
     {
         return self::search(["u.id" => (string) $id]) ?? [];
@@ -68,7 +51,7 @@ class User
         $settings = new Settings();
         $cache = new Cache();
 
-        $cacheKey = self::buildCacheKey($conditions);
+        $cacheKey = Cache::buildCacheKey(entity: "user", conditions: $conditions);
 
         $user = $cache->get($cacheKey, function () use ($database, $conditions) {
             return $database->select(
@@ -125,24 +108,17 @@ class User
 
     public static function exists(array $conditions): bool
     {
-        static $localCache = [];
+        $settings = new Settings();
+        $cache = new Cache();
 
-        $key = md5(json_encode($conditions));
+        $cacheKey = Cache::buildCacheKey(entity: "user", conditions: $conditions) . ':exists';
 
-        if (array_key_exists($key, $localCache)) {
-            return $localCache[$key];
-        }
+        $result = $cache->get($cacheKey, function () use ($conditions) {
+            $database = new Database();
+            return $database->exists(self::$table, $conditions);
+        }, $settings->CACHE_QUERY_TIME);
 
-        $database = new Database();
-        $result = $database->select(
-            table: self::$table,
-            fields: ["1"],
-            where: $conditions,
-            limit: "1",
-        );
-
-        $localCache[$key] = !empty($result);
-        return $localCache[$key];
+        return (bool) $result;
     }
 
     /**
