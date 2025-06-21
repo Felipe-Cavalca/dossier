@@ -27,6 +27,7 @@ enum Field: string
     case JSON = 'JSON';
     case UUID = 'UUID';
     case PASSWORD = 'Password';
+    case ROLE_CODE = 'Role code [admin, manager, user]';
 
     public function validate($val): bool
     {
@@ -50,6 +51,7 @@ enum Field: string
             self::JSON => json_decode($val) !== null,
             self::UUID => self::validateUUID($val),
             self::PASSWORD => is_string($val) && strlen($val) >= 8,
+            self::ROLE_CODE => self::validateRoleCode($val),
             default => false,
         };
     }
@@ -140,5 +142,22 @@ enum Field: string
 
         // Check for invalid characters and length (1 to 255)
         return preg_match('/^[^\\/:*?"<>|]{1,255}$/', $val) === 1;
+    }
+
+    /**
+     * Valida o código do cargo.
+     * @param string $val Código da função a ser validado.
+     * @return bool Retorna true se o código for válido, caso contrário, false.
+     */
+    private static function validateRoleCode(string $val): bool
+    {
+        return in_array(
+            $val,
+            [
+                'admin',
+                'manager',
+                'user',
+            ]
+        );
     }
 }
