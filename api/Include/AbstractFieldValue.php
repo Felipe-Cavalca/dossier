@@ -48,4 +48,9 @@ trait AbstractFieldValue
     {
         return true; // por padrão
     }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->value;
+    }
 }

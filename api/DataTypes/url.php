@@ -5,7 +5,7 @@ namespace Bifrost\DataTypes;
 use Bifrost\Enum\Field;
 use Bifrost\Include\AbstractFieldValue;
 
-class Url
+class Url implements \JsonSerializable
 {
     use AbstractFieldValue;
 
