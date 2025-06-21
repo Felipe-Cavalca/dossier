@@ -54,7 +54,7 @@ class RequiredFields implements AttributesInterface
         foreach (self::$fields as $field => $filter) {
             $campos[$field] = $filter->value ?? null;
         }
-        return ["Fields" => $campos];
+        return ["fields" => $campos];
     }
 
     /**
