@@ -59,7 +59,7 @@ class User implements ControllerInterface
     #[Auth("manager", "admin")]
     #[Cache(60)]
     #[Details([
-        "description" => "Lista usuarios do sistema"
+        "description" => "List all users in the system",
     ])]
     public function all(): HttpResponse
     {
@@ -117,7 +117,7 @@ class User implements ControllerInterface
     #[Auth("manager", "admin")]
     #[Cache(60)]
     #[Details([
-        "description" => "Lista um usuário do sistema"
+        "description" => "List a user by ID",
     ])]
     public function get(): HttpResponse
     {
@@ -145,7 +145,7 @@ class User implements ControllerInterface
     ])]
     #[Auth("manager", "admin")]
     #[Details([
-        "description" => "Atualiza um usuário do sistema",
+        "description" => "Update a user by ID",
         "optionalFields" => [
             "name" => Field::STRING,
             "email" => Field::EMAIL,
@@ -198,7 +198,7 @@ class User implements ControllerInterface
     ])]
     #[Auth("manager", "admin")]
     #[Details([
-        "description" => "Deleta um usuário e todos os seus dados relacionados"
+        "description" => "Delete a user and all its data by ID",
     ])]
     public function delete(): HttpResponse
     {
