@@ -21,6 +21,7 @@ use Bifrost\Enum\Field;
 use Bifrost\Model\User as UserModel;
 use Bifrost\Class\Role as RoleClass;
 use Bifrost\Core\Get;
+use Bifrost\DataTypes\Password;
 use Bifrost\DataTypes\UUID;
 
 class User implements ControllerInterface
@@ -70,7 +71,7 @@ class User implements ControllerInterface
     #[RequiredFields([
         "name" => Field::STRING,
         "email" => Field::EMAIL,
-        "password" => Field::STRING,
+        "password" => Field::PASSWORD,
     ])]
     #[OptionalFields([
         "userName" => Field::STRING
@@ -85,7 +86,7 @@ class User implements ControllerInterface
         $name = $post->name;
         $userName = empty($post->userName) ? null : $post->userName;
         $email = new Email($post->email);
-        $password = $post->password;
+        $password = new Password($post->password);
 
         if (UserClass::exists(email: $email, userName: $userName)) {
             return HttpResponse::badRequest([
@@ -149,7 +150,7 @@ class User implements ControllerInterface
         "optionalFields" => [
             "name" => Field::STRING,
             "email" => Field::EMAIL,
-            "password" => Field::STRING,
+            "password" => Field::PASSWORD,
             "userName" => Field::STRING,
             "roleCode" => Field::STRING
         ]

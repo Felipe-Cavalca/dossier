@@ -8,6 +8,7 @@ use Bifrost\DataTypes\UUID;
 use Bifrost\Model\User as UserModel;
 use Bifrost\Class\Role as Role;
 use Bifrost\Class\EntityDuplicateException;
+use Bifrost\DataTypes\Password;
 
 /**
  * @property UUID id
@@ -99,8 +100,10 @@ class User implements JsonSerializable
                 }
                 break;
             case "password":
-                $this->data[$property] = password_hash($value, PASSWORD_DEFAULT);
-                $this->updateFields[$property] = $this->data[$property];
+                if ($value instanceof Password) {
+                    $this->data[$property] = (string) $value;
+                    $this->updateFields[$property] = $this->data[$property];
+                }
                 break;
             case "name":
             case "userName":
@@ -202,7 +205,7 @@ class User implements JsonSerializable
     public static function new(
         string $name,
         Email $email,
-        string $password,
+        Password $password,
         Role $role,
         ?string $userName = null,
     ): self {

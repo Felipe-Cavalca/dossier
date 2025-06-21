@@ -26,6 +26,7 @@ enum Field: string
     case FILE_PATH = 'File path';
     case JSON = 'JSON';
     case UUID = 'UUID';
+    case PASSWORD = 'Password';
 
     public function validate($val): bool
     {
@@ -48,6 +49,7 @@ enum Field: string
             self::FOLDER_NAME => self::validateFolderName($val),
             self::JSON => json_decode($val) !== null,
             self::UUID => self::validateUUID($val),
+            self::PASSWORD => is_string($val) && strlen($val) >= 8,
             default => false,
         };
     }
