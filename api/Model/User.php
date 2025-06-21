@@ -8,6 +8,7 @@ use Bifrost\DataTypes\UUID;
 use Bifrost\Class\Role as Role;
 use Bifrost\Core\Cache;
 use Bifrost\Core\Settings;
+use Bifrost\DataTypes\Password;
 
 class User
 {
@@ -81,7 +82,7 @@ class User
     public static function new(
         string $name,
         Email $email,
-        string $password,
+        Password $password,
         Role $role,
         ?string $userName = null,
     ): array {
@@ -90,7 +91,7 @@ class User
         $userData = [
             "name" => $name,
             "email" => (string) $email,
-            "password" => password_hash($password, PASSWORD_DEFAULT),
+            "password" => (string) $password,
             "userName" => $userName,
             "role_id" => (string) $role->id
         ];
