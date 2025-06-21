@@ -88,11 +88,27 @@ class User implements ControllerInterface
         $email = new Email($post->email);
         $password = new Password($post->password);
 
-        if (UserClass::exists(email: $email, userName: $userName)) {
-            return HttpResponse::badRequest([
-                "email" => (string) $email,
-                "userName" => $userName
-            ], "User already exists");
+        if (UserClass::exists(email: $email)) {
+            return HttpResponse::conflict(
+                errors: [
+                    "code" => "email_exists",
+                    "fields" => [
+                        "email" => $email
+                    ],
+                ],
+                message: "Email already exists"
+            );
+        }
+        if (UserClass::exists(userName: $userName)) {
+            return HttpResponse::conflict(
+                errors: [
+                    "code" => "username_exists",
+                    "fields" => [
+                        "userName" => $userName
+                    ],
+                ],
+                message: "Username already exists"
+            );
         }
 
         $roleClass = new RoleClass();
