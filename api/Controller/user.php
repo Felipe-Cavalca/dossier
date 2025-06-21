@@ -168,7 +168,7 @@ class User implements ControllerInterface
             "email" => Field::EMAIL,
             "password" => Field::PASSWORD,
             "userName" => Field::STRING,
-            "roleCode" => Field::STRING
+            "roleCode" => Field::ROLE_CODE
         ]
     ])]
     public function update()
