@@ -5,7 +5,7 @@ namespace Bifrost\DataTypes;
 use Bifrost\Enum\Field;
 use Bifrost\Include\AbstractFieldValue;
 
-class UUID
+class UUID implements \JsonSerializable
 {
     use AbstractFieldValue;
 

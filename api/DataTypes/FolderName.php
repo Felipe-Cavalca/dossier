@@ -8,7 +8,7 @@ use Bifrost\Include\AbstractFieldValue;
 /**
  * Armazena e valida o nome de uma pasta
  */
-class FolderName
+class FolderName implements \JsonSerializable
 {
     use AbstractFieldValue;
 

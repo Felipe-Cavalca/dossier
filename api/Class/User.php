@@ -146,7 +146,7 @@ class User implements JsonSerializable
             "id" => (string) $this->__get("id"),
             "name" => $this->name,
             "userName" => $this->userName,
-            "email" => (string) $this->__get("email"),
+            "email" => $this->__get("email"),
             "role" => $this->role,
         ];
     }

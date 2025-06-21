@@ -5,7 +5,7 @@ namespace Bifrost\DataTypes;
 use Bifrost\Enum\Field;
 use Bifrost\Include\AbstractFieldValue;
 
-class Email
+class Email implements \JsonSerializable
 {
     use AbstractFieldValue;
 
