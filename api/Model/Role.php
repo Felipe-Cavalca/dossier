@@ -62,14 +62,17 @@ class Role
      */
     public static function getById(UUID $id): array
     {
-        $key = 'role:id:' . (string) $id;
+        $key = Cache::buildCacheKey(
+            entity: 'role',
+            conditions: ['id' => (string) $id]
+        );
 
         $settings = new Settings();
         $cache = new Cache();
 
         $role = $cache->get(
             key: $key,
-            value: fn () => self::fetch(['r.id' => (string) $id]),
+            value: fn() => self::fetch(['r.id' => (string) $id]),
             expire: $settings->CACHE_QUERY_TIME
         );
 
@@ -84,14 +87,17 @@ class Role
      */
     public static function getByCode(string $code): array
     {
-        $key = 'role:code:' . $code;
+        $key = Cache::buildCacheKey(
+            entity: 'role',
+            conditions: ['code' => $code]
+        );
 
         $settings = new Settings();
         $cache = new Cache();
 
         $role = $cache->get(
             key: $key,
-            value: fn () => self::fetch(['r.code' => $code]),
+            value: fn() => self::fetch(['r.code' => $code]),
             expire: $settings->CACHE_QUERY_TIME
         );
 
