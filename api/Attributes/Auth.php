@@ -48,9 +48,9 @@ class Auth implements AttributesInterface
     public function getOptions(): array
     {
         return [
-            "Auth" => [
-                "Description" => "Authentication required",
-                "Roles" => self::$roles
+            "auth" => [
+                "description" => "Authentication required",
+                "roles" => self::$roles
             ]
         ];
     }
