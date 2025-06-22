@@ -14,7 +14,7 @@ class Password implements \JsonSerializable
 
     public function __construct(mixed $password)
     {
-        $this->init($password, Field::PASSWORD);
+        $this->init($password, Field::STRING);
     }
 
     public function jsonSerialize(): string
@@ -25,5 +25,13 @@ class Password implements \JsonSerializable
     public function __toString(): string
     {
         return password_hash($this->value, PASSWORD_DEFAULT);
+    }
+
+    public function validate(string $hash): bool
+    {
+        return password_verify(
+            password: $this->value,
+            hash: $hash
+        );
     }
 }

@@ -44,7 +44,7 @@ const afterSend = async (response) => {
     } else if (data.status === 409 && data.errors.code == "username_exists") {
         alert().error("Já existe um usuário cadastrado com este nome de usuário");
     } else {
-        alert().error("Erro ao cadastrar, tente novamente mais tardez");
+        alert().error("Erro ao cadastrar, tente novamente mais tarde");
     }
 }
 

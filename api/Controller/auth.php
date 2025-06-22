@@ -12,6 +12,7 @@ use Bifrost\Enum\Field;
 use Bifrost\Interface\ControllerInterface;
 use Bifrost\Core\Post;
 use Bifrost\DataTypes\Email;
+use Bifrost\DataTypes\Password;
 
 class Auth implements ControllerInterface
 {
@@ -33,11 +34,17 @@ class Auth implements ControllerInterface
     {
         $post = new Post();
         $email = new Email($post->email);
-        $password = $post->password;
+        $password = new Password($post->password);
 
-        return ClassAuth::autenticate($email, $password) ?
-            HttpResponse::success("Usuário logado com sucesso") :
-            HttpResponse::unauthorized("Usuário ou senha invalidos");
+        return
+            ClassAuth::autenticate(email: $email, password: $password) ?
+            HttpResponse::success(
+                message: "user logged in successfully",
+                data: ClassAuth::getCourentUser()->toArray()
+            ) :
+            HttpResponse::unauthorized(
+                message: "Invalid email or password"
+            );
     }
 
     #[Method("GET")]
@@ -47,7 +54,7 @@ class Auth implements ControllerInterface
     ])]
     public function validate()
     {
-        return HttpResponse::success("Usuário logado com sucesso");
+        return HttpResponse::success("user is logged in");
     }
 
     #[Details([

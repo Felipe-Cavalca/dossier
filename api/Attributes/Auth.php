@@ -6,6 +6,7 @@ use Bifrost\Class\Auth as ClassAuth;
 use Bifrost\Interface\AttributesInterface;
 use Bifrost\Class\HttpResponse;
 use Bifrost\DataTypes\Email;
+use Bifrost\DataTypes\Password;
 
 #[\Attribute]
 class Auth implements AttributesInterface
@@ -23,7 +24,7 @@ class Auth implements AttributesInterface
     {
         if (isset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])) {
             $email = new Email($_SERVER['PHP_AUTH_USER']);
-            $password = $_SERVER['PHP_AUTH_PW'];
+            $password = new Password($_SERVER['PHP_AUTH_PW']);
 
             if (!ClassAuth::autenticate($email, $password)) {
                 return HttpResponse::unauthorized("Invalid credentials");

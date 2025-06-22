@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erro Interno do Servidor</title>
+    <style>
+        c-card {
+            padding: 50px;
+        }
+
+        .error-code {
+            font-size: 5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+    </style>
+    <script src="../core/core.js" defer></script>
+    <script src="../js/pages/error.js" defer></script>
+</head>
+
+<body>
+
+    <c-maximized>
+        <c-card>
+            <div class="error-code">500</div>
+            <div class="error-message">Tivemos um erro em nossos servidores.</div>
+            <button onclick="tryAgain()">Voltar para o Inicio</button>
+        </c-card>
+    </c-maximized>
+</body>
+
+</html>

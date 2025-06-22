@@ -6,6 +6,7 @@ use Bifrost\Core\Session;
 use Bifrost\Class\User;
 use Bifrost\Core\Database;
 use Bifrost\DataTypes\Email;
+use Bifrost\DataTypes\Password;
 use Bifrost\Model\User as ModelUser;
 
 class Auth
@@ -33,14 +34,18 @@ class Auth
     /**
      * Verifica se o usuário está autenticado
      * @param Email $email
-     * @param string $password
+     * @param Password $password
      * @return bool Usuario autenticado e logado
      */
-    public static function autenticate(Email $email, string $password): bool
+    public static function autenticate(Email $email, Password $password): bool
     {
+        if (!ModelUser::exists(["email" => (string) $email])) {
+            return false;
+        }
+
         $user = new User(email: $email);
 
-        if (!$user->validatePassword($password)) {
+        if (!$user->validatePassword(password: $password)) {
             return false;
         }
 

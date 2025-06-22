@@ -170,12 +170,14 @@ class User implements JsonSerializable
 
     /**
      * Valida se a senha passada é a mesma do usuário
-     * @param string $password senha a ser validada
+     * @param Password $password senha a ser validada
      * @return bool true se a senha for válida, false caso contrário
      */
-    public function validatePassword(string $password): bool
+    public function validatePassword(Password $password): bool
     {
-        return password_verify($password, $this->password);
+        return $password->validate(
+            hash: $this->password
+        );
     }
 
     public static function exists(?string $userName = null, ?Email $email = null, ?UUID $id = null): bool

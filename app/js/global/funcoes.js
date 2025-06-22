@@ -19,7 +19,7 @@ function alert() {
 
     // Verifica se Service Workers são suportados
     if (!('serviceWorker' in navigator)) {
-        console.warn("Service Worker não suportado neste navegador.");
+        console.warn("[Interceptor] Service Worker não suportado neste navegador.");
         return;
     }
 
@@ -30,8 +30,12 @@ function alert() {
 
             // Escuta mensagens do Service Worker
             navigator.serviceWorker.addEventListener("message", (event) => {
+                console.log("[Interceptor] Mensagem recebida do Service Worker:", event.data);
+
                 if (event.data?.type === 'unauthorized') {
-                    redirecionarParaLogin();
+                    redirectToLogin();
+                } else if (event.data?.type === 'server-error') {
+                    redirectToError();
                 }
             });
         })
@@ -39,12 +43,22 @@ function alert() {
             console.warn("[Interceptor] Service Worker não ficou pronto:", err);
         });
 
-    // Função que você pode customizar
-    function redirecionarParaLogin() {
-        // Se quiser, pode validar URL atual antes de redirecionar
+    /**
+     * Redireciona para a página de login se o usuário não estiver autenticado.
+     * * @returns {void}
+     */
+    function redirectToLogin() {
         const allowedPaths = ['/pages/', '/pages/cadastro.html'];
         if (!allowedPaths.some(path => window.location.pathname.startsWith(path))) {
             window.location.href = "/pages/index.html";
         }
+    }
+
+    /**
+     * Redireciona para a página de erro caso receba um erro 500 do servidor.
+     * * @returns {void}
+     */
+    function redirectToError() {
+        window.location.href = "/pages/error.html";
     }
 })();
