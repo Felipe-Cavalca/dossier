@@ -31,14 +31,20 @@ const afterSend = async (response) => {
     button.disabled = false;
     button.innerHTML = originalTextButton;
 
-    if (data.isSuccess) {
+    if (data.status === 201) {
         alert().success("Cadastro realizado com sucesso, você será redirecionado para a página inicial");
         document.querySelector("form").reset();
         setInterval(() => {
             window.location.href = "/";
         }, 2000);
+    } else if (data.status === 400) {
+        alert().error("Erro ao cadastrar, verifique os dados informados");
+    } else if (data.status === 409 && data.errors.code == "email_exists") {
+        alert().error("Já existe um usuário cadastrado com este e-mail");
+    } else if (data.status === 409 && data.errors.code == "username_exists") {
+        alert().error("Já existe um usuário cadastrado com este nome de usuário");
     } else {
-        alert().error(data.message);
+        alert().error("Erro ao cadastrar, tente novamente mais tardez");
     }
 }
 
