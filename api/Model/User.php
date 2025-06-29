@@ -52,7 +52,7 @@ class User
         $settings = new Settings();
         $cache = new Cache();
 
-        $cacheKey = Cache::buildCacheKey(entity: "user", conditions: $conditions);
+        $cacheKey = Cache::buildCacheKey(entity: self::$table, conditions: $conditions);
 
         $user = $cache->get($cacheKey, function () use ($database, $conditions) {
             return $database->select(
@@ -112,11 +112,11 @@ class User
         $settings = new Settings();
         $cache = new Cache();
 
-        $cacheKey = Cache::buildCacheKey(entity: "user", conditions: $conditions) . ':exists';
+        $cacheKey = Cache::buildCacheKey(entity: self::$table, conditions: $conditions) . ':exists';
 
         $result = $cache->get($cacheKey, function () use ($conditions) {
             $database = new Database();
-            return $database->exists(self::$table, $conditions);
+            return $database->exists(table: self::$table, where: $conditions);
         }, $settings->CACHE_QUERY_TIME);
 
         return (bool) $result;

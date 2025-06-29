@@ -8,6 +8,7 @@ use Bifrost\Class\User;
 use Bifrost\DataTypes\FileName;
 use Bifrost\DataTypes\FolderName;
 use DateTime;
+use JsonSerializable;
 
 /**
  * @property-read UUID id
@@ -16,7 +17,7 @@ use DateTime;
  * @property FileName name
  * @property DateTime changed
  */
-class Folder
+class Folder implements JsonSerializable
 {
     public readonly UUID $id;
     private array $data;
@@ -40,14 +41,10 @@ class Folder
      */
     public function __toString(): string
     {
-        $parent = $this->__get("parent");
-        return json_encode([
-            "id" => (string) $this->id,
-            "name" => (string) $this->name,
-            "changed" => $this->changed,
-            "user" => json_decode((string) $this->__get("user")),
-            "parent" => $parent ? json_decode((string) $parent) : null,
-        ]);
+        return json_encode(
+            $this->toArray(),
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
     }
 
     /**
@@ -69,12 +66,37 @@ class Folder
             case "name":
             case "changed":
                 if (empty($this->data)) {
-                    $this->data = FolderModel::getById($this->id);
+                    $this->data = FolderModel::list($this->id, first: true);
                 }
-                return $this->data[$property];
+                return $this->data[$property] ?? null;
             default:
                 return null;
         }
+    }
+
+    /**
+     * Retorna os dados da pasta em formato json
+     * @return array dados da pasta
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
+    }
+
+    /**
+     * Retorna os dados da pasta em formato array
+     * @return array dados da pasta
+     */
+    public function toArray(): array
+    {
+        $parent = $this->__get("parent");
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+            "changed" => $this->changed,
+            "user" => $this->__get("user"),
+            "parent" => $parent,
+        ];
     }
 
     /**
@@ -83,8 +105,8 @@ class Folder
      */
     private function getParent(): ?Self
     {
-        if ($this->parentClass === null && $this->__get("parent_id") !== null) {
-            $this->parentClass = new Folder(id: $this->__get("parent_id"));
+        if ($this->parentClass === null && $this->parent_id !== null) {
+            $this->parentClass = new Folder(id: $this->parent_id);
         }
 
         return $this->parentClass;
@@ -97,7 +119,7 @@ class Folder
     private function getUser(): User
     {
         if ($this->userClass === null) {
-            $this->userClass = new User(id: $this->__get("user_id"));
+            $this->userClass = new User(id: $this->user_id);
         }
 
         return $this->userClass;
@@ -105,23 +127,24 @@ class Folder
 
     /**
      * Valida se uma pasta já existe
-     * @param FolderName $name nome da pasta
-     * @param self|User $reference Pasta pai ou o dono da pasta caso ela esteja na raiz
+     * @param UUID $id ID da pasta
+     * @param FolderName $name Nome da pasta
+     * @param self $parent Pasta Pai
+     * @param User $user Usuário dono da pasta
      * @return bool a pasta existe ou não
      */
-    public static function exists(FolderName $name, self|User $reference): bool
-    {
-        return FolderModel::exists(name: $name, reference: $reference);
-    }
-
-    /**
-     * Verifica se o ID é válido
-     * @param UUID $id ID da pasta
-     * @return bool se o ID é válido ou não
-     */
-    public static function validId(UUID $id): bool
-    {
-        return FolderModel::validId(id: $id);
+    public static function exists(
+        ?UUID $id = null,
+        ?FolderName $name = null,
+        ?self $parent = null,
+        ?User $user = null,
+    ): bool {
+        return FolderModel::exists(
+            id: $id,
+            name: $name,
+            parent: $parent,
+            user: $user
+        );
     }
 
     /**
@@ -133,21 +156,14 @@ class Folder
      */
     public static function new(User $user, FolderName $name, ?self $parent = null): self
     {
-        $reference = $parent === null ? $user : $parent;
-
-        if (self::exists(name: $name, reference: $reference)) {
+        if (self::exists(name: $name, parent: $parent, user: $user)) {
             throw new EntityDuplicateException("Folder");
         }
 
-        $data = FolderModel::new(
+        return FolderModel::new(
             user: $user,
             name: $name,
             parent: $parent
-        );
-
-        return new self(
-            id: $data["id"],
-            allData: $data
         );
     }
 }

@@ -26,35 +26,28 @@ class Folder implements ControllerInterface
 
     public function index()
     {
-        $controller = "folder";
         switch ($_SERVER["REQUEST_METHOD"]) {
             case "GET":
-                return Request::run($controller, "list");
+                return Request::run($this, "list");
             case "POST":
-                return Request::run($controller, "new");
+                return Request::run($this, "new");
             case "OPTIONS":
-                return HttpResponse::returnAttributes("infos", [
-                    "list" => Request::getOptionsAttributes($controller, "list"),
-                    "all" => Request::getOptionsAttributes($controller, "all"),
-                    "new" => Request::getOptionsAttributes($controller, "new")
+                return HttpResponse::success("infos", [
+                    "list" => Request::getOptionsAttributes($this, "list"),
+                    "all" => Request::getOptionsAttributes($this, "all"),
+                    "new" => Request::getOptionsAttributes($this, "new")
                 ]);
             default:
                 return HttpResponse::methodNotAllowed("Method not allowed");
         }
     }
 
-    #[Method("POST")]
-    #[RequiredFields([
-        "name" => Field::FILE_PATH,
-    ])]
     #[Auth("user", "manager", "admin")]
-    #[OptionalFields([
-        "parent_id" => Field::UUID
-    ])]
-    #[Details([
-        "Description" => "Cria um novo usuário no sistema"
-    ])]
-    public function new()
+    #[Method("POST")]
+    #[RequiredFields(["name" => Field::FILE_PATH])]
+    #[OptionalFields(["parent_id" => Field::UUID])]
+    #[Details(["description" => "Creates a new folder"])]
+    public function new(): HttpResponse
     {
         $user = ClassAuth::getCourentUser();
         $post = new Post();
@@ -64,7 +57,7 @@ class Folder implements ControllerInterface
 
         if ($post->parent_id) {
             $id = new UUID($post->parent_id);
-            if (!FolderClass::validId($id)) {
+            if (!FolderClass::exists(id: $id)) {
                 return HttpResponse::badRequest(
                     errors: [
                         "fieldName" => "parent_id",
@@ -77,8 +70,18 @@ class Folder implements ControllerInterface
             $parent = new FolderClass(id: $id);
         }
 
-        if (FolderClass::exists(name: $name, reference: $parent ?? $user)) {
-            return HttpResponse::badRequest([], "Folder already exists");
+        if (FolderClass::exists(name: $name, parent: $parent, user: $user)) {
+            return HttpResponse::conflict(
+                errors: [
+                    "code" => "folder_exists",
+                    "fields" => [
+                        "name" => $name,
+                        "parent_id" => $parent ? (string) $parent->id : null,
+                        "user_id" => (string) $user->id
+                    ],
+                ],
+                message: "Folder already exists"
+            );
         }
 
         $folder = FolderClass::new(
@@ -87,35 +90,32 @@ class Folder implements ControllerInterface
             parent: $parent
         );
 
-        return new HttpResponse(
-            statusCode: HttpStatusCode::CREATED,
-            message: "Folder created",
-            data: (string) $folder
+        return HttpResponse::created(
+            objName: "Folder",
+            data: $folder->toArray(),
         );
     }
 
     #[Auth("user", "manager", "admin")]
-    #[Cache("list-user", 60)]
-    #[Details(["Description" => "Retorna uma lista de pastas do usuário autenticado"])]
     #[Method("GET")]
+    #[Cache(60)]
+    #[Details(["description" => "Returngs a list of folders for the current user"])]
     public function list(): HttpResponse
     {
-        return new HttpResponse(
-            statusCode: HttpStatusCode::OK,
+        return HttpResponse::success(
             message: "Folders found",
             data: ModelFolder::list(user: ClassAuth::getCourentUser())
         );
     }
 
     #[Auth("manager", "admin")]
-    #[Cache("list-all", 60)]
-    #[Details(["Description" => "Retorna uma lista de pastas de todos os usuários"])]
     #[Method("GET")]
+    #[Cache(60)]
+    #[Details(["description" => "Returns a list of all folders in the system"])]
     public function all(): HttpResponse
     {
-        return new HttpResponse(
-            statusCode: HttpStatusCode::OK,
-            message: "Folders found",
+        return HttpResponse::success(
+            message: "All folders found",
             data: ModelFolder::list()
         );
     }
